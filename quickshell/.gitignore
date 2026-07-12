@@ -1,0 +1,10 @@
+# Ignore dynamic state/cache files
+alarms.json
+calculator_history.json
+launcher_frequency.json
+nepali_calendar_cache.json
+todo.json
+scratch/
+*.bak
+*.backup*
+

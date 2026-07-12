@@ -1,0 +1,32 @@
+{
+  "ai": {
+    "apiKey": "YOUR_GEMINI_API_KEY",
+    "systemInstruction": "I do use arch linux in hyprland WM."
+  },
+  "clock": {
+    "winX": 46,
+    "winY": 73,
+    "winSize": 220,
+    "scallops": 12,
+    "amplitude": 5,
+    "showNumbers": false,
+    "showTicks": true,
+    "showDayLabel": false,
+    "showDigitalTime": true,
+    "showDateBadge": true,
+    "showSecondHand": true,
+    "showSecondHandLine": false,
+    "showWeather": true,
+    "isActive": true
+  },
+  "photoFrame": {
+    "imagePath": "/home/sawmer/Pictures/Images/",
+    "photoFrameX": 39,
+    "photoFrameY": 405,
+    "photoFrameShape": "cookie_4",
+    "isActive": true
+  },
+  "activateLinux": {
+    "isActive": true
+  }
+}

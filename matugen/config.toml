@@ -1,0 +1,19 @@
+[config]
+
+[templates.colors_json]
+input_path = "/home/sawmer/.config/matugen/templates/colors.json"
+output_path = "/home/sawmer/.cache/wal/colors.json"
+
+[templates.colors_lua]
+input_path = "/home/sawmer/.config/matugen/templates/colors.lua"
+output_path = "/home/sawmer/.config/hypr/lua.d/colors.lua"
+
+[templates.kitty]
+input_path = "/home/sawmer/.config/matugen/templates/colors-kitty.conf"
+output_path = "/home/sawmer/.config/kitty/colors.conf"
+post_hook = "killall -USR1 kitty || true"
+
+[templates.quickshell_colors_json]
+input_path = "/home/sawmer/.config/matugen/templates/quickshell_colors.json"
+output_path = "/home/sawmer/.config/quickshell/colors.json"
+
