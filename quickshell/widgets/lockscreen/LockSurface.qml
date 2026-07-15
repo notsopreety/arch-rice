@@ -12,12 +12,18 @@ import "../../theme"
 import "../../components"
 import "../../services"
 import "../desktopWidget" as DesktopClock
+import Quickshell
 
 Rectangle {
     id: root
     required property LockContext context
 
     color: "transparent"
+
+    FontLoader {
+        id: anuratiFont
+        source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/fonts/anurati/Anurati-Regular.otf"
+    }
 
     // Wallpaper image
     Image {
@@ -60,7 +66,7 @@ Rectangle {
         }
 
         // Clock Configuration - M3 Themed
-        property string clockFontFamily: "Anurati"
+        property string clockFontFamily: anuratiFont.name
         property int containerSpacing: 12
 
         // Day settings

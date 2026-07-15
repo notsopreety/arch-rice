@@ -50,5 +50,4 @@ singleton SystemData 1.0 SystemData.qml
 singleton SystemUpdateService 1.0 SystemUpdateService.qml
 singleton BatteryCenterService 1.0 BatteryCenterService.qml
 singleton UsbMonitorService 1.0 UsbMonitorService.qml
-
-
+singleton LyricsService 1.0 LyricsService.qml

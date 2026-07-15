@@ -112,7 +112,8 @@ RowLayout {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                Quickshell.execDetached(["quickshell", "ipc", "call", "quickshell", "run", "media"]);
+                DankDashService.activeTab = 1;
+                DankDashService.visible = true;
             }
         }
     }

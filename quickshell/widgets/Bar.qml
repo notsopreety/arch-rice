@@ -182,16 +182,42 @@ PanelWindow {
         // CENTER MODULE: Media Player + Time & Day + Weather/Temperature
             Rectangle {
                 id: centerPill
+                property bool showLyricsMode: false
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
                 height: parent.height
-                width: centerLayout.implicitWidth + 24
+                width: showLyricsMode ? Math.min(Math.max(400, lyricsIsland.maxTextWidth + 60), parent.width > 0 ? parent.width - 600 : 1000) : centerLayout.implicitWidth + 24
+                Behavior on width { NumberAnimation { duration: 350; easing.type: Easing.OutCubic } }
                 radius: height / 2
                 
                 color: Theme.surfaceContainerHigh
                 opacity: 0.95
                 border.color: Theme.outlineVariant
                 border.width: 1
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    onClicked: (mouse) => {
+                        if (mouse.button === Qt.RightButton) {
+                            if (LyricsService.backendStatus !== "idle") {
+                                centerPill.showLyricsMode = !centerPill.showLyricsMode
+                            }
+                        } else if (mouse.button === Qt.LeftButton) {
+                            DankDashService.activeTab = 1
+                            DankDashService.visible = true
+                        }
+                    }
+                }
+
+                Connections {
+                    target: LyricsService
+                    function onBackendStatusChanged() {
+                        if (LyricsService.backendStatus === "idle" && centerPill.showLyricsMode) {
+                            centerPill.showLyricsMode = false
+                        }
+                    }
+                }
 
                 Rectangle {
                     id: centerPillMask
@@ -214,6 +240,7 @@ PanelWindow {
 
             RowLayout {
                 id: centerLayout
+                visible: !centerPill.showLyricsMode
                 anchors.centerIn: parent
                 spacing: 12
 
@@ -410,6 +437,101 @@ PanelWindow {
                         color: TimerStopwatchService.swRunning ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
                         anchors.verticalCenter: parent.verticalCenter
                     }
+                }
+            }
+
+            // Lyrics Island layout
+            Item {
+                id: lyricsIsland
+                anchors.fill: parent
+                anchors.leftMargin: 20
+                anchors.rightMargin: 20
+                visible: centerPill.showLyricsMode
+                opacity: centerPill.showLyricsMode ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 300 } }
+                clip: true
+
+                BarAudioVisualizer {
+                    id: lyricsVisualizer
+                    activePlayer: barMediaPlayer.activePlayer
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    // Only show when the player has media
+                    visible: activePlayer !== null
+                }
+
+                property string lyricText: {
+                    if (LyricsService.backendStatus === "missing" || LyricsService.backendStatus === "error" || LyricsService.backendStatus === "idle") return "No lyrics found";
+                    if (LyricsService.backendStatus === "loading") return "Loading lyrics...";
+                    return LyricsService.currentLyric || MprisController.trackTitle || "";
+                }
+                
+                property string activeLyricText: lyricText
+                property string previousLyricText: ""
+                property real lyricChangeProgress: 1
+                property real maxTextWidth: Math.max(oldTextItem.implicitWidth, newTextItem.implicitWidth) + (lyricsVisualizer.visible ? lyricsVisualizer.width + 12 : 0)
+                
+                onLyricTextChanged: {
+                    if (lyricText === activeLyricText) return;
+                    if (activeLyricText === "") {
+                        previousLyricText = "";
+                        activeLyricText = lyricText;
+                        lyricChangeProgress = 1;
+                        return;
+                    }
+                    previousLyricText = activeLyricText;
+                    activeLyricText = lyricText;
+                    lyricChangeProgress = 0;
+                    lyricChangeAnimation.restart();
+                }
+
+                SequentialAnimation {
+                    id: lyricChangeAnimation
+
+                    NumberAnimation {
+                        target: lyricsIsland
+                        property: "lyricChangeProgress"
+                        from: 0
+                        to: 1
+                        duration: 260
+                        easing.type: Easing.OutCubic
+                    }
+
+                    ScriptAction {
+                        script: lyricsIsland.previousLyricText = ""
+                    }
+                }
+
+                Text {
+                    id: oldTextItem
+                    visible: lyricsIsland.previousLyricText !== ""
+                    anchors.centerIn: parent
+                    anchors.verticalCenterOffset: -14 * lyricsIsland.lyricChangeProgress
+                    width: parent.width
+                    text: lyricsIsland.previousLyricText
+                    color: Theme.primary
+                    opacity: 1 - lyricsIsland.lyricChangeProgress
+                    font.family: Theme.font.family
+                    font.pixelSize: 14
+                    font.weight: Font.Bold
+                    horizontalAlignment: Text.AlignHCenter
+                    elide: Text.ElideRight
+                }
+
+                Text {
+                    id: newTextItem
+                    visible: lyricsIsland.activeLyricText !== ""
+                    anchors.centerIn: parent
+                    anchors.verticalCenterOffset: lyricsIsland.previousLyricText !== "" ? 12 * (1 - lyricsIsland.lyricChangeProgress) : 0
+                    width: parent.width
+                    text: lyricsIsland.activeLyricText
+                    color: Theme.primary
+                    opacity: lyricsIsland.previousLyricText !== "" ? lyricsIsland.lyricChangeProgress : 1
+                    font.family: Theme.font.family
+                    font.pixelSize: 14
+                    font.weight: Font.Bold
+                    horizontalAlignment: Text.AlignHCenter
+                    elide: Text.ElideRight
                 }
             }
         }
