@@ -1,42 +1,89 @@
 #!/usr/bin/env python3
 """
-Lyrics daemon - runs persistently, reads MPRIS via playerctl, outputs JSON lines:
+Lyrics daemon - runs persistently, watches MPRIS via playerctl,
+outputs JSON lines like Tide-island's lyricsmpris binary:
   {"type":"line","text":"lyric text","synced":true}
   {"type":"status","status":"loading"}
   {"type":"status","status":"missing"}
 """
 import subprocess, json, sys, os, re, urllib.request, urllib.parse, hashlib, time, threading
 
-POLL_MS = 150  # how often to poll position
+POLL_MS = 150
 
 def emit(obj):
     print(json.dumps(obj), flush=True)
 
 def clean_artist(artist):
-    return re.split(r'\s+(?:feat\.?|ft\.?|featuring)\s+', artist, flags=re.IGNORECASE)[0].strip()
+    # Strip featuring artists
+    a = re.split(r'\s*[,&]\s*|\s+(?:feat\.?|ft\.?|featuring)\s+', artist, flags=re.IGNORECASE)[0].strip()
+    # Strip parenthetical suffixes like (feat. X)
+    a = re.sub(r'\s*\((?:feat|ft)\.?.*?\)', '', a, flags=re.IGNORECASE).strip()
+    return a
+
+def normalize(s):
+    """Lowercase, strip punctuation/brackets for fuzzy matching."""
+    s = s.lower()
+    s = re.sub(r'\(.*?\)|\[.*?\]', '', s)       # remove bracketed parts
+    s = re.sub(r'[^\w\s]', ' ', s)               # punctuation → space
+    return ' '.join(s.split())
+
+def tokens(s):
+    return set(normalize(s).split())
 
 def score_result(item, track_name, artist_name, duration):
+    item_track  = (item.get('trackName')  or '').strip()
+    item_artist = (item.get('artistName') or '').strip()
+
+    nt  = normalize(track_name)
+    na  = normalize(artist_name)
+    nca = normalize(clean_artist(artist_name))
+    nit = normalize(item_track)
+    nia = normalize(item_artist)
+
     score = 0
-    item_track = (item.get('trackName') or '').lower()
-    item_artist = (item.get('artistName') or '').lower()
-    track_lower = track_name.lower()
-    clean_lower = clean_artist(artist_name).lower()
-    if item_track == track_lower: score += 100
-    elif track_lower in item_track or item_track in track_lower: score += 50
-    if item_artist == clean_lower: score += 40
-    elif clean_lower in item_artist or item_artist in clean_lower: score += 20
-    if item.get('syncedLyrics'): score += 30
+
+    # ── Track scoring ──────────────────────────────────────
+    track_match = False
+    if nit == nt:
+        score += 120; track_match = True
+    elif nt in nit or nit in nt:
+        score += 70;  track_match = True
+    else:
+        # token overlap — need ≥50 % of query tokens present
+        qt = tokens(track_name);  it = tokens(item_track)
+        common = qt & it
+        if len(qt) > 0 and len(common) / len(qt) >= 0.5:
+            score += 40; track_match = True
+
+    # ── Artist scoring ─────────────────────────────────────
+    artist_match = False
+    for na_variant in [nca, na]:
+        if nia == na_variant:
+            score += 100; artist_match = True; break
+        elif na_variant in nia or nia in na_variant:
+            score += 60;  artist_match = True; break
+        else:
+            qa = tokens(na_variant); ia = tokens(item_artist)
+            common = qa & ia
+            if len(qa) > 0 and len(common) / len(qa) >= 0.5:
+                score += 30; artist_match = True; break
+
+    # Require at least a loose match on BOTH fields
+    if not track_match or not artist_match:
+        return -1
+
+    if item.get('syncedLyrics'): score += 50
     if duration and duration > 0:
         diff = abs((item.get('duration') or 0) - duration)
-        if diff < 2: score += 15
-        elif diff < 5: score += 8
-        elif diff < 10: score += 3
+        if diff < 2:  score += 20
+        elif diff < 5: score += 10
+        elif diff < 10: score += 5
     return score
 
 def fetch_lyrics(track, artist, duration):
     cache_dir = os.path.expanduser("~/.cache/quickshell/lyrics")
     os.makedirs(cache_dir, exist_ok=True)
-    key_hash = hashlib.md5(f"{track.lower()}-{clean_artist(artist).lower()}".encode()).hexdigest()
+    key_hash = hashlib.md5(f"{track.lower()}|{clean_artist(artist).lower()}".encode()).hexdigest()
     cache_file = os.path.join(cache_dir, f"{key_hash}.json")
 
     if os.path.exists(cache_file):
@@ -45,79 +92,140 @@ def fetch_lyrics(track, artist, duration):
                 d = json.load(f)
             if d.get('syncedLyrics') or d.get('plainLyrics'):
                 return d
-        except: pass
+            # cached "not found" — try again after 24 h
+            if time.time() - os.path.getmtime(cache_file) < 86400:
+                return None
+        except:
+            pass
 
     headers = {'User-Agent': 'Quickshell-Lyrics-Backend/1.0'}
-    dur_int = int(float(duration)) if duration else 0
+    dur_int  = int(float(duration)) if duration else 0
 
     def get(url):
         req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=8) as r:
+        with urllib.request.urlopen(req, timeout=10) as r:
             return json.loads(r.read().decode())
 
-    # Strategy 1: /api/get
-    try:
-        params = {'track_name': track, 'artist_name': clean_artist(artist)}
-        if dur_int > 0: params['duration'] = str(dur_int)
-        d = get("https://lrclib.net/api/get?" + urllib.parse.urlencode(params))
-        if d.get('syncedLyrics') or d.get('plainLyrics'):
-            with open(cache_file, 'w') as f: json.dump(d, f)
-            return d
-    except: pass
+    def cache_and_return(d):
+        with open(cache_file, 'w') as f: json.dump(d, f)
+        return d
 
-    # Strategy 2: /api/search
-    for q in [f"{track} {clean_artist(artist)}", track]:
+    # ── Strategy 1: exact /api/get with duration ──────────
+    for artist_variant in [clean_artist(artist), artist]:
+        try:
+            params = {'track_name': track, 'artist_name': artist_variant}
+            if dur_int > 0: params['duration'] = str(dur_int)
+            d = get("https://lrclib.net/api/get?" + urllib.parse.urlencode(params))
+            if d.get('syncedLyrics') or d.get('plainLyrics'):
+                return cache_and_return(d)
+        except:
+            pass
+
+    # ── Strategy 2: /api/get without duration (looser) ───
+    for artist_variant in [clean_artist(artist), artist]:
+        try:
+            params = {'track_name': track, 'artist_name': artist_variant}
+            d = get("https://lrclib.net/api/get?" + urllib.parse.urlencode(params))
+            if d.get('syncedLyrics') or d.get('plainLyrics'):
+                return cache_and_return(d)
+        except:
+            pass
+
+    # ── Strategy 3: /api/search — multiple query variants ─
+    dur_f = float(duration) if duration else 0
+    queries = [
+        f"{track} {clean_artist(artist)}",
+        f"{track} {artist}",
+        track,
+    ]
+    seen = set()
+    for q in queries:
+        if q in seen: continue
+        seen.add(q)
         try:
             results = get("https://lrclib.net/api/search?q=" + urllib.parse.quote(q))
-            if results:
-                best = max(results, key=lambda x: score_result(x, track, artist, float(duration) if duration else 0))
-                if score_result(best, track, artist, float(duration) if duration else 0) > 20:
-                    with open(cache_file, 'w') as f: json.dump(best, f)
-                    return best
-        except: pass
+            if not results:
+                continue
+            scored = [(score_result(r, track, artist, dur_f), r) for r in results]
+            scored = [(s, r) for s, r in scored if s >= 0]
+            if scored:
+                best_score, best = max(scored, key=lambda x: x[0])
+                if best_score >= 0:
+                    return cache_and_return(best)
+        except:
+            pass
 
+    # Cache negative result
+    cache_and_return({})
     return None
 
 def parse_synced(synced_str):
-    """Parse LRC format into [(time_sec, text), ...]"""
     lines = []
     for line in synced_str.split('\n'):
         m = re.match(r'\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)', line)
         if m:
-            t = int(m.group(1))*60 + int(m.group(2)) + int(m.group(3).ljust(3,'0'))/1000.0
+            t    = int(m.group(1))*60 + int(m.group(2)) + int(m.group(3).ljust(3,'0'))/1000.0
             text = m.group(4).strip()
             if text:
                 lines.append((t, text))
     return lines
 
-def playerctl(*args):
+def playerctl(*args, player=None):
+    cmd = ['playerctl']
+    if player:
+        cmd += ['-p', player]
+    cmd += list(args)
     try:
-        r = subprocess.run(['playerctl'] + list(args), capture_output=True, text=True, timeout=2)
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=2)
         return r.stdout.strip() if r.returncode == 0 else None
-    except: return None
+    except:
+        return None
+
+def get_active_player():
+    """Return (player_name, title, artist, status) for best active player."""
+    try:
+        r = subprocess.run(['playerctl', '-l'], capture_output=True, text=True, timeout=2)
+        players = [p.strip() for p in r.stdout.strip().split('\n') if p.strip()]
+    except:
+        return None, None, None, None
+
+    # Prefer Playing > Paused
+    best = None
+    for priority in ['Playing', 'Paused']:
+        for p in players:
+            status = playerctl('status', player=p)
+            if status != priority:
+                continue
+            title  = playerctl('metadata', 'title',  player=p) or ''
+            artist = playerctl('metadata', 'artist', player=p) or ''
+            if title and artist.strip():
+                best = (p, title, artist, status)
+                if priority == 'Playing':
+                    return best  # take first Playing player immediately
+        if best:
+            return best
+
+    return None, None, None, None
 
 def main():
-    current_track = None
+    current_track  = None
     current_artist = None
-    synced_lines = []  # [(time_sec, text)]
-    last_idx = -1
+    synced_lines   = []
+    last_idx       = -1
     last_line_text = None
 
     emit({"type": "status", "status": "idle"})
 
     while True:
         try:
-            title = playerctl('metadata', 'title')
-            artist = playerctl('metadata', 'artist') or ""
-            pos_us = playerctl('metadata', 'mpris:length')  # we use status for playing check
-            status = playerctl('status')
-            pos_str = playerctl('position')  # seconds as float
+            player_name, title, artist, status = get_active_player()
 
-            if not title or status not in ('Playing', 'Paused') or not artist.strip():
+            if not title or not artist.strip() or not status:
                 if current_track is not None:
-                    current_track = None
-                    synced_lines = []
-                    last_idx = -1
+                    current_track  = None
+                    current_artist = None
+                    synced_lines   = []
+                    last_idx       = -1
                     last_line_text = None
                     emit({"type": "status", "status": "idle"})
                 time.sleep(1)
@@ -125,53 +233,64 @@ def main():
 
             track_changed = (title != current_track or artist != current_artist)
             if track_changed:
-                current_track = title
+                current_track  = title
                 current_artist = artist
-                synced_lines = []
-                last_idx = -1
+                synced_lines   = []
+                last_idx       = -1
                 last_line_text = None
                 emit({"type": "status", "status": "loading"})
 
-                length_us = playerctl('metadata', 'mpris:length') or "0"
-                try: dur_sec = int(length_us) / 1000000.0
+                length_us = playerctl('metadata', 'mpris:length', player=player_name) or "0"
+                try:    dur_sec = int(length_us) / 1_000_000.0
                 except: dur_sec = 0
 
-                # fetch in background thread
-                def fetch_and_set(t, a, d):
+                def fetch_and_set(t, a, d, sl=synced_lines):
                     data = fetch_lyrics(t, a, str(int(d)))
+                    # Guard: track may have changed by the time we get back
+                    if t != current_track or a != current_artist:
+                        return
                     if data and data.get('syncedLyrics'):
-                        lines = parse_synced(data['syncedLyrics'])
-                        synced_lines.clear()
-                        synced_lines.extend(lines)
+                        parsed = parse_synced(data['syncedLyrics'])
+                        sl.clear(); sl.extend(parsed)
                         emit({"type": "status", "status": "synced"})
                     elif data and data.get('plainLyrics'):
-                        first = data['plainLyrics'].split('\n')[0].strip()
-                        emit({"type": "line", "text": first, "synced": False})
+                        first = next(
+                            (ln.strip() for ln in data['plainLyrics'].split('\n') if ln.strip()),
+                            ""
+                        )
+                        if first:
+                            emit({"type": "line",   "text": first, "synced": False})
                         emit({"type": "status", "status": "plain"})
                     else:
                         emit({"type": "status", "status": "missing"})
 
-                t = threading.Thread(target=fetch_and_set, args=(title, artist, dur_sec), daemon=True)
-                t.start()
+                threading.Thread(target=fetch_and_set,
+                                 args=(title, artist, dur_sec),
+                                 daemon=True).start()
 
-            # sync position
-            if synced_lines and pos_str:
-                try:
-                    pos = float(pos_str)
-                    idx = -1
-                    for i in range(len(synced_lines) - 1, -1, -1):
-                        if pos >= synced_lines[i][0]:
-                            idx = i
-                            break
-                    if idx != last_idx and idx >= 0:
-                        last_idx = idx
-                        text = synced_lines[idx][1]
-                        if text != last_line_text:
-                            last_line_text = text
-                            emit({"type": "line", "text": text, "synced": True})
-                except: pass
+            # ── Position sync (only when Playing) ──────────────
+            if synced_lines and status == 'Playing':
+                pos_str = playerctl('position', player=player_name)
+                if pos_str:
+                    try:
+                        pos = float(pos_str)
+                        idx = -1
+                        for i in range(len(synced_lines) - 1, -1, -1):
+                            if pos >= synced_lines[i][0]:
+                                idx = i
+                                break
+                        # Emit on index change OR on seek (position jumped back)
+                        if idx >= 0 and (idx != last_idx or
+                                (last_idx >= 0 and abs(pos - synced_lines[last_idx][0]) > 2.5)):
+                            last_idx = idx
+                            text = synced_lines[idx][1]
+                            if text != last_line_text or idx != last_idx:
+                                last_line_text = text
+                                emit({"type": "line", "text": text, "synced": True})
+                    except:
+                        pass
 
-        except Exception as e:
+        except Exception:
             pass
 
         time.sleep(POLL_MS / 1000.0)

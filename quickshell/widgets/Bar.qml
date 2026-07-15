@@ -200,7 +200,7 @@ PanelWindow {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: (mouse) => {
                         if (mouse.button === Qt.RightButton) {
-                            if (LyricsService.backendStatus !== "idle") {
+                            if (barMediaPlayer.hasPlayer) {
                                 centerPill.showLyricsMode = !centerPill.showLyricsMode
                             }
                         } else if (mouse.button === Qt.LeftButton) {
@@ -211,9 +211,23 @@ PanelWindow {
                 }
 
                 Connections {
-                    target: LyricsService
-                    function onBackendStatusChanged() {
-                        if (LyricsService.backendStatus === "idle" && centerPill.showLyricsMode) {
+                    target: barMediaPlayer
+                    function onHasPlayerChanged() {
+                        if (!barMediaPlayer.hasPlayer) {
+                            noPlayerTimer.restart()
+                        } else {
+                            noPlayerTimer.stop()
+                        }
+                    }
+                }
+
+                Timer {
+                    id: noPlayerTimer
+                    interval: 2000
+                    repeat: false
+                    onTriggered: {
+                        // Only close after 2s of confirmed no player
+                        if (!barMediaPlayer.hasPlayer && centerPill.showLyricsMode) {
                             centerPill.showLyricsMode = false
                         }
                     }
