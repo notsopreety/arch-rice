@@ -474,16 +474,24 @@ PanelWindow {
                     visible: activePlayer !== null
                 }
 
+                property bool showMarquee: LyricsService.backendStatus === "loading" || LyricsService.backendStatus === "missing" || LyricsService.backendStatus === "error" || LyricsService.backendStatus === "idle"
+
                 property string lyricText: {
-                    if (LyricsService.backendStatus === "missing" || LyricsService.backendStatus === "error" || LyricsService.backendStatus === "idle") return "No lyrics found";
-                    if (LyricsService.backendStatus === "loading") return "Loading lyrics...";
+                    if (showMarquee) return ""; // Let marquee handle this
                     return LyricsService.currentLyric || MprisController.trackTitle || "";
                 }
                 
                 property string activeLyricText: lyricText
                 property string previousLyricText: ""
                 property real lyricChangeProgress: 1
-                property real maxTextWidth: Math.max(oldTextItem.implicitWidth, newTextItem.implicitWidth) + (lyricsVisualizer.visible ? lyricsVisualizer.width + 12 : 0)
+                
+                property real maxTextWidth: {
+                    let visualizerW = lyricsVisualizer.visible ? lyricsVisualizer.width + 12 : 0;
+                    if (showMarquee) {
+                        return Math.min(fallbackMarqueeText.implicitWidth, 250) + visualizerW;
+                    }
+                    return Math.max(oldTextItem.implicitWidth, newTextItem.implicitWidth) + visualizerW;
+                }
                 
                 onLyricTextChanged: {
                     if (lyricText === activeLyricText) return;
@@ -516,9 +524,58 @@ PanelWindow {
                     }
                 }
 
+                // Fallback Marquee (Loading / Missing)
+                Item {
+                    id: fallbackMarqueeContainer
+                    visible: lyricsIsland.showMarquee
+                    anchors.left: lyricsVisualizer.visible ? lyricsVisualizer.right : parent.left
+                    anchors.leftMargin: lyricsVisualizer.visible ? 12 : 0
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 16
+                    clip: true
+
+                    Text {
+                        id: fallbackMarqueeText
+                        text: {
+                            if (!barMediaPlayer.activePlayer) return "No Media";
+                            var title = barMediaPlayer.activePlayer.trackTitle || barMediaPlayer.activePlayer.title || "Unknown Track";
+                            var artist = barMediaPlayer.activePlayer.trackArtist || barMediaPlayer.activePlayer.artist || "";
+                            return artist !== "" ? (title + " - " + artist) : title;
+                        }
+                        font.family: Theme.font.family
+                        font.pixelSize: 14
+                        font.weight: Font.Bold
+                        color: Theme.primary
+                        y: (parent.height - height) / 2
+                        opacity: 1.0
+
+                        SequentialAnimation {
+                            running: LyricsService.backendStatus === "loading" && lyricsIsland.visible
+                            loops: Animation.Infinite
+                            NumberAnimation { target: fallbackMarqueeText; property: "opacity"; from: 1.0; to: 0.3; duration: 800; easing.type: Easing.InOutQuad }
+                            NumberAnimation { target: fallbackMarqueeText; property: "opacity"; from: 0.3; to: 1.0; duration: 800; easing.type: Easing.InOutQuad }
+                            onRunningChanged: {
+                                if (!running) fallbackMarqueeText.opacity = 1.0
+                            }
+                        }
+
+                        NumberAnimation on x {
+                            id: lyricsMarqueeAnim
+                            from: fallbackMarqueeContainer.width
+                            to: -fallbackMarqueeText.implicitWidth
+                            duration: Math.max(4000, fallbackMarqueeText.implicitWidth * 35)
+                            loops: Animation.Infinite
+                            running: lyricsIsland.showMarquee && lyricsIsland.visible
+                        }
+
+                        onTextChanged: lyricsMarqueeAnim.restart()
+                    }
+                }
+
                 Text {
                     id: oldTextItem
-                    visible: lyricsIsland.previousLyricText !== ""
+                    visible: lyricsIsland.previousLyricText !== "" && !lyricsIsland.showMarquee
                     anchors.centerIn: parent
                     anchors.verticalCenterOffset: -14 * lyricsIsland.lyricChangeProgress
                     width: parent.width
@@ -534,7 +591,7 @@ PanelWindow {
 
                 Text {
                     id: newTextItem
-                    visible: lyricsIsland.activeLyricText !== ""
+                    visible: lyricsIsland.activeLyricText !== "" && !lyricsIsland.showMarquee
                     anchors.centerIn: parent
                     anchors.verticalCenterOffset: lyricsIsland.previousLyricText !== "" ? 12 * (1 - lyricsIsland.lyricChangeProgress) : 0
                     width: parent.width
