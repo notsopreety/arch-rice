@@ -20,6 +20,11 @@ def clean_artist(artist):
     a = re.sub(r'\s*\((?:feat|ft)\.?.*?\)', '', a, flags=re.IGNORECASE).strip()
     return a
 
+def clean_track(track):
+    # Strip parenthetical suffixes like (feat. X) or (with X)
+    t = re.sub(r'\s*\((?:feat|ft|with)\.?.*?\)', '', track, flags=re.IGNORECASE).strip()
+    return t
+
 def normalize(s):
     """Lowercase, strip punctuation/brackets for fuzzy matching."""
     s = s.lower()
@@ -34,7 +39,7 @@ def score_result(item, track_name, artist_name, duration):
     item_track  = (item.get('trackName')  or '').strip()
     item_artist = (item.get('artistName') or '').strip()
 
-    nt  = normalize(track_name)
+    nt  = normalize(clean_track(track_name))
     na  = normalize(artist_name)
     nca = normalize(clean_artist(artist_name))
     nit = normalize(item_track)
@@ -50,7 +55,7 @@ def score_result(item, track_name, artist_name, duration):
         score += 70;  track_match = True
     else:
         # token overlap — need ≥50 % of query tokens present
-        qt = tokens(track_name);  it = tokens(item_track)
+        qt = tokens(clean_track(track_name));  it = tokens(item_track)
         common = qt & it
         if len(qt) > 0 and len(common) / len(qt) >= 0.5:
             score += 40; track_match = True
@@ -72,7 +77,8 @@ def score_result(item, track_name, artist_name, duration):
     if not track_match or not artist_match:
         return -1
 
-    if item.get('syncedLyrics'): score += 50
+    # MASSIVE boost for synced lyrics to ensure they always beat plain ones
+    if item.get('syncedLyrics'): score += 500
     if duration and duration > 0:
         diff = abs((item.get('duration') or 0) - duration)
         if diff < 2:  score += 20
@@ -110,14 +116,20 @@ def fetch_lyrics(track, artist, duration):
         with open(cache_file, 'w') as f: json.dump(d, f)
         return d
 
+    # We will save any plain-text result as a fallback, 
+    # but keep searching to see if we can find a synced version.
+    fallback_plain = None
+
     # ── Strategy 1: exact /api/get with duration ──────────
     for artist_variant in [clean_artist(artist), artist]:
         try:
             params = {'track_name': track, 'artist_name': artist_variant}
             if dur_int > 0: params['duration'] = str(dur_int)
             d = get("https://lrclib.net/api/get?" + urllib.parse.urlencode(params))
-            if d.get('syncedLyrics') or d.get('plainLyrics'):
+            if d.get('syncedLyrics'):
                 return cache_and_return(d)
+            elif d.get('plainLyrics') and not fallback_plain:
+                fallback_plain = d
         except:
             pass
 
@@ -126,17 +138,19 @@ def fetch_lyrics(track, artist, duration):
         try:
             params = {'track_name': track, 'artist_name': artist_variant}
             d = get("https://lrclib.net/api/get?" + urllib.parse.urlencode(params))
-            if d.get('syncedLyrics') or d.get('plainLyrics'):
+            if d.get('syncedLyrics'):
                 return cache_and_return(d)
+            elif d.get('plainLyrics') and not fallback_plain:
+                fallback_plain = d
         except:
             pass
 
     # ── Strategy 3: /api/search — multiple query variants ─
     dur_f = float(duration) if duration else 0
     queries = [
-        f"{track} {clean_artist(artist)}",
+        f"{clean_track(track)} {clean_artist(artist)}",
         f"{track} {artist}",
-        track,
+        clean_track(track),
     ]
     seen = set()
     for q in queries:
@@ -151,9 +165,17 @@ def fetch_lyrics(track, artist, duration):
             if scored:
                 best_score, best = max(scored, key=lambda x: x[0])
                 if best_score >= 0:
-                    return cache_and_return(best)
+                    # If the best search result is synced, return it!
+                    if best.get('syncedLyrics'):
+                        return cache_and_return(best)
+                    # If it's not synced but we have a fallback plain, we'll return that later
+                    if best.get('plainLyrics') and not fallback_plain:
+                        fallback_plain = best
         except:
             pass
+
+    if fallback_plain:
+        return cache_and_return(fallback_plain)
 
     # Cache negative result
     cache_and_return({})
