@@ -1,6 +1,6 @@
 {
   "ai": {
-    "apiKey": "AIzaSyBKbLOMnunn5j1C8RDQT5rkSLK5A53hXZI",
+    "apiKey": "YOUR_API_KEY",
     "systemInstruction": "I do use arch linux in hyprland WM."
   },
   "clock": {
