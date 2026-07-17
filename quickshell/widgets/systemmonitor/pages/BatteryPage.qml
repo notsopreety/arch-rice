@@ -115,16 +115,38 @@ Flickable {
                         }
                     }
 
-                    // Charging Bolt Overlay (White for contrast against green)
-                    MaterialSymbol {
+                    // Custom Charging Bolt Overlay
+                    Image {
+                        id: chargingBolt
                         anchors.centerIn: parent
-                        text: "bolt"
-                        iconSize: 40 * Appearance.effectiveScale
-                        fill: 1
-                        color: "#ffffff"
+                        source: "file:///home/sawmer/.config/quickshell/assets/bolt.svg"
+                        sourceSize.width: 40 * Appearance.effectiveScale
+                        sourceSize.height: 40 * Appearance.effectiveScale
+                        width: 40 * Appearance.effectiveScale
+                        height: 40 * Appearance.effectiveScale
+                        fillMode: Image.PreserveAspectFit
                         visible: Battery.isCharging
-                        opacity: 0.9
-                        renderType: Text.QtRendering
+                        smooth: true
+                        antialiasing: true
+
+                        // Pulsing breathing animation
+                        SequentialAnimation on opacity {
+                            loops: Animation.Infinite
+                            running: Battery.isCharging
+                            
+                            NumberAnimation {
+                                from: 0.3
+                                to: 1.0
+                                duration: 1000
+                                easing.type: Easing.InOutSine
+                            }
+                            NumberAnimation {
+                                from: 1.0
+                                to: 0.3
+                                duration: 1000
+                                easing.type: Easing.InOutSine
+                            }
+                        }
                     }
                 }
 
