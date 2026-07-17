@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import "../../services"
 import "../../theme"
 
@@ -22,6 +23,19 @@ PanelWindow {
 
     color: "transparent"
     visible: WorkspaceService.visible
+
+    // ── Glassmorphism toggle ─────────────────────────
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        
+        Component.onCompleted: { try { glassFlag.reload(); workspaceWindow.glassmorphism = true; } catch(e) { workspaceWindow.glassmorphism = false; } }
+        onLoaded: workspaceWindow.glassmorphism = true
+        onLoadFailed: workspaceWindow.glassmorphism = false
+    }
+    // ─────────────────────────────────────────────────
 
     onVisibleChanged: {
         if (visible) {
@@ -48,6 +62,7 @@ PanelWindow {
         screen: workspaceWindow.screen
         hyprlandData: hyprlandData
         showCondition: workspaceWindow.visible
+        glassmorphism: workspaceWindow.glassmorphism
         focus: true
 
         onCloseRequested: {

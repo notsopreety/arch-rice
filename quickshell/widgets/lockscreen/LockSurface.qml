@@ -20,6 +20,27 @@ Rectangle {
 
     color: "transparent"
 
+    // ── Glassmorphism toggle ──────────────────────────────────────────────
+    property bool glassmorphism: false
+    property bool isReady: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlagTimer.restart()
+        Component.onCompleted: { try { glassFlag.reload(); } catch(e) {} }
+        onLoaded: { root.glassmorphism = true; root.isReady = true; }
+        onLoadFailed: { root.glassmorphism = false; root.isReady = true; }
+    }
+    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+
+    // Pill color helpers
+    readonly property color pillBg: root.glassmorphism
+        ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.35)
+        : Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.90)
+    readonly property color pillBorder: root.glassmorphism ? Qt.rgba(1,1,1,0.18) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.15)
+
     FontLoader {
         id: anuratiFont
         source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/fonts/anurati/Anurati-Regular.otf"
@@ -237,11 +258,11 @@ Rectangle {
             width: battMouseArea.containsMouse ? (batteryRow.implicitWidth + 24) : 44
             height: 36
             radius: Theme.rounding.full
-            color: Theme.surfaceContainerHigh
-            opacity: 0.9
+            color: root.pillBg
+            border.color: root.pillBorder
+            border.width: 1
             clip: true
-
-            Behavior on width { NumberAnimation { duration: Theme.anim.durationNormal; easing.type: Theme.anim.type; easing.bezierCurve: Theme.anim.curve } }
+            Behavior on color { enabled: root.isReady; ColorAnimation { duration: 400 } }
 
             Row {
                 id: batteryRow
@@ -358,11 +379,11 @@ Rectangle {
             width: wifiMouseArea.containsMouse ? (wifiRow.implicitWidth + 24) : 44
             height: 36
             radius: Theme.rounding.full
-            color: Theme.surfaceContainerHigh
-            opacity: 0.9
+            color: root.pillBg
+            border.color: root.pillBorder
+            border.width: 1
             clip: true
-
-            Behavior on width { NumberAnimation { duration: Theme.anim.durationNormal; easing.type: Theme.anim.type; easing.bezierCurve: Theme.anim.curve } }
+            Behavior on color { enabled: root.isReady; ColorAnimation { duration: 400 } }
 
             property bool wifiEnabled: true
             property string wifiSSID: ""
@@ -470,11 +491,11 @@ Rectangle {
             width: btMouseArea.containsMouse ? (bluetoothRow.implicitWidth + 24) : 44
             height: 36
             radius: Theme.rounding.full
-            color: Theme.surfaceContainerHigh
-            opacity: 0.9
+            color: root.pillBg
+            border.color: root.pillBorder
+            border.width: 1
             clip: true
-
-            Behavior on width { NumberAnimation { duration: Theme.anim.durationNormal; easing.type: Theme.anim.type; easing.bezierCurve: Theme.anim.curve } }
+            Behavior on color { enabled: root.isReady; ColorAnimation { duration: 400 } }
 
             Row {
                 id: bluetoothRow
@@ -652,10 +673,24 @@ Rectangle {
         // Overlay to dim the background for readability
         Rectangle {
             anchors.fill: parent
-            color: Theme.surfaceContainer
-            opacity: 0.7
+            color: root.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.80)
             z: -1
             radius: Theme.rounding.large
+            Behavior on color { enabled: root.isReady; ColorAnimation { duration: 400 } }
+
+            // Gloss overlay on media card
+            Rectangle {
+                anchors { left: parent.left; right: parent.right; top: parent.top }
+                height: parent.height * 0.45
+                radius: parent.radius
+                visible: root.glassmorphism
+                gradient: Gradient {
+                    orientation: Gradient.Vertical
+                    GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.10) }
+                    GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.00) }
+                }
+                border.color: "transparent"
+            }
         }
 
         Behavior on opacity { NumberAnimation { duration: Theme.anim.durationNormal; easing.type: Theme.anim.type; easing.bezierCurve: Theme.anim.curve } }
@@ -795,9 +830,10 @@ Rectangle {
             Layout.preferredWidth: 380
             Layout.preferredHeight: 48
             radius: height / 2
-            color: Theme.surfaceContainer
-            border.color: passwordInput.activeFocus ? Theme.primary : Theme.outlineVariant
+            color: root.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
+            border.color: passwordInput.activeFocus ? Theme.primary : (root.glassmorphism ? Qt.rgba(1,1,1,0.22) : Theme.outlineVariant)
             border.width: passwordInput.activeFocus ? 1.5 : 1
+            Behavior on color { enabled: root.isReady; ColorAnimation { duration: 400 } }
 
             property bool showPasswordText: false
 
@@ -826,8 +862,12 @@ Rectangle {
                     id: inputWrapper
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    color: Theme.surfaceContainerLow
+                    color: root.glassmorphism ? Qt.rgba(Theme.surfaceContainerLow.r, Theme.surfaceContainerLow.g, Theme.surfaceContainerLow.b, 0.3) : Theme.surfaceContainerLow
+                    border.color: root.glassmorphism ? Qt.rgba(1, 1, 1, 0.12) : "transparent"
+                    border.width: root.glassmorphism ? 1 : 0
                     radius: height / 2
+                    Behavior on color { enabled: root.isReady; ColorAnimation { duration: 400 } }
+                    Behavior on border.color { enabled: root.isReady; ColorAnimation { duration: 400 } }
 
                     TextInput {
                         id: passwordInput
@@ -942,8 +982,11 @@ Rectangle {
                         property string hoverShape: "square"
 
                         shape: unlockButton.hovered ? hoverShape : "circle"
-                        color: unlockButton.enabled ? Theme.primary : Theme.surfaceContainerLow
-                        borderWidth: 0
+                        color: unlockButton.enabled ? Theme.primary : (root.glassmorphism ? Qt.rgba(Theme.surfaceContainerLow.r, Theme.surfaceContainerLow.g, Theme.surfaceContainerLow.b, 0.3) : Theme.surfaceContainerLow)
+                        borderColor: root.glassmorphism ? (unlockButton.enabled ? "transparent" : Qt.rgba(1, 1, 1, 0.12)) : "transparent"
+                        borderWidth: root.glassmorphism ? (unlockButton.enabled ? 0 : 1) : 0
+                        Behavior on color { enabled: root.isReady; ColorAnimation { duration: 400 } }
+                        Behavior on borderColor { enabled: root.isReady; ColorAnimation { duration: 400 } }
 
                         RotationAnimation on rotation {
                             loops: Animation.Infinite
@@ -1008,8 +1051,9 @@ Rectangle {
                     property string hoverShape: "square"
 
                     shape: powerMouse.containsMouse ? hoverShape : "circle"
-                    color: powerMouse.containsMouse ? Theme.primary : Theme.surfaceContainerHigh
-                    borderWidth: 0
+                    color: powerMouse.containsMouse ? Theme.primary : (root.glassmorphism ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.35) : Theme.surfaceContainerHigh)
+                    borderColor: root.glassmorphism ? (powerMouse.containsMouse ? "transparent" : Qt.rgba(1, 1, 1, 0.18)) : "transparent"
+                    borderWidth: root.glassmorphism ? (powerMouse.containsMouse ? 0 : 1) : 0
 
                     RotationAnimation on rotation {
                         loops: Animation.Infinite
@@ -1018,7 +1062,9 @@ Rectangle {
                         running: powerMouse.containsMouse
                     }
 
-                    Behavior on color { ColorAnimation { duration: 200 } }
+                    Behavior on color { enabled: root.isReady; ColorAnimation { duration: 200 } }
+                    Behavior on borderColor { enabled: root.isReady; ColorAnimation { duration: 200 } }
+                    Behavior on borderWidth { enabled: root.isReady; NumberAnimation { duration: 200 } }
                 }
 
                 Item {

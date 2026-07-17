@@ -53,8 +53,8 @@ hl.config({
             rounding_power = 2,
 
             -- Change transparency of focused and unfocused windows for glassmorphism
-            active_opacity   = is_glass and 0.75 or 1.0,
-            inactive_opacity = is_glass and 0.65 or 1.0,
+            active_opacity   = is_glass and 0.65 or 1.0,
+            inactive_opacity = is_glass and 0.60 or 1.0,
 
             shadow = {
                 enabled      = true,
@@ -65,9 +65,13 @@ hl.config({
 
             blur = {
                 enabled   = true,
-                size      = is_glass and 12 or 3,
-                passes    = is_glass and 4 or 1,
+                -- Keep blur strength identical in both modes so the background
+                -- looks the same. Glass effect comes from widget transparency (0.35 alpha),
+                -- not from heavy background blur.
+                size      = 3,
+                passes    = 1,
                 vibrancy  = 0.1696,
+                -- ignore_opacity=true lets blur render under transparent glass widgets
                 ignore_opacity = is_glass,
             },
         }

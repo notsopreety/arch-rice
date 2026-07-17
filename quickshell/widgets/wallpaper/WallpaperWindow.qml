@@ -11,6 +11,21 @@ import "../../components"
 PanelWindow {
     id: main
 
+    // ── Glassmorphism toggle ──────────────────────────────────────────────
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlagTimer.restart()
+        Component.onCompleted: { try { glassFlag.reload(); } catch(e) {} }
+        onLoaded: main.glassmorphism = true
+        onLoadFailed: main.glassmorphism = false
+    }
+    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+
+
     anchors {
         top: true
         bottom: true
@@ -431,12 +446,19 @@ PanelWindow {
         Rectangle {
             id: randButton
             width: 48; height: 48; radius: 14
-            color: randMouse.pressed ? Theme.surfaceContainerLow : randMouse.containsMouse ? Theme.primary : Theme.surfaceContainer
+            color: randMouse.pressed 
+                ? (main.glassmorphism ? Qt.rgba(Theme.surfaceContainerLow.r, Theme.surfaceContainerLow.g, Theme.surfaceContainerLow.b, 0.25) : Theme.surfaceContainerLow) 
+                : randMouse.containsMouse 
+                    ? Theme.primary 
+                    : (main.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Theme.surfaceContainer)
             opacity: randMouse.containsMouse ? 1.0 : 0.8
             border.width: 1
-            border.color: randMouse.containsMouse ? "transparent" : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+            border.color: randMouse.containsMouse 
+                ? "transparent" 
+                : (main.glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2))
 
             Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on border.color { ColorAnimation { duration: 150 } }
 
             DankIcon {
                 anchors.centerIn: parent
@@ -470,16 +492,25 @@ PanelWindow {
                 property bool expanded: false
                 anchors.fill: parent
                 radius: expanded ? 8 : 14
-                color: expanded ? "transparent" : (searchMouse.pressed ? Theme.surfaceContainerLow : searchMouse.containsMouse ? Theme.primary : Theme.surfaceContainer)
+                color: expanded 
+                    ? "transparent" 
+                    : (searchMouse.pressed 
+                        ? (main.glassmorphism ? Qt.rgba(Theme.surfaceContainerLow.r, Theme.surfaceContainerLow.g, Theme.surfaceContainerLow.b, 0.25) : Theme.surfaceContainerLow) 
+                        : searchMouse.containsMouse 
+                            ? Theme.primary 
+                            : (main.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Theme.surfaceContainer))
                 opacity: (searchMouse.containsMouse || expanded) ? 1.0 : 0.8
                 border.width: expanded ? (searchInput.activeFocus ? 2 : 1) : 1
                 border.color: expanded 
                     ? (searchInput.activeFocus ? Theme.primary : Theme.outline)
-                    : (searchMouse.containsMouse ? "transparent" : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2))
+                    : (searchMouse.containsMouse 
+                        ? "transparent" 
+                        : (main.glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)))
                 clip: true
 
                 Behavior on radius { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
                 Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on border.color { ColorAnimation { duration: 150 } }
 
                 DankIcon {
                     name: "search"
@@ -590,12 +621,19 @@ PanelWindow {
         Rectangle {
             id: reloadButton
             width: 48; height: 48; radius: 14
-            color: reloadMouse.pressed ? Theme.surfaceContainerLow : reloadMouse.containsMouse ? Theme.primary : Theme.surfaceContainer
+            color: reloadMouse.pressed 
+                ? (main.glassmorphism ? Qt.rgba(Theme.surfaceContainerLow.r, Theme.surfaceContainerLow.g, Theme.surfaceContainerLow.b, 0.25) : Theme.surfaceContainerLow) 
+                : reloadMouse.containsMouse 
+                    ? Theme.primary 
+                    : (main.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Theme.surfaceContainer)
             opacity: reloadMouse.containsMouse ? 1.0 : 0.8
             border.width: 1
-            border.color: reloadMouse.containsMouse ? "transparent" : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+            border.color: reloadMouse.containsMouse 
+                ? "transparent" 
+                : (main.glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2))
 
             Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on border.color { ColorAnimation { duration: 150 } }
 
             DankIcon {
                 anchors.centerIn: parent

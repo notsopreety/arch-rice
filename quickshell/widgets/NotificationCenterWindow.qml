@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import Quickshell.Services.Notifications
 import "../theme"
 import "../services"
@@ -17,6 +18,28 @@ PanelWindow {
     readonly property color textMutedColor: "#e2e8f0"
     readonly property color primaryColor: Theme.primary
     readonly property color errorColor: Theme.error
+
+    // ── Glassmorphism toggle ──────────────────────────────────────────────
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlagTimer.restart()
+        Component.onCompleted: { try { glassFlag.reload(); window.glassmorphism = true; } catch(e) { window.glassmorphism = false; } }
+        onLoaded: window.glassmorphism = true
+        onLoadFailed: window.glassmorphism = false
+    }
+    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+
+    // Glassmorphic surface helpers
+    readonly property color glassCanvasBg:        Qt.rgba(Theme.surfaceContainer.r,    Theme.surfaceContainer.g,    Theme.surfaceContainer.b,    0.35)
+    readonly property color glassIslandBg:        Qt.rgba(Theme.surfaceContainerLow.r, Theme.surfaceContainerLow.g, Theme.surfaceContainerLow.b, 0.35)
+    readonly property color glassCardBg:          Qt.rgba(Theme.surfaceContainer.r,    Theme.surfaceContainer.g,    Theme.surfaceContainer.b,    0.40)
+    readonly property color glassCardHoverBg:     Qt.rgba(Theme.surfaceContainerHigh.r,Theme.surfaceContainerHigh.g,Theme.surfaceContainerHigh.b, 0.45)
+    readonly property color glassActionBg:        Qt.rgba(Theme.surfaceContainerHigh.r,Theme.surfaceContainerHigh.g,Theme.surfaceContainerHigh.b, 0.40)
+    readonly property color glassBorder:          Qt.rgba(1, 1, 1, 0.18)
 
     readonly property var visibleNotifications: (Notifs.recentNotifications ?? []).slice(0, 100)
     property bool _triggeredByClear: false
@@ -138,10 +161,27 @@ PanelWindow {
             y: 50 // Placed nicely below the top status bar
 
             radius: 24
-            color: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.85) // Matugen dynamic background tint
-            border.color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.2) // Material You outline accent
+            color: window.glassmorphism ? window.glassCanvasBg : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.85)
+            border.color: window.glassmorphism ? window.glassBorder : Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.2)
             border.width: 1
             clip: true
+            Behavior on color { ColorAnimation { duration: 400 } }
+            Behavior on border.color { ColorAnimation { duration: 400 } }
+
+            // Gloss overlay
+            Rectangle {
+                anchors { left: parent.left; right: parent.right; top: parent.top }
+                height: parent.height * 0.45
+                radius: parent.radius
+                visible: window.glassmorphism
+                gradient: Gradient {
+                    orientation: Gradient.Vertical
+                    GradientStop { position: 0.0; color: Qt.rgba(1,1,1,0.12) }
+                    GradientStop { position: 1.0; color: Qt.rgba(1,1,1,0.00) }
+                }
+                border.color: "transparent"
+                z: 999
+            }
 
             opacity: 0
 
@@ -176,9 +216,11 @@ PanelWindow {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     radius: 20
-                    color: Qt.rgba(Theme.surfaceContainerLow.r, Theme.surfaceContainerLow.g, Theme.surfaceContainerLow.b, 0.95)
-                    border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.15)
+                    color: window.glassmorphism ? window.glassIslandBg : Qt.rgba(Theme.surfaceContainerLow.r, Theme.surfaceContainerLow.g, Theme.surfaceContainerLow.b, 0.95)
+                    border.color: window.glassmorphism ? window.glassBorder : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.15)
                     border.width: 1
+                    Behavior on color { ColorAnimation { duration: 400 } }
+                    Behavior on border.color { ColorAnimation { duration: 400 } }
 
                     ColumnLayout {
                         id: islandColumn
@@ -350,11 +392,13 @@ PanelWindow {
                                         }
                                     }
 
-                                    color: cardMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+                                    color: cardMouse.containsMouse
+                                        ? (window.glassmorphism ? window.glassCardHoverBg : Theme.surfaceContainerHigh)
+                                        : (window.glassmorphism ? window.glassCardBg      : Theme.surfaceContainer)
                                     border.width: modelData.read ? 1 : 1.25
-                                    border.color: modelData.read
-                                        ? Qt.rgba(255, 255, 255, 0.05)
-                                        : Qt.rgba(window.urgencyColor(modelData.urgency).r, window.urgencyColor(modelData.urgency).g, window.urgencyColor(modelData.urgency).b, 0.32)
+                                    border.color: window.glassmorphism
+                                        ? (modelData.read ? Qt.rgba(1,1,1,0.12) : Qt.rgba(window.urgencyColor(modelData.urgency).r, window.urgencyColor(modelData.urgency).g, window.urgencyColor(modelData.urgency).b, 0.40))
+                                        : (modelData.read ? Qt.rgba(255,255,255,0.05) : Qt.rgba(window.urgencyColor(modelData.urgency).r, window.urgencyColor(modelData.urgency).g, window.urgencyColor(modelData.urgency).b, 0.32))
 
                                     Behavior on color { ColorAnimation { duration: 120 } }
                                     Behavior on border.color { ColorAnimation { duration: 120 } }
@@ -601,9 +645,13 @@ PanelWindow {
                                 Layout.preferredWidth: 56
                                 Layout.preferredHeight: 40
                                 radius: 20
-                                color: Notifs.dnd ? Theme.primaryContainer : Theme.surfaceContainerHigh
-                                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
+                                color: Notifs.dnd 
+                                    ? (window.glassmorphism ? Qt.rgba(Theme.primaryContainer.r, Theme.primaryContainer.g, Theme.primaryContainer.b, 0.5) : Theme.primaryContainer)
+                                    : (window.glassmorphism ? window.glassActionBg : Theme.surfaceContainerHigh)
+                                border.color: window.glassmorphism ? window.glassBorder : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
                                 border.width: 1
+                                Behavior on color { ColorAnimation { duration: 400 } }
+                                Behavior on border.color { ColorAnimation { duration: 400 } }
 
                                 DankIcon {
                                     anchors.centerIn: parent
@@ -624,9 +672,11 @@ PanelWindow {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 40
                                 radius: 20
-                                color: Theme.surfaceContainerHigh
-                                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
+                                color: window.glassmorphism ? window.glassActionBg : Theme.surfaceContainerHigh
+                                border.color: window.glassmorphism ? window.glassBorder : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
                                 border.width: 1
+                                Behavior on color { ColorAnimation { duration: 400 } }
+                                Behavior on border.color { ColorAnimation { duration: 400 } }
 
                                 Text {
                                     anchors.centerIn: parent
@@ -645,9 +695,11 @@ PanelWindow {
                                 Layout.preferredWidth: 56
                                 Layout.preferredHeight: 40
                                 radius: 20
-                                color: Theme.surfaceContainerHigh
-                                border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
+                                color: window.glassmorphism ? window.glassActionBg : Theme.surfaceContainerHigh
+                                border.color: window.glassmorphism ? window.glassBorder : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
                                 border.width: 1
+                                Behavior on color { ColorAnimation { duration: 400 } }
+                                Behavior on border.color { ColorAnimation { duration: 400 } }
                                 opacity: window.visibleNotifications.length > 0 ? 1.0 : 0.5
 
                                 DankIcon {

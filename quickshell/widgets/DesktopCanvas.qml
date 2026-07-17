@@ -35,5 +35,9 @@ PanelWindow {
         ActivateLinuxWatermark {
             id: activateLinuxWatermark
         }
+
+        FlowersWidget {
+            id: flowersWidget
+        }
     }
 }

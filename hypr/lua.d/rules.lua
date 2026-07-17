@@ -49,18 +49,28 @@ hl.layer_rule({
     no_anim = true,
 })
 
--- Enable blur on the quickshell power menu overlay for beautiful glassmorphism
+-- Enable blur on the quickshell power menu / app launcher overlay only when NOT in glassmorphism mode
+-- (shared namespace "quickshell-powermenu" covers both PowerMenuWindow and LauncherWindow)
+-- In glassmorphism mode, global blur passes = 4 already makes the overlay too opaque.
 hl.layer_rule({
     name  = "blur-powermenu",
     match = { namespace = "^quickshell-powermenu$" },
-    blur  = true,
+    blur  = not is_glass,
 })
 
--- Enable blur on the quickshell wallpaper selector overlay for glassmorphism
+-- Enable blur on the quickshell wallpaper selector overlay when NOT in glassmorphism mode
+-- (since glassmorphism mode increases global blur passes to 4, making it too opaque)
+local is_glass = false
+local f = io.open(os.getenv("HOME") .. "/.config/hypr/.glassmorphism_enabled", "r")
+if f then
+    is_glass = true
+    f:close()
+end
+
 hl.layer_rule({
     name  = "blur-wallpaper",
     match = { namespace = "^quickshell-wallpaper$" },
-    blur  = true,
+    blur  = not is_glass,
 })
 
 -- Hyprland-run windowrule

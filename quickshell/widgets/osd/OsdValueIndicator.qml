@@ -5,6 +5,7 @@ import "../../theme"
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 
 /**
  * Refactored OSD Value Indicator (Volume/Brightness)
@@ -40,27 +41,45 @@ Item {
         badgeSlideIn.start();
     }
 
+    // ── Glassmorphism toggle ──────────────────────────────────────────────
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlagTimer.restart()
+        Component.onCompleted: { try { glassFlag.reload(); valueIndicatorRoot.glassmorphism = true; } catch(e) { valueIndicatorRoot.glassmorphism = false; } }
+        onLoaded: valueIndicatorRoot.glassmorphism = true
+        onLoadFailed: valueIndicatorRoot.glassmorphism = false
+    }
+    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+
     // Main Glassmorphic Container
     Rectangle {
         id: valueIndicator
         anchors.fill: parent
         radius: height / 2
-        color: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.45)
-        border.color: Qt.rgba(255, 255, 255, 0.18)
+        color: valueIndicatorRoot.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
+        border.color: valueIndicatorRoot.glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
         border.width: 1
+        clip: true
+        Behavior on color { ColorAnimation { duration: 400 } }
+        Behavior on border.color { ColorAnimation { duration: 400 } }
 
         // Glossy glare reflection overlay (Android 16 glassmorphic style)
         Rectangle {
-            anchors.fill: parent
+            anchors { left: parent.left; right: parent.right; top: parent.top }
+            height: parent.height * 0.45
             radius: parent.radius
+            visible: valueIndicatorRoot.glassmorphism
             gradient: Gradient {
                 orientation: Gradient.Vertical
-                GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.16) }
-                GradientStop { position: 0.4; color: Qt.rgba(255, 255, 255, 0.04) }
-                GradientStop { position: 0.42; color: Qt.rgba(255, 255, 255, 0.0) }
-                GradientStop { position: 1.0; color: Qt.rgba(255, 255, 255, 0.0) }
+                GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.12) }
+                GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.00) }
             }
             border.color: "transparent"
+            z: 999
         }
 
         RowLayout {

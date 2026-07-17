@@ -19,6 +19,7 @@ Item {
     required property var hyprlandData
 
     property bool showCondition: false
+    property bool glassmorphism: false
     property string textFontFamily: Theme.font.family
     property string heroFontFamily: Theme.font.family
     property string wallpaperPath: ""
@@ -53,10 +54,10 @@ Item {
     readonly property int workspaceOverviewWindowAcceptedButtons: Qt.LeftButton | Qt.RightButton
     
     readonly property color activeBorderColor: Theme.primary
-    readonly property color cardColor: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.85)
-    readonly property color cardBorderColor: Theme.outlineVariant
-    readonly property color workspaceColor: Theme.background
-    readonly property color workspaceHoverColor: Theme.surfaceContainerHigh
+    property color cardColor: glassmorphism ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.35) : Theme.surfaceContainerHigh
+    property color cardBorderColor: glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+    property color workspaceColor: glassmorphism ? Qt.rgba(Theme.background.r, Theme.background.g, Theme.background.b, 0.35) : Theme.surfaceContainer
+    property color workspaceHoverColor: glassmorphism ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.5) : Theme.surfaceContainerHighest
     readonly property color workspaceBorderHoverColor: Theme.primary
     
     readonly property real workspaceImplicitWidth: {
@@ -162,6 +163,13 @@ Item {
         }
     }
 
+    Behavior on cardColor {
+        ColorAnimation { duration: 400; easing.type: Easing.OutCubic }
+    }
+    Behavior on cardBorderColor {
+        ColorAnimation { duration: 400; easing.type: Easing.OutCubic }
+    }
+
     Rectangle {
         id: overviewCard
 
@@ -182,6 +190,7 @@ Item {
             color: "transparent"
             border.width: 1
             border.color: "#12ffffff"
+            visible: root.glassmorphism
         }
 
         Column {
@@ -300,6 +309,7 @@ Item {
                                 height: implicitHeight
                                 clip: true
                                 color: hoveredWhileDragging ? root.workspaceHoverColor : root.workspaceColor
+                                Behavior on color { ColorAnimation { duration: 150 } }
                                 topLeftRadius: workspaceAtLeft && workspaceAtTop ? root.largeWorkspaceRadius : root.smallWorkspaceRadius
                                 topRightRadius: workspaceAtRight && workspaceAtTop ? root.largeWorkspaceRadius : root.smallWorkspaceRadius
                                 bottomLeftRadius: workspaceAtLeft && workspaceAtBottom ? root.largeWorkspaceRadius : root.smallWorkspaceRadius

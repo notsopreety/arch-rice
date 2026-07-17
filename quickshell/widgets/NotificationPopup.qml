@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Notifications
 import Quickshell.Wayland
 import "../theme"
@@ -11,7 +12,23 @@ import "../components"
 PanelWindow {
     id: root
 
-    readonly property color surface: Theme.surfaceContainer
+    // ── Glassmorphism toggle ──────────────────────────────────────────────
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlagTimer.restart()
+        Component.onCompleted: { try { glassFlag.reload(); root.glassmorphism = true; } catch(e) { root.glassmorphism = false; } }
+        onLoaded: root.glassmorphism = true
+        onLoadFailed: root.glassmorphism = false
+    }
+    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+
+    readonly property color surface: root.glassmorphism
+        ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35)
+        : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.97)
     readonly property color textColor: "#ffffff"
     readonly property color textMutedColor: "#e2e8f0"
     readonly property color primaryColor: Theme.primary
@@ -315,6 +332,8 @@ PanelWindow {
                     color: root.surface
                     border.width: 1.25
                     border.color: Qt.rgba(root.urgencyColor(modelData.urgency).r, root.urgencyColor(modelData.urgency).g, root.urgencyColor(modelData.urgency).b, 0.32)
+                    clip: true
+                    Behavior on color { ColorAnimation { duration: 400 } }
 
                     layer.enabled: true
                     layer.effect: MultiEffect {
@@ -322,6 +341,21 @@ PanelWindow {
                         shadowColor: Qt.rgba(0, 0, 0, 0.2)
                         shadowBlur: 0.6
                         shadowVerticalOffset: 4
+                    }
+
+                    // Gloss overlay
+                    Rectangle {
+                        anchors { left: parent.left; right: parent.right; top: parent.top }
+                        height: parent.height * 0.45
+                        radius: parent.radius
+                        visible: root.glassmorphism
+                        gradient: Gradient {
+                            orientation: Gradient.Vertical
+                            GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.10) }
+                            GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.00) }
+                        }
+                        border.color: "transparent"
+                        z: 999
                     }
 
                     // Progress timeout track (only visible on top card)

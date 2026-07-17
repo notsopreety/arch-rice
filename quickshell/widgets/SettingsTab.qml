@@ -17,6 +17,7 @@ Item {
     property bool clockWidgetActive: true
     property bool photoFrameWidgetActive: true
     property bool activateLinuxWidgetActive: true
+    property bool flowersWidgetActive: false
 
     function loadWidgetSettings(jsonText) {
         if (!jsonText || jsonText.trim() === "") return;
@@ -28,6 +29,8 @@ Item {
                 root.photoFrameWidgetActive = data.photoFrame.isActive;
             if (data.activateLinux && data.activateLinux.isActive !== undefined)
                 root.activateLinuxWidgetActive = data.activateLinux.isActive;
+            if (data.flowersWidget && data.flowersWidget.isActive !== undefined)
+                root.flowersWidgetActive = data.flowersWidget.isActive;
         } catch(e) {
             console.error("[SettingsTab] Failed to parse settings.json:", e);
         }
@@ -1278,6 +1281,21 @@ Item {
                     onClicked: {
                         root.activateLinuxWidgetActive = !root.activateLinuxWidgetActive;
                         root.saveWidgetSetting("activateLinux", root.activateLinuxWidgetActive);
+                    }
+                }
+
+                // --- Flowers Widget Toggle ---
+                SettingsToggle {
+                    id: flowersWidgetPill
+                    isActive: root.flowersWidgetActive
+                    title: "Flowers Widget"
+                    statusText: root.flowersWidgetActive ? "Visible" : "Hidden"
+                    iconName: "local_florist"
+                    iconOffName: "spa"
+                    tooltipText: "Toggle Flowers Desktop Widget"
+                    onClicked: {
+                        root.flowersWidgetActive = !root.flowersWidgetActive;
+                        root.saveWidgetSetting("flowersWidget", root.flowersWidgetActive);
                     }
                 }
             } // end Desktop Widgets GridLayout

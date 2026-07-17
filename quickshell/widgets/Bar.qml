@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import "../theme"
 import "../components"
 import "../components/bar" as BarComponents
@@ -40,6 +41,37 @@ PanelWindow {
         anchors.topMargin: 4
         anchors.bottomMargin: 4
 
+        // ── Glassmorphism toggle (reads ~/.config/hypr/.glassmorphism_enabled) ──
+        property bool glassmorphism: false
+
+        FileView {
+            id: glassmorphismFlagFile
+            path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+            watchChanges: true
+            onFileChanged: glassmorphismReloadTimer.restart()
+            Component.onCompleted: {
+                try { glassmorphismFlagFile.reload(); barContainer.glassmorphism = true; } catch(e) { barContainer.glassmorphism = false; }
+            }
+            onLoaded: barContainer.glassmorphism = true
+            onLoadFailed: barContainer.glassmorphism = false
+        }
+        Timer {
+            id: glassmorphismReloadTimer
+            interval: 200; repeat: false
+            onTriggered: {
+                try { glassmorphismFlagFile.reload(); } catch(e) {}
+            }
+        }
+
+        // Glassmorphic color helpers
+        readonly property color pillColor: glassmorphism
+            ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.45)
+            : Theme.surfaceContainerHigh
+        readonly property color pillBorder: glassmorphism
+            ? Qt.rgba(1, 1, 1, 0.18)
+            : Theme.outlineVariant
+        readonly property real pillOpacity: glassmorphism ? 1.0 : 0.95
+
         // LEFT MODULE: OS Icon + Workspaces
         Rectangle {
             id: leftPill
@@ -48,11 +80,27 @@ PanelWindow {
             height: parent.height
             width: leftLayout.implicitWidth + 24
             radius: height / 2
-            
-            color: Theme.surfaceContainerHigh
-            opacity: 0.95
-            border.color: Theme.outlineVariant
+            color: barContainer.pillColor
+            opacity: barContainer.pillOpacity
+            border.color: barContainer.pillBorder
             border.width: 1
+            Behavior on color { ColorAnimation { duration: 400 } }
+            Behavior on border.color { ColorAnimation { duration: 400 } }
+
+            // Glassmorphic gloss overlay
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                visible: barContainer.glassmorphism
+                gradient: Gradient {
+                    orientation: Gradient.Vertical
+                    GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.14) }
+                    GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.03) }
+                    GradientStop { position: 0.46; color: Qt.rgba(1, 1, 1, 0.0) }
+                    GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+                }
+                border.color: "transparent"
+            }
 
             RowLayout {
                 id: leftLayout
@@ -102,11 +150,26 @@ PanelWindow {
             height: parent.height
             width: sysMonitorLayout.implicitWidth + 20
             radius: height / 2
-
-            color: Theme.surfaceContainerHigh
-            opacity: 0.95
-            border.color: Theme.outlineVariant
+            color: barContainer.pillColor
+            opacity: barContainer.pillOpacity
+            border.color: barContainer.pillBorder
             border.width: 1
+            Behavior on color { ColorAnimation { duration: 400 } }
+            Behavior on border.color { ColorAnimation { duration: 400 } }
+
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                visible: barContainer.glassmorphism
+                gradient: Gradient {
+                    orientation: Gradient.Vertical
+                    GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.14) }
+                    GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.03) }
+                    GradientStop { position: 0.46; color: Qt.rgba(1, 1, 1, 0.0) }
+                    GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+                }
+                border.color: "transparent"
+            }
 
             MouseArea {
                 anchors.fill: parent
@@ -189,11 +252,26 @@ PanelWindow {
                 width: showLyricsMode ? Math.min(Math.max(400, lyricsIsland.maxTextWidth + 60), parent.width > 0 ? parent.width - 600 : 1000) : centerLayout.implicitWidth + 24
                 Behavior on width { NumberAnimation { duration: 350; easing.type: Easing.OutCubic } }
                 radius: height / 2
-                
-                color: Theme.surfaceContainerHigh
-                opacity: 0.95
-                border.color: Theme.outlineVariant
+                color: barContainer.pillColor
+                opacity: barContainer.pillOpacity
+                border.color: barContainer.pillBorder
                 border.width: 1
+                Behavior on color { ColorAnimation { duration: 400 } }
+                Behavior on border.color { ColorAnimation { duration: 400 } }
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    visible: barContainer.glassmorphism
+                    gradient: Gradient {
+                        orientation: Gradient.Vertical
+                        GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.14) }
+                        GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.03) }
+                        GradientStop { position: 0.46; color: Qt.rgba(1, 1, 1, 0.0) }
+                        GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+                    }
+                    border.color: "transparent"
+                }
 
                 MouseArea {
                     anchors.fill: parent
@@ -620,10 +698,26 @@ PanelWindow {
                 height: barContainer.height
                 width: connectivityLayout.implicitWidth + 24
                 radius: height / 2
-                color: Theme.surfaceContainerHigh
-                opacity: 0.95
-                border.color: Theme.outlineVariant
+                color: barContainer.pillColor
+                opacity: barContainer.pillOpacity
+                border.color: barContainer.pillBorder
                 border.width: 1
+                Behavior on color { ColorAnimation { duration: 400 } }
+                Behavior on border.color { ColorAnimation { duration: 400 } }
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    visible: barContainer.glassmorphism
+                    gradient: Gradient {
+                        orientation: Gradient.Vertical
+                        GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.14) }
+                        GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.03) }
+                        GradientStop { position: 0.46; color: Qt.rgba(1, 1, 1, 0.0) }
+                        GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+                    }
+                    border.color: "transparent"
+                }
 
                 RowLayout {
                     id: connectivityLayout
@@ -655,10 +749,26 @@ PanelWindow {
                 height: barContainer.height
                 width: audioLayout.implicitWidth + 24
                 radius: height / 2
-                color: Theme.surfaceContainerHigh
-                opacity: 0.95
-                border.color: Theme.outlineVariant
+                color: barContainer.pillColor
+                opacity: barContainer.pillOpacity
+                border.color: barContainer.pillBorder
                 border.width: 1
+                Behavior on color { ColorAnimation { duration: 400 } }
+                Behavior on border.color { ColorAnimation { duration: 400 } }
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    visible: barContainer.glassmorphism
+                    gradient: Gradient {
+                        orientation: Gradient.Vertical
+                        GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.14) }
+                        GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.03) }
+                        GradientStop { position: 0.46; color: Qt.rgba(1, 1, 1, 0.0) }
+                        GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+                    }
+                    border.color: "transparent"
+                }
 
                 RowLayout {
                     id: audioLayout
@@ -690,10 +800,26 @@ PanelWindow {
                 height: barContainer.height
                 width: controlLayout.implicitWidth + 24
                 radius: height / 2
-                color: Theme.surfaceContainerHigh
-                opacity: 0.95
-                border.color: Theme.outlineVariant
+                color: barContainer.pillColor
+                opacity: barContainer.pillOpacity
+                border.color: barContainer.pillBorder
                 border.width: 1
+                Behavior on color { ColorAnimation { duration: 400 } }
+                Behavior on border.color { ColorAnimation { duration: 400 } }
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    visible: barContainer.glassmorphism
+                    gradient: Gradient {
+                        orientation: Gradient.Vertical
+                        GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.14) }
+                        GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.03) }
+                        GradientStop { position: 0.46; color: Qt.rgba(1, 1, 1, 0.0) }
+                        GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+                    }
+                    border.color: "transparent"
+                }
 
                 RowLayout {
                     id: controlLayout

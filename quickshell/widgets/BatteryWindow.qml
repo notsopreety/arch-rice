@@ -13,9 +13,23 @@ import "../core"
 PanelWindow {
     id: window
 
-    readonly property color cBg: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.45)
-    readonly property color cCard: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.4)
-    readonly property color cCardBorder: Qt.rgba(255, 255, 255, 0.12)
+    // ── Glassmorphism toggle ──────────────────────────────────────────────
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlagTimer.restart()
+        Component.onCompleted: { try { glassFlag.reload(); window.glassmorphism = true; } catch(e) { window.glassmorphism = false; } }
+        onLoaded: window.glassmorphism = true
+        onLoadFailed: window.glassmorphism = false
+    }
+    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+
+    readonly property color cBg: window.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
+    readonly property color cCard: window.glassmorphism ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.4) : Theme.surfaceContainerHigh
+    readonly property color cCardBorder: window.glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
     readonly property color cTextPrimary: "#ffffff"
     readonly property color cTextSecondary: "#e2e8f0"
     readonly property color cTextMuted: Qt.rgba(255, 255, 255, 0.45)
@@ -151,14 +165,17 @@ PanelWindow {
                 anchors.fill: parent
                 radius: 24 * Appearance.effectiveScale
                 color: window.cBg
-                border.color: Qt.rgba(255, 255, 255, 0.18)
+                border.color: window.cCardBorder
                 border.width: 1
                 clip: true
+                Behavior on color { ColorAnimation { duration: 400 } }
+                Behavior on border.color { ColorAnimation { duration: 400 } }
 
                 // Glossy reflection overlay
                 Rectangle {
                     anchors.fill: parent
                     radius: parent.radius
+                    visible: window.glassmorphism
                     gradient: Gradient {
                         orientation: Gradient.Vertical
                         GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.14) }
@@ -198,6 +215,8 @@ PanelWindow {
                         color: window.cCard
                         border.color: window.cCardBorder
                         border.width: 1
+                        Behavior on color { ColorAnimation { duration: 400 } }
+                        Behavior on border.color { ColorAnimation { duration: 400 } }
 
                         // Hover effect scale
                         scale: statusMouseArea.containsMouse ? 1.015 : 1.0

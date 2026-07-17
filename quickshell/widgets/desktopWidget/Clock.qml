@@ -111,8 +111,24 @@ Item {
         saveSettingsProc.running = true;
     }
 
+    // ── Glassmorphism toggle ──────────────────────────────────────────────
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlagTimer.restart()
+        Component.onCompleted: { try { glassFlag.reload(); } catch(e) {} }
+        onLoaded: root.glassmorphism = true
+        onLoadFailed: root.glassmorphism = false
+    }
+    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+
     // Dynamic Colors: Matugen Theme
-    property color bgColor: Theme.primaryContainer
+    property color bgColor: root.glassmorphism 
+        ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) 
+        : Theme.primaryContainer
     property color accentColor: Theme.primary
     property color primaryColor: Theme.onPrimaryContainerColor
     property color secondaryColor: Theme.outline
@@ -195,6 +211,7 @@ Item {
             function onAmplitudeChanged() { clockFace.requestPaint() }
             function onWinSizeChanged() { clockFace.requestPaint() }
             function onBgColorChanged() { clockFace.requestPaint() }
+            function onGlassmorphismChanged() { clockFace.requestPaint() }
         }
 
         onPaint: {
@@ -216,6 +233,25 @@ Item {
             ctx.closePath();
             ctx.fillStyle = bgColor;
             ctx.fill();
+
+            if (root.glassmorphism) {
+                // Scalloped border
+                ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.18);
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Glossy reflection overlay
+                ctx.save();
+                ctx.clip();
+                var grad = ctx.createLinearGradient(cx, cy - radius - ampScaled, cx, cy + radius + ampScaled);
+                grad.addColorStop(0.0, Qt.rgba(1, 1, 1, 0.12));
+                grad.addColorStop(0.4, Qt.rgba(1, 1, 1, 0.03));
+                grad.addColorStop(0.42, Qt.rgba(1, 1, 1, 0.0));
+                grad.addColorStop(1.0, Qt.rgba(1, 1, 1, 0.0));
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, width, height * 0.45);
+                ctx.restore();
+            }
         }
     }
 

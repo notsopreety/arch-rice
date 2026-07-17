@@ -41,6 +41,32 @@ PanelWindow {
     property bool editMode: false
     property var date: new Date()
 
+    // ── Glassmorphism toggle ──────────────────────────────────────────────
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlagTimer.restart()
+        Component.onCompleted: { try { glassFlag.reload(); window.glassmorphism = true; } catch(e) { window.glassmorphism = false; } }
+        onLoaded: window.glassmorphism = true
+        onLoadFailed: window.glassmorphism = false
+    }
+    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+
+    // Glassmorphic surface helpers
+    readonly property color glassCanvasBg:        Qt.rgba(Theme.surfaceContainer.r,    Theme.surfaceContainer.g,    Theme.surfaceContainer.b,    0.35)
+    readonly property color glassCardBg:          Qt.rgba(Theme.surfaceContainerHigh.r,Theme.surfaceContainerHigh.g,Theme.surfaceContainerHigh.b, 0.40)
+    readonly property color glassActionBg:        Qt.rgba(Theme.surfaceContainer.r,    Theme.surfaceContainer.g,    Theme.surfaceContainer.b,    0.40)
+    readonly property color glassBorder:          Qt.rgba(1, 1, 1, 0.18)
+
+    // Solid (non-glass) surface helpers
+    readonly property color solidCanvasBg:        Qt.rgba(Theme.surfaceContainer.r,    Theme.surfaceContainer.g,    Theme.surfaceContainer.b,    1.0)
+    readonly property color solidCardBg:          Theme.surfaceContainerHigh
+    readonly property color solidActionBg:        Qt.rgba(Theme.surfaceContainer.r,    Theme.surfaceContainer.g,    Theme.surfaceContainer.b,    1.0)
+    readonly property color solidBorder:          Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
+
     // --- Media Player MPRIS State ---
     readonly property var textColor: "#ffffff"
     readonly property color primaryColor: Theme.primary
@@ -179,10 +205,27 @@ PanelWindow {
             y: 50 // Placed nicely below the top status bar
 
             radius: 24
-            color: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.85) // Matugen dynamic background tint
-            border.color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.2) // Material You outline accent
+            color: window.glassmorphism ? window.glassCanvasBg : window.solidCanvasBg
+            border.color: window.glassmorphism ? window.glassBorder : window.solidBorder
             border.width: 1
             clip: true
+            Behavior on color { ColorAnimation { duration: 400 } }
+            Behavior on border.color { ColorAnimation { duration: 400 } }
+
+            // Gloss overlay
+            Rectangle {
+                anchors { left: parent.left; right: parent.right; top: parent.top }
+                height: parent.height * 0.45
+                radius: parent.radius
+                visible: window.glassmorphism
+                gradient: Gradient {
+                    orientation: Gradient.Vertical
+                    GradientStop { position: 0.0; color: Qt.rgba(1,1,1,0.12) }
+                    GradientStop { position: 1.0; color: Qt.rgba(1,1,1,0.00) }
+                }
+                border.color: "transparent"
+                z: 999
+            }
 
             transform: Translate {
                 id: canvasTransform
@@ -419,10 +462,12 @@ PanelWindow {
                         Layout.fillWidth: false
                         Layout.preferredHeight: 165 * Appearance.effectiveScale
                         radius: 20 * Appearance.effectiveScale
-                        color: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.6)
-                        border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.15)
+                        color: window.glassmorphism ? window.glassCardBg : window.solidCardBg
+                        border.color: window.glassmorphism ? window.glassBorder : window.solidBorder
                         border.width: 1
                         clip: true
+                        Behavior on color { ColorAnimation { duration: 400 } }
+                        Behavior on border.color { ColorAnimation { duration: 400 } }
 
                         Image {
                             id: albumArtBg
@@ -628,9 +673,11 @@ PanelWindow {
                             height: 165 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
                             radius: Appearance.rounding.normal
-                            color: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.5)
-                            border.color: Qt.rgba(255, 255, 255, 0.08)
+                            color: window.glassmorphism ? window.glassActionBg : window.solidActionBg
+                            border.color: window.glassmorphism ? window.glassBorder : window.solidBorder
                             border.width: 1
+                            Behavior on color { ColorAnimation { duration: 400 } }
+                            Behavior on border.color { ColorAnimation { duration: 400 } }
 
                             Item {
                                 anchors.fill: parent
@@ -732,9 +779,11 @@ PanelWindow {
                             height: 165 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
                             radius: Appearance.rounding.normal
-                            color: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.5)
-                            border.color: Qt.rgba(255, 255, 255, 0.08)
+                            color: window.glassmorphism ? window.glassActionBg : window.solidActionBg
+                            border.color: window.glassmorphism ? window.glassBorder : window.solidBorder
                             border.width: 1
+                            Behavior on color { ColorAnimation { duration: 400 } }
+                            Behavior on border.color { ColorAnimation { duration: 400 } }
 
                             Item {
                                 anchors.fill: parent
@@ -836,9 +885,11 @@ PanelWindow {
                             height: 165 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
                             radius: Appearance.rounding.normal
-                            color: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.5)
-                            border.color: Qt.rgba(255, 255, 255, 0.08)
+                            color: window.glassmorphism ? window.glassActionBg : window.solidActionBg
+                            border.color: window.glassmorphism ? window.glassBorder : window.solidBorder
                             border.width: 1
+                            Behavior on color { ColorAnimation { duration: 400 } }
+                            Behavior on border.color { ColorAnimation { duration: 400 } }
 
                             Item {
                                 anchors.fill: parent

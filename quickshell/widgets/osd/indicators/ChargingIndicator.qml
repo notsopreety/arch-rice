@@ -1,5 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
 import "../../../core"
 import "../../../theme"
 import "../../../services"
@@ -7,6 +9,20 @@ import "../../"
 
 Item {
     id: root
+
+    // ── Glassmorphism toggle ──────────────────────────────────────────────
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlagTimer.restart()
+        Component.onCompleted: { try { glassFlag.reload(); root.glassmorphism = true; } catch(e) { root.glassmorphism = false; } }
+        onLoaded: root.glassmorphism = true
+        onLoadFailed: root.glassmorphism = false
+    }
+    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
 
     // Required properties by OSD loader interface
     readonly property bool isSliderPressed: false
@@ -112,9 +128,12 @@ Item {
         id: bgContainer
         anchors.fill: parent
         radius: height / 2
-        color: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.45)
-        border.color: Qt.rgba(255, 255, 255, 0.18)
+        color: root.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
+        border.color: root.glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
         border.width: 1
+        clip: true
+        Behavior on color { ColorAnimation { duration: 400 } }
+        Behavior on border.color { ColorAnimation { duration: 400 } }
 
         // Canvas for wave animation and bubble particle effect
         Canvas {
@@ -244,16 +263,17 @@ Item {
 
         // Glossy glare reflection overlay (Android 16 glassmorphic highlight)
         Rectangle {
-            anchors.fill: parent
+            anchors { left: parent.left; right: parent.right; top: parent.top }
+            height: parent.height * 0.45
             radius: parent.radius
+            visible: root.glassmorphism
             gradient: Gradient {
                 orientation: Gradient.Vertical
-                GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.16) }
-                GradientStop { position: 0.4; color: Qt.rgba(255, 255, 255, 0.04) }
-                GradientStop { position: 0.42; color: Qt.rgba(255, 255, 255, 0.0) }
-                GradientStop { position: 1.0; color: Qt.rgba(255, 255, 255, 0.0) }
+                GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.12) }
+                GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.00) }
             }
             border.color: "transparent"
+            z: 999
         }
 
         // Content Row Layout

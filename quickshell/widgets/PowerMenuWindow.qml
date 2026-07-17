@@ -5,12 +5,28 @@ import QtQuick.Shapes
 import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import "../theme"
 import "../services"
 import "../components"
 
 PanelWindow {
     id: powermenuWindow
+
+    // ── Glassmorphism toggle ──────────────────────────────────────────────
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlagTimer.restart()
+        Component.onCompleted: { try { glassFlag.reload(); powermenuWindow.glassmorphism = true; } catch(e) { powermenuWindow.glassmorphism = false; } }
+        onLoaded: powermenuWindow.glassmorphism = true
+        onLoadFailed: powermenuWindow.glassmorphism = false
+    }
+    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+
 
     anchors {
         top: true
@@ -111,15 +127,28 @@ PanelWindow {
                 radius: Theme.rounding.extraLarge
 
                 // Dynamic Material You surface container with glassmorphic transparency
-                color: Qt.rgba(
-                    Theme.surfaceContainer.r,
-                    Theme.surfaceContainer.g,
-                    Theme.surfaceContainer.b,
-                    0.5
-                )
+                color: powermenuWindow.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.5) : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
                 // High contrast white highlight border for glass effect
-                border.color: Qt.rgba(255, 255, 255, 0.15)
+                border.color: powermenuWindow.glassmorphism ? Qt.rgba(255, 255, 255, 0.15) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
                 border.width: 1
+
+                Behavior on color { ColorAnimation { duration: 400 } }
+                Behavior on border.color { ColorAnimation { duration: 400 } }
+
+                // Glossy reflection overlay
+                Rectangle {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    visible: powermenuWindow.glassmorphism
+                    gradient: Gradient {
+                        orientation: Gradient.Vertical
+                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.12) }
+                        GradientStop { position: 0.4; color: Qt.rgba(255, 255, 255, 0.03) }
+                        GradientStop { position: 0.42; color: Qt.rgba(255, 255, 255, 0.0) }
+                        GradientStop { position: 1.0; color: Qt.rgba(255, 255, 255, 0.0) }
+                    }
+                    border.color: "transparent"
+                }
 
                 MouseArea {
                     anchors.fill: parent
