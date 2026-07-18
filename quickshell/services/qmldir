@@ -6,7 +6,6 @@ singleton Hypr 1.0 Hypr.qml
 singleton WeatherService 1.0 WeatherService.qml
 singleton DankDashService 1.0 DankDashService.qml
 singleton DgopService 1.0 DgopService.qml
-singleton AudioService 1.0 AudioService.qml
 singleton OsdService 1.0 OsdService.qml
 singleton Network 1.0 Network.qml
 singleton Bluetooth 1.0 Bluetooth.qml
@@ -38,7 +37,6 @@ singleton GoogleLensService 1.0 GoogleLensService.qml
 singleton BooruService 1.0 BooruService.qml
 singleton SnipService 1.0 SnipService.qml
 singleton Weather 1.0 Weather.qml
-singleton MaterialThemeLoader 1.0 MaterialThemeLoader.qml
 singleton DateTime 1.0 DateTime.qml
 singleton MprisController 1.0 MprisController.qml
 singleton HyprlandCompat 1.0 HyprlandCompat.qml

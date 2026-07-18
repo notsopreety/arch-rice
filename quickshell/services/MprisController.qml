@@ -30,7 +30,7 @@ Singleton {
     property real length: activePlayer ? activePlayer.length : 0
 
     // --- Persistent Art & Color Logic ---
-    property string _artDownloadLocation: Functions.FileUtils.trimFileProtocol(Directories.cache) + "/nandoroid/coverArt"
+    property string _artDownloadLocation: Functions.FileUtils.trimFileProtocol(Directories.cache) + "/quickshell/coverArt"
     property string _activeArtPath: ""
     property bool _artDownloaded: false
     property double _cacheBuster: 0

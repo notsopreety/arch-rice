@@ -4,8 +4,8 @@
     "systemInstruction": "I do use arch linux in hyprland WM."
   },
   "clock": {
-    "winX": 43,
-    "winY": 106,
+    "winX": 15,
+    "winY": 59,
     "winSize": 220,
     "scallops": 12,
     "amplitude": 5,
@@ -31,5 +31,65 @@
   },
   "flowersWidget": {
     "isActive": true
+  },
+  "quickSettings": {
+    "toggles": [
+      {
+        "type": "wifi",
+        "size": 2
+      },
+      {
+        "type": "bluetooth",
+        "size": 2
+      },
+      {
+        "type": "dnd",
+        "size": 2
+      },
+      {
+        "type": "caffeine",
+        "size": 2
+      },
+      {
+        "type": "screenshot",
+        "size": 2
+      },
+      {
+        "type": "screenRecord",
+        "size": 2
+      },
+      {
+        "type": "powerProfile",
+        "size": 2
+      },
+      {
+        "type": "conservationMode",
+        "size": 2
+      },
+      {
+        "type": "nightLight",
+        "size": 2
+      },
+      {
+        "type": "colorPicker",
+        "size": 2
+      },
+      {
+        "type": "googleLens",
+        "size": 2
+      },
+      {
+        "type": "screenSnip",
+        "size": 2
+      },
+      {
+        "type": "airplaneMode",
+        "size": 2
+      },
+      {
+        "type": "systemUpdate",
+        "size": 2
+      }
+    ]
   }
 }

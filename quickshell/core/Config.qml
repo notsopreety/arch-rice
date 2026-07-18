@@ -56,20 +56,56 @@ Singleton {
         onTriggered: configFileView.writeAdapter()
     }
 
+    Process {
+        id: saveTogglesProc
+    }
+
+    function saveToggles(togglesList) {
+        if (!togglesList) return;
+        let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
+        let arr = [];
+        for (let i = 0; i < togglesList.length; i++) {
+            let item = togglesList[i];
+            if (item) {
+                arr.push({
+                    "type": item.type || "",
+                    "size": item.size || 1
+                });
+            }
+        }
+        let listStr = JSON.stringify(arr);
+        let cmd = "import json, os; path = '" + path + "'; " +
+                  "data = json.load(open(path)) if os.path.exists(path) else {}; " +
+                  "qs = data.setdefault('quickSettings', {}); " +
+                  "qs['toggles'] = " + listStr + "; " +
+                  "tmp = path + '.tmp'; " +
+                  "f = open(tmp, 'w'); " +
+                  "json.dump(data, f, indent=2); " +
+                  "f.close(); " +
+                  "os.replace(tmp, path)";
+        saveTogglesProc.command = ["python3", "-c", cmd];
+        saveTogglesProc.running = true;
+    }
+
+    Connections {
+        target: configOptionsJsonAdapter.quickSettings
+        function onTogglesChanged() {
+            if (root.ready) {
+                root.saveToggles(configOptionsJsonAdapter.quickSettings.toggles);
+            }
+        }
+    }
+
     FileView {
         id: configFileView
         path: root.filePath
         watchChanges: true
         onFileChanged: fileReloadTimer.restart()
-        onAdapterUpdated: fileWriteTimer.restart()
         onLoaded: {
             root.ready = true;
         }
         onLoadFailed: error => {
             console.error("[Config] FileView load failed:", error);
-            if (error == FileViewError.FileNotFound) {
-                writeAdapter();
-            }
         }
 
         JsonAdapter {
@@ -243,100 +279,36 @@ Singleton {
                 }
             }
 
-            // --- Language ---
-            property JsonObject language: JsonObject {
-                property string ui: "auto"
-                property JsonObject translator: JsonObject {
-                    property string sourceLanguage: "auto"
-                    property string targetLanguage: "en"
-                }
-            }
-
-            // --- Workspaces ---
-            property JsonObject workspaces: JsonObject {
-                property int max_shown: 5
-                property string indicatorStyle: "pill" 
-                property string indicatorLabel: "none" 
-            }
-
             // --- Bar ---
             property JsonObject bar: JsonObject {
-                property bool show_distro_icon: true
-                property string distroIcon: "" 
-                property string avatar_path: ""
                 property bool show_network_speed: false
-                property string network_speed_unit: "KB" 
             }
 
             // --- Status Bar ---
             property JsonObject statusBar: JsonObject {
-                property real height: 40
-                property string layoutStyle: "standard" 
-                property int centeredWidth: 1200
-                property string clockPosition: "center" 
-                property string textColorMode: "adaptive" 
                 property bool useGradient: true
                 property int backgroundStyle: 0
-                property int backgroundCornerRadius: 20
-                property string islandStyle: "pill" 
-                property bool autoHide: false
-                property string trayStyle: "adaptive" 
+                property string textColorMode: "adaptive" 
             }
 
             // --- Quick Settings ---
             property JsonObject quickSettings: JsonObject {
-                property bool caffeineActive: false
-                property bool showPerformanceStats: true
-                property string quickActionsPosition: "top" 
                 property list<var> toggles: [
                     { "type": "wifi", "size": 2 },
                     { "type": "bluetooth", "size": 2 },
                     { "type": "dnd", "size": 1 },
-                    { "type": "darkMode", "size": 1 },
                     { "type": "caffeine", "size": 1 },
+                    { "type": "screenshot", "size": 1 },
+                    { "type": "screenRecord", "size": 1 },
+                    { "type": "googleLens", "size": 1 },
+                    { "type": "screenSnip", "size": 1 },
                     { "type": "nightLight", "size": 1 },
                     { "type": "colorPicker", "size": 1 },
-                    { "type": "screenSnip", "size": 1 },
-                    { "type": "gameMode", "size": 1 },
-                    { "type": "screenRecord", "size": 1 },
-                    { "type": "musicRecognition", "size": 1 },
-                    { "type": "easyEffects", "size": 1 },
+                    { "type": "powerProfile", "size": 2 },
+                    { "type": "airplaneMode", "size": 1 },
                     { "type": "conservationMode", "size": 1 },
-                    { "type": "systemUpdate", "size": 1 },
-                    { "type": "warp", "size": 2 },
-                    { "type": "audioOutput", "size": 1 },
-                    { "type": "audioInput", "size": 1 },
-                    { "type": "powerProfile", "size": 2 }
+                    { "type": "systemUpdate", "size": 1 }
                 ]
-            }
-
-            // --- Dock ---
-            property JsonObject dock: JsonObject {
-                property bool enable: true
-                property bool autoHide: false
-                property int autoHideMode: 0 
-                property bool showOnlyInDesktop: true
-                property int backgroundStyle: 1 
-                property int hoverRegionHeight: 5
-                property bool pinnedOnStartup: false
-                property bool monochromeIcons: true
-                property list<string> pinnedApps: ["kitty", "org.kde.dolphin"]
-                property list<string> ignoredAppRegexes: ["^xwaylandvideobridge$"]
-                property real scale: 1.0
-                property bool showLauncher: true
-                property bool showOverview: true
-            }
-
-            // --- Power Profile ---
-            property JsonObject powerProfile: JsonObject {
-                property bool enabled: false
-                property string customPath: "/tmp/ryzen_mode"
-            }
-
-            // --- Night Mode ---
-            property JsonObject nightMode: JsonObject {
-                property bool active: false
-                property int colorTemperature: 4000
             }
 
             // --- Weather ---
@@ -350,136 +322,29 @@ Singleton {
                 property int updateInterval: 30 
             }
 
-            // --- Overview Panel ---
-            property QtObject overview: QtObject {
-                property int rows: 2
-                property int columns: 5
-                property real scale: 0.15
-                property real workspaceSpacing: 10
-            }
-
-            // --- Notifications ---
-            property JsonObject notifications: JsonObject {
-                property int timeout_ms: 2000
-                property string counterStyle: "counter" 
-            }
-
             // --- Battery ---
             property JsonObject battery: JsonObject {
                 property int low: 20
                 property int critical: 5
             }
 
-            // --- Panels ---
-            property JsonObject panels: JsonObject {
-                property bool keep_left_sidebar_loaded: false
-                property bool keep_right_sidebar_loaded: true
-            }
-
-            // --- Search & Launcher ---
-            property JsonObject search: JsonObject {
-                property string mathPrefix: "="
-                property string webPrefix: "!"
-                property string emojiPrefix: ":"
-                property string clipboardPrefix: ";"
-                property string filePrefix: "?"
-                property string commandPrefix: ">"
-                property string toolsPrefix: "."
-                property string iconShape: "Square"
-                property bool enableGrouping: false
-                property bool enableUsageTracking: true
-                property JsonObject imageSearch: JsonObject {
-                    property string imageSearchEngineBaseUrl: "https://lens.google.com/uploadbyurl?url="
-                }
-            }
-
             // --- Lock ---
             property JsonObject lock: JsonObject {
-                property bool launchOnStartup: false
-                property bool useHyprlock: false
                 property string wallpaperPath: ""
                 property bool useSeparateWallpaper: false
-                property bool showCava: true
-                property real cavaOpacity: 0.15
-                property bool showMediaCard: true
-                property bool showWeather: true
                 property JsonObject weather: JsonObject { property string textColorMode: "adaptive" }
-                property JsonObject security: JsonObject { property bool requirePasswordToPower: true }
             }
 
             // --- System ---
             property JsonObject system: JsonObject {
-                property string lastUpdateCheckDate: ""
-                property bool easyeffectsEnabled: false
-                property bool bluetoothEnabled: true
-                property bool onboardingCompleted: false
                 property list<var> monitoredDisks: [ { "path": "/", "alias": "System" } ]
             }
 
             // --- Media ---
             property JsonObject media: JsonObject {
                 property string priority: ""
-                property bool showMediaCard: true
                 property bool enableMediaHover: true
-                property bool balancedEars: true
                 property string notchMediaStyle: "mini" 
-            }
-
-            // --- Privacy ---
-            property JsonObject privacy: JsonObject { property bool enable: true }
-
-            // --- Screen Snip ---
-            property JsonObject screenSnip: JsonObject { property string savePath: "" }
-
-            // --- Region Selector ---
-            property JsonObject regionSelector: JsonObject {
-                property bool showOnlyOnFocusedMonitor: false
-                property JsonObject targetRegions: JsonObject {
-                    property bool windows: true
-                    property bool layers: true
-                    property bool images: true
-                    property int selectionPadding: 5
-                }
-                property JsonObject rect: JsonObject {
-                    property bool showAimLines: true
-                    property int strokeWidth: 1
-                    property real opacity: 0.2
-                }
-                property JsonObject circle: JsonObject { property int strokeWidth: 6 }
-                property JsonObject annotationSymbol: JsonObject { property bool showIcons: true }
-                property JsonObject annotation: JsonObject { property bool useSatty: false }
-            }
-
-            // --- GitHub ---
-            property JsonObject github: JsonObject { property string githubUsername: ""; property string githubToken: "" }
-
-            // --- Screenshot & Recording ---
-            property JsonObject screenshot: JsonObject {
-                property bool autoSave: true
-                property string savePath: Directories.home.replace("file://", "") + "/Pictures/Screenshots"
-                property string recordPath: Directories.home.replace("file://", "") + "/Videos/Recordings"
-                property bool showPreview: true
-                property bool autoCopy: true
-            }
-
-            // --- Wallpaper Engine ---
-            property JsonObject wallpaperEngine: JsonObject {
-                property int fps: 30
-                property int volume: 15
-                property bool silent: false
-                property bool autoPause: true
-                property bool disableParticles: true
-                property bool disableParallax: false
-                property bool disableMouse: false
-                property bool disableAudioProcessing: false
-                property string scaling: "fill" // stretch, fit, fill, cover
-                property bool noPbo: false
-            }
-
-            // --- Game Mode State ---
-            property JsonObject gameModeState: JsonObject {
-                property string previousLiveWallpaperPath: ""
-                property string previousLayout: ""
             }
         }
     }

@@ -42,7 +42,7 @@ Singleton {
         return s;
     }
 
-    readonly property string cacheDir: cleanPath(Directories.home) + "/.cache/nandoroid"
+    readonly property string cacheDir: cleanPath(Directories.home) + "/.cache/quickshell"
     readonly property string cachePath: cacheDir + "/weather.json"
 
     // --- Config Helpers ---

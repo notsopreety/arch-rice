@@ -52,7 +52,7 @@ Variants {
 
         // Positioning: Center top, below status bar
         WlrLayershell.layer: WlrLayer.Top
-        WlrLayershell.namespace: "nandoroid:media-hud"
+        WlrLayershell.namespace: "quickshell:media-hud"
         exclusiveZone: 0
 
         anchors {

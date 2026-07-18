@@ -7,7 +7,7 @@ import Quickshell.Io
 import Quickshell.Hyprland
 
 /**
- * Central state management for all NAnDoroid panels.
+ * Central state management for all quickshell panels.
  * Controls visibility of the status bar, notification center, and quick settings.
  */
 Singleton {

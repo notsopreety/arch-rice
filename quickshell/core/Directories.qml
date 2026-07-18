@@ -19,10 +19,10 @@ Singleton {
     readonly property string cache: StandardPaths.standardLocations(StandardPaths.CacheLocation)[0]
     readonly property string genericCache: Functions.FileUtils.trimFileProtocol(`${home}/.cache`)
 
-    // NAnDoroid paths (without "file://")
+    // Quickshell paths (without "file://")
     property string assetsPath: Quickshell.shellPath("assets")
-    property string shellConfig: Functions.FileUtils.trimFileProtocol(`${home}/.config/nandoroid`)
-    property string shellConfigName: "config.json"
+    property string shellConfig: Functions.FileUtils.trimFileProtocol(`${home}/.config/quickshell`)
+    property string shellConfigName: "settings.json"
     property string shellConfigPath: `${shellConfig}/${shellConfigName}`
 
     // Matugen colors path
@@ -32,18 +32,18 @@ Singleton {
     property string notificationsPath: Functions.FileUtils.trimFileProtocol(`${cache}/notifications/notifications.json`)
 
     // Favorites cache
-    property string favoritesPathRaw: genericCache + "/nandoroid/favorites.json"
+    property string favoritesPathRaw: genericCache + "/quickshell/favorites.json"
     property string favoritesPath: "file://" + favoritesPathRaw
 
     // Screenshots
-    property string screenshotTemp: "/tmp/nandoroid/screenshots"
+    property string screenshotTemp: "/tmp/quickshell/screenshots"
     property string screenshotDir: Functions.FileUtils.trimFileProtocol(`${pictures}/Screenshots`)
 
     // Ensure config dir exists
     Component.onCompleted: {
         Quickshell.execDetached(["mkdir", "-p", `${shellConfig}`])
         Quickshell.execDetached(["mkdir", "-p", `${screenshotTemp}`])
-        Quickshell.execDetached(["mkdir", "-p", `${cache.toString().substring(7)}/nandoroid`])
+        Quickshell.execDetached(["mkdir", "-p", `${cache.toString().substring(7)}/quickshell`])
         
         // Ensure matugen output dir exists
         const matugenFile = generatedMaterialThemePath;
