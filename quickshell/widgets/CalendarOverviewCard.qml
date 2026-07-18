@@ -353,21 +353,21 @@ Card {
 
                 Item {
                     width: parent.width
-                    height: root.selectedDaysCount > 0 ? 38 : 28
+                    height: root.selectedDaysCount > 0 ? 42 : 32
 
                     Rectangle {
-                        width: 28
-                        height: 28
-                        radius: Theme.rounding.normal
+                        width: 32
+                        height: 32
+                        radius: 16
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        color: prevMonthArea.containsMouse ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.1) : "transparent"
+                        color: prevMonthArea.containsMouse ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : "transparent"
+                        Behavior on color { ColorAnimation { duration: 150 } }
 
-                        Text {
+                        MaterialSymbol {
                             anchors.centerIn: parent
-                            text: "‹"
-                            font.family: Theme.font.family
-                            font.pixelSize: 18
+                            text: "chevron_left"
+                            iconSize: 20
                             color: Theme.primary
                         }
 
@@ -392,9 +392,9 @@ Card {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: root.displayDate.toLocaleDateString(Qt.locale(), "MMMM yyyy")
                             font.family: Theme.font.family
-                            font.pixelSize: 14
+                            font.pixelSize: 15
                             color: "white"
-                            font.weight: Font.Medium
+                            font.weight: Font.DemiBold
                         }
 
                         Text {
@@ -409,18 +409,18 @@ Card {
                     }
 
                     Rectangle {
-                        width: 28
-                        height: 28
-                        radius: Theme.rounding.normal
+                        width: 32
+                        height: 32
+                        radius: 16
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        color: nextMonthArea.containsMouse ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.1) : "transparent"
+                        color: nextMonthArea.containsMouse ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : "transparent"
+                        Behavior on color { ColorAnimation { duration: 150 } }
 
-                        Text {
+                        MaterialSymbol {
                             anchors.centerIn: parent
-                            text: "›"
-                            font.family: Theme.font.family
-                            font.pixelSize: 18
+                            text: "chevron_right"
+                            iconSize: 20
                             color: Theme.primary
                         }
 
@@ -440,22 +440,24 @@ Card {
 
                 Row {
                     width: parent.width
-                    height: 18
+                    height: 24
 
                     Repeater {
                         model: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
                         Rectangle {
                             width: parent.width / 7
-                            height: 18
+                            height: 24
                             color: "transparent"
 
                             Text {
                                 anchors.centerIn: parent
                                 text: modelData
                                 font.family: Theme.font.family
-                                font.pixelSize: 11
-                                color: Qt.rgba(1, 1, 1, 0.5)
+                                font.pixelSize: 12
+                                font.weight: Font.DemiBold
+                                color: Theme.primary
+                                opacity: 0.8
                             }
                         }
                     }
@@ -464,7 +466,7 @@ Card {
                 Grid {
                     id: calendarGrid
                     width: parent.width
-                    height: parent.height - (root.selectedDaysCount > 0 ? 38 : 28) - 18 - 12
+                    height: parent.height - (root.selectedDaysCount > 0 ? 42 : 32) - 24 - 12
                     columns: 7
                     rows: 6
 
@@ -477,6 +479,7 @@ Card {
                         model: 42
 
                         Rectangle {
+                            id: dayCell
                             readonly property date dayDate: {
                                 const date = new Date(calendarGrid.firstDay);
                                 date.setDate(date.getDate() + index);
@@ -491,21 +494,38 @@ Card {
                             color: "transparent"
 
                             Rectangle {
+                                id: dayHighlight
                                 anchors.centerIn: parent
-                                width: 28
-                                height: 28
-                                color: isSelected ? Theme.primary : isToday ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.25) : dayArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
-                                radius: 14
-                                border.color: isToday && !isSelected ? Theme.primary : "transparent"
-                                border.width: 1
+                                width: 34
+                                height: 34
+                                radius: 17
+                                
+                                color: isSelected 
+                                    ? Theme.primary 
+                                    : (isToday ? "transparent" : (dayArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"))
+                                
+                                border.color: isToday 
+                                    ? Theme.primary 
+                                    : (isSelected ? Theme.primary : "transparent")
+                                border.width: isToday ? 1.5 : 0
+
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                                Behavior on border.color { ColorAnimation { duration: 150 } }
+                                
+                                // Material You feedback
+                                scale: dayArea.pressed ? 0.9 : (dayArea.containsMouse ? 1.05 : 1.0)
+                                Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 
                                 Text {
                                     anchors.centerIn: parent
-                                    text: dayDate.getDate()
+                                    text: dayCell.dayDate.getDate()
                                     font.family: Theme.font.family
-                                    font.pixelSize: 11
-                                    color: isSelected ? Theme.onPrimary : isToday ? Theme.primary : isCurrentMonth ? "white" : Qt.rgba(1, 1, 1, 0.3)
+                                    font.pixelSize: 12
+                                    color: isSelected 
+                                        ? Theme.onPrimary 
+                                        : (isToday ? Theme.primary : (isCurrentMonth ? "white" : Qt.rgba(1, 1, 1, 0.25)))
                                     font.weight: (isToday || isSelected) ? Font.Bold : Font.Normal
+                                    Behavior on color { ColorAnimation { duration: 150 } }
                                 }
                             }
 
@@ -514,7 +534,7 @@ Card {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: root.selectedDate = dayDate
+                                onClicked: root.selectedDate = dayCell.dayDate
                             }
                         }
                     }
@@ -530,27 +550,63 @@ Card {
             ColumnLayout {
                 anchors.fill: parent
                 visible: root.activeTab === "todo"
-                spacing: 12
+                spacing: 14
+
+                // Header with Statistics
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.bottomMargin: 2
+                    
+                    Text {
+                        text: qsTr("My Tasks")
+                        font.family: Theme.font.family
+                        font.pixelSize: 15
+                        font.weight: Font.DemiBold
+                        color: "white"
+                    }
+
+                    Item { Layout.fillWidth: true }
+
+                    // Task counters
+                    Text {
+                        readonly property int activeCount: {
+                            let count = 0;
+                            for (let i = 0; i < todoModel.count; i++) {
+                                if (!todoModel.get(i).done) count++;
+                            }
+                            return count;
+                        }
+                        text: activeCount === 0 ? qsTr("All done!") : activeCount + qsTr(" remaining")
+                        font.family: Theme.font.family
+                        font.pixelSize: 11
+                        font.weight: Font.Medium
+                        color: Theme.primary
+                        opacity: 0.85
+                    }
+                }
 
                 // Input Bar (MD3 Pill Style)
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 44
-                    radius: 22
-                    color: Qt.rgba(255, 255, 255, 0.04)
+                    Layout.preferredHeight: 46
+                    radius: 23
+                    color: taskInput.activeFocus ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.08) : Qt.rgba(255, 255, 255, 0.04)
                     border.color: taskInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.08)
-                    border.width: 1
+                    border.width: taskInput.activeFocus ? 1.5 : 1
+                    Behavior on color { ColorAnimation { duration: 150 } }
+                    Behavior on border.color { ColorAnimation { duration: 150 } }
 
                     RowLayout {
                         anchors.fill: parent
                         anchors.leftMargin: 16
-                        anchors.rightMargin: 12
-                        spacing: 8
+                        anchors.rightMargin: 8
+                        spacing: 12
 
-                        DankIcon {
-                            name: "edit"
-                            size: 16
+                        MaterialSymbol {
+                            text: "add_task"
+                            iconSize: 18
                             color: taskInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.4)
+                            Behavior on color { ColorAnimation { duration: 150 } }
                         }
 
                         TextInput {
@@ -558,7 +614,7 @@ Card {
                             Layout.fillWidth: true
                             verticalAlignment: TextInput.AlignVCenter
                             color: "white"
-                            font.family: "Inter"
+                            font.family: Theme.font.family
                             font.pixelSize: 13
                             clip: true
                             selectByMouse: true
@@ -577,32 +633,41 @@ Card {
                             Keys.onReturnPressed: {
                                 let txt = taskInput.text.trim();
                                 if (txt.length > 0) {
-                                    todoModel.append({ "text": txt, "done": false });
+                                    todoModel.insert(0, { "text": txt, "done": false });
                                     taskInput.text = "";
                                     root.saveTodo();
                                 }
                             }
                         }
 
-                        QQC.Button {
+                        Rectangle {
                             id: addTaskBtn
-                            implicitWidth: 32
-                            implicitHeight: 32
-                            background: Rectangle {
-                                color: taskInput.text.trim().length > 0 ? Theme.primary : Qt.rgba(255, 255, 255, 0.05)
-                                radius: 16
-                            }
-                            contentItem: DankIcon {
-                                name: "add"
-                                size: 14
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: taskInput.text.trim().length > 0 ? Theme.primary : "transparent"
+                            Behavior on color { ColorAnimation { duration: 150 } }
+
+                            MaterialSymbol {
+                                text: "arrow_upward"
+                                iconSize: 16
                                 color: taskInput.text.trim().length > 0 ? Theme.onPrimary : Qt.rgba(255, 255, 255, 0.3)
+                                anchors.centerIn: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                Behavior on color { ColorAnimation { duration: 150 } }
                             }
-                            onClicked: {
-                                let txt = taskInput.text.trim();
-                                if (txt.length > 0) {
-                                    todoModel.append({ "text": txt, "done": false });
-                                    taskInput.text = "";
-                                    root.saveTodo();
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    let txt = taskInput.text.trim();
+                                    if (txt.length > 0) {
+                                        todoModel.insert(0, { "text": txt, "done": false });
+                                        taskInput.text = "";
+                                        root.saveTodo();
+                                    }
                                 }
                             }
                         }
@@ -614,10 +679,22 @@ Card {
                     id: todoList
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing: 8
+                    spacing: 6
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
                     model: todoModel
+
+                    add: Transition {
+                        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 200; easing.type: Easing.OutQuad }
+                        NumberAnimation { property: "scale"; from: 0.85; to: 1.0; duration: 200; easing.type: Easing.OutQuad }
+                    }
+                    remove: Transition {
+                        NumberAnimation { property: "opacity"; to: 0; duration: 150 }
+                        NumberAnimation { property: "scale"; to: 0.85; duration: 150 }
+                    }
+                    displaced: Transition {
+                        NumberAnimation { properties: "y"; duration: 200; easing.type: Easing.OutQuad }
+                    }
 
                     QQC.ScrollBar.vertical: QQC.ScrollBar {
                         policy: QQC.ScrollBar.AsNeeded
@@ -626,11 +703,21 @@ Card {
                     delegate: Rectangle {
                         id: taskRow
                         width: todoList.width
-                        height: 48
-                        radius: 16
-                        color: taskHover.hovered ? Qt.rgba(255, 255, 255, 0.05) : Qt.rgba(255, 255, 255, 0.02)
-                        border.color: Qt.rgba(255, 255, 255, 0.05)
+                        height: 46
+                        radius: 12
+                        
+                        // Soft primary tinted color for active tasks, fully transparent for done tasks
+                        color: model.done 
+                            ? "transparent" 
+                            : (taskHover.hovered ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.08) : Qt.rgba(255, 255, 255, 0.02))
+                        
+                        border.color: model.done 
+                            ? "transparent" 
+                            : (taskHover.hovered ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.2) : Qt.rgba(255, 255, 255, 0.04))
                         border.width: 1
+
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
 
                         HoverHandler {
                             id: taskHover
@@ -638,29 +725,40 @@ Card {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 12
+                            anchors.leftMargin: 12
+                            anchors.rightMargin: 8
                             spacing: 12
 
-                            // MD3 Style Checkbox / Circle
+                            // Checkbox (Material Design 3 style)
                             Rectangle {
-                                width: 22
-                                height: 22
-                                radius: 11
+                                id: checkbox
+                                width: 20
+                                height: 20
+                                radius: 10
                                 color: model.done ? Theme.primary : "transparent"
-                                border.color: model.done ? "transparent" : Qt.rgba(255, 255, 255, 0.3)
-                                border.width: model.done ? 0 : 2
+                                border.color: model.done ? "transparent" : (checkboxArea.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.4))
+                                border.width: model.done ? 0 : 1.5
 
-                                DankIcon {
-                                    name: "check"
-                                    size: 14
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                                Behavior on border.color { ColorAnimation { duration: 150 } }
+                                
+                                scale: checkboxArea.pressed ? 0.85 : 1.0
+                                Behavior on scale { NumberAnimation { duration: 100 } }
+
+                                MaterialSymbol {
+                                    text: "check"
+                                    iconSize: 13
                                     color: Theme.onPrimary
                                     anchors.centerIn: parent
                                     visible: model.done
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
                                 }
 
                                 MouseArea {
+                                    id: checkboxArea
                                     anchors.fill: parent
+                                    hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: {
                                         model.done = !model.done;
@@ -673,35 +771,46 @@ Card {
                             Text {
                                 Layout.fillWidth: true
                                 text: model.text
-                                font.family: "Inter"
-                                font.pixelSize: 13
+                                font.family: Theme.font.family
+                                font.pixelSize: 12
                                 color: model.done ? Qt.rgba(255, 255, 255, 0.35) : "white"
                                 font.strikeout: model.done
+                                font.weight: model.done ? Font.Normal : Font.Medium
                                 elide: Text.ElideRight
                                 verticalAlignment: Text.AlignVCenter
+                                Behavior on color { ColorAnimation { duration: 150 } }
                             }
 
-                            // Delete Action Button
-                            QQC.Button {
+                            // Delete Button (Custom centered icon button)
+                            Rectangle {
                                 id: taskDelBtn
-                                visible: taskHover.hovered
-                                implicitWidth: 28
-                                implicitHeight: 28
+                                width: 28
+                                height: 28
+                                radius: 14
+                                color: delArea.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.12) : "transparent"
+                                opacity: taskHover.hovered ? 0.9 : 0.0
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                                Behavior on opacity { NumberAnimation { duration: 150 } }
 
-                                background: Rectangle {
-                                    color: taskDelBtn.hovered ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15) : "transparent"
-                                    radius: 14
+                                MaterialSymbol {
+                                    text: "close"
+                                    iconSize: 16
+                                    color: delArea.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.4)
+                                    anchors.centerIn: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    Behavior on color { ColorAnimation { duration: 150 } }
                                 }
 
-                                contentItem: DankIcon {
-                                    name: "delete"
-                                    size: 14
-                                    color: Theme.error
-                                }
-
-                                onClicked: {
-                                    todoModel.remove(index);
-                                    root.saveTodo();
+                                MouseArea {
+                                    id: delArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        todoModel.remove(index);
+                                        root.saveTodo();
+                                    }
                                 }
                             }
                         }
@@ -720,7 +829,7 @@ Card {
                 ColumnLayout {
                     anchors.fill: parent
                     visible: !TimerStopwatchService.timerSetupMode
-                    spacing: 12
+                    spacing: 14
 
                     Item {
                         Layout.fillWidth: true
@@ -728,12 +837,12 @@ Card {
 
                         // Minimalist Circular Progress Track (MD3 Accent Track)
                         Rectangle {
-                            width: 130
-                            height: 130
-                            radius: 65
+                            width: 140
+                            height: 140
+                            radius: 70
                             color: Qt.rgba(255, 255, 255, 0.02)
                             border.color: Qt.rgba(255, 255, 255, 0.05)
-                            border.width: 6
+                            border.width: 5
                             anchors.centerIn: parent
 
                             // Active progress fill representation
@@ -748,11 +857,11 @@ Card {
                                     
                                     var ratio = TimerStopwatchService.timerSeconds / TimerStopwatchService.timerTotal;
                                     var center = width / 2;
-                                    var radius = center - 3; // Align to border center
+                                    var radius = center - 2.5; // Align to border center
 
                                     ctx.beginPath();
                                     ctx.strokeStyle = Theme.primary;
-                                    ctx.lineWidth = 6;
+                                    ctx.lineWidth = 5;
                                     ctx.lineCap = "round";
                                     ctx.arc(center, center, radius, 0, 2 * Math.PI * ratio, false);
                                     ctx.stroke();
@@ -769,24 +878,25 @@ Card {
                             // Digital countdown text inside the circle
                             Column {
                                 anchors.centerIn: parent
-                                spacing: 2
+                                spacing: 4
 
-                                Text {
+                                 Text {
                                     text: TimerStopwatchService.formatTimer(TimerStopwatchService.timerSeconds)
-                                    font.family: "Inter"
-                                    font.pixelSize: 24
-                                    font.weight: Font.Bold
+                                    font.family: Theme.font.monospace
+                                    font.pixelSize: 26
+                                    font.weight: Font.DemiBold
                                     color: "white"
                                     anchors.horizontalCenter: parent.horizontalCenter
                                 }
 
                                 Text {
                                     text: TimerStopwatchService.timerRunning ? "RUNNING" : "PAUSED"
-                                    font.family: "Inter"
+                                    font.family: Theme.font.family
                                     font.pixelSize: 8
                                     font.weight: Font.Bold
                                     color: TimerStopwatchService.timerRunning ? Theme.primary : Qt.rgba(255, 255, 255, 0.35)
                                     anchors.horizontalCenter: parent.horizontalCenter
+                                    Behavior on color { ColorAnimation { duration: 150 } }
                                 }
                             }
                         }
@@ -796,46 +906,66 @@ Card {
                     RowLayout {
                         Layout.alignment: Qt.AlignHCenter
                         spacing: 16
-                        Layout.bottomMargin: 12
+                        Layout.bottomMargin: 14
 
-                        // Start/Pause Button (MD3 Fab style)
-                        QQC.Button {
+                        // Start/Pause Button (Custom centered icon button)
+                        Rectangle {
                             id: timerPlayBtn
-                            implicitWidth: 44
-                            implicitHeight: 44
-                            background: Rectangle {
-                                color: TimerStopwatchService.timerRunning ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Theme.primary
-                                radius: 22
-                                border.color: TimerStopwatchService.timerRunning ? Theme.primary : "transparent"
-                                border.width: 1
-                            }
-                            contentItem: DankIcon {
-                                name: TimerStopwatchService.timerRunning ? "pause" : "play_arrow"
-                                size: 20
+                            width: 44
+                            height: 44
+                            radius: 22
+                            color: TimerStopwatchService.timerRunning ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Theme.primary
+                            border.color: TimerStopwatchService.timerRunning ? Theme.primary : "transparent"
+                            border.width: 1
+                            Behavior on color { ColorAnimation { duration: 150 } }
+
+                            MaterialSymbol {
+                                text: TimerStopwatchService.timerRunning ? "pause" : "play_arrow"
+                                iconSize: 22
                                 color: TimerStopwatchService.timerRunning ? Theme.primary : Theme.onPrimary
+                                anchors.centerIn: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                Behavior on color { ColorAnimation { duration: 150 } }
                             }
-                            onClicked: TimerStopwatchService.timerRunning = !TimerStopwatchService.timerRunning
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: TimerStopwatchService.timerRunning = !TimerStopwatchService.timerRunning
+                            }
                         }
 
-                        // Stop/Reset Button (MD3 Outlined Action style)
-                        QQC.Button {
+                        // Stop/Reset Button (Custom centered icon button)
+                        Rectangle {
                             id: timerStopBtn
-                            implicitWidth: 44
-                            implicitHeight: 44
-                            background: Rectangle {
-                                color: timerStopBtn.hovered ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
-                                border.color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.3)
-                                border.width: 1
-                                radius: 22
+                            width: 44
+                            height: 44
+                            radius: 22
+                            color: stopArea.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
+                            border.color: stopArea.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.1)
+                            border.width: 1
+                            Behavior on color { ColorAnimation { duration: 150 } }
+
+                            MaterialSymbol {
+                                text: "replay"
+                                iconSize: 20
+                                color: stopArea.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.6)
+                                anchors.centerIn: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                Behavior on color { ColorAnimation { duration: 150 } }
                             }
-                            contentItem: DankIcon {
-                                name: "refresh"
-                                size: 20
-                                color: Theme.error
-                            }
-                            onClicked: {
-                                TimerStopwatchService.timerRunning = false;
-                                TimerStopwatchService.timerSetupMode = true;
+
+                            MouseArea {
+                                id: stopArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    TimerStopwatchService.timerRunning = false;
+                                    TimerStopwatchService.timerSetupMode = true;
+                                }
                             }
                         }
                     }
@@ -845,29 +975,29 @@ Card {
                 ColumnLayout {
                     anchors.fill: parent
                     visible: TimerStopwatchService.timerSetupMode
-                    spacing: 12
+                    spacing: 14
 
                     // Header
                     Text {
                         text: "Set Timer Duration"
-                        font.family: "Inter"
+                        font.family: Theme.font.family
                         font.pixelSize: 13
-                        font.weight: Font.Bold
+                        font.weight: Font.DemiBold
                         color: Qt.rgba(255, 255, 255, 0.7)
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.topMargin: 8
+                        Layout.topMargin: 12
                     }
 
                     // Time inputs row (MD3 styled cards)
                     RowLayout {
                         Layout.alignment: Qt.AlignHCenter
-                        spacing: 12
+                        spacing: 16
                         Layout.fillHeight: true
 
                         // Minutes Card
                         Rectangle {
-                            implicitWidth: 72
-                            implicitHeight: 88
+                            implicitWidth: 80
+                            implicitHeight: 96
                             radius: 16
                             color: Qt.rgba(255, 255, 255, 0.03)
                             border.color: minInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.08)
@@ -876,35 +1006,47 @@ Card {
                             ColumnLayout {
                                 anchors.fill: parent
                                 anchors.topMargin: 4
-                                anchors.bottomMargin: 4
+                                anchors.bottomMargin: 6
                                 spacing: 0
 
-                                QQC.Button {
+                                Rectangle {
                                     id: minUp
                                     Layout.alignment: Qt.AlignHCenter
-                                    implicitWidth: 40; implicitHeight: 20
-                                    background: Rectangle { color: minUp.hovered ? Qt.rgba(255, 255, 255, 0.06) : "transparent"; radius: 10 }
-                                    contentItem: DankIcon {
-                                        name: "arrow_drop_up"
-                                        size: 16
+                                    width: 32; height: 20
+                                    radius: 10
+                                    color: minUpArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
+                                    Behavior on color { ColorAnimation { duration: 150 } }
+                                    
+                                    MaterialSymbol {
+                                        text: "keyboard_arrow_up"
+                                        iconSize: 18
                                         color: "white"
+                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
-                                    onClicked: TimerStopwatchService.setupMins = Math.min(99, TimerStopwatchService.setupMins + 5)
+                                    MouseArea {
+                                        id: minUpArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: TimerStopwatchService.setupMins = Math.min(99, TimerStopwatchService.setupMins + 1)
+                                    }
                                 }
 
                                 TextInput {
                                     id: minInput
                                     text: String(TimerStopwatchService.setupMins).padStart(2, '0')
-                                    font.family: "Inter"
-                                    font.pixelSize: 22
-                                    font.weight: Font.Bold
+                                    font.family: Theme.font.monospace
+                                    font.pixelSize: 24
+                                    font.weight: Font.DemiBold
                                     color: "white"
                                     selectByMouse: true
                                     horizontalAlignment: TextInput.AlignHCenter
                                     Layout.alignment: Qt.AlignHCenter
                                     validator: IntValidator { bottom: 0; top: 99 }
                                     inputMethodHints: Qt.ImhDigitsOnly
-                                    width: 32
+                                    width: 36
 
                                     onEditingFinished: {
                                         let val = parseInt(text);
@@ -925,36 +1067,48 @@ Card {
                                     }
                                 }
 
-                                QQC.Button {
+                                Rectangle {
                                     id: minDown
                                     Layout.alignment: Qt.AlignHCenter
-                                    implicitWidth: 40; implicitHeight: 20
-                                    background: Rectangle { color: minDown.hovered ? Qt.rgba(255, 255, 255, 0.06) : "transparent"; radius: 10 }
-                                    contentItem: DankIcon {
-                                        name: "arrow_drop_down"
-                                        size: 16
+                                    width: 32; height: 20
+                                    radius: 10
+                                    color: minDownArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
+                                    Behavior on color { ColorAnimation { duration: 150 } }
+                                    
+                                    MaterialSymbol {
+                                        text: "keyboard_arrow_down"
+                                        iconSize: 18
                                         color: "white"
+                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
-                                    onClicked: TimerStopwatchService.setupMins = Math.max(0, TimerStopwatchService.setupMins - 5)
+                                    MouseArea {
+                                        id: minDownArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: TimerStopwatchService.setupMins = Math.max(0, TimerStopwatchService.setupMins - 1)
+                                    }
                                 }
 
-                                Text { text: "MINUTES"; font.family: "Inter"; font.pixelSize: 7; font.weight: Font.Bold; color: Qt.rgba(255, 255, 255, 0.4); Layout.alignment: Qt.AlignHCenter }
+                                Text { text: "MINUTES"; font.family: Theme.font.family; font.pixelSize: 8; font.weight: Font.Bold; color: Qt.rgba(255, 255, 255, 0.4); Layout.alignment: Qt.AlignHCenter }
                             }
                         }
 
                         Text {
                             text: ":"
-                            font.family: "Inter"
-                            font.pixelSize: 24
-                            font.weight: Font.Bold
+                            font.family: Theme.font.family
+                            font.pixelSize: 26
+                            font.weight: Font.DemiBold
                             color: Theme.primary
                             Layout.alignment: Qt.AlignVCenter
                         }
 
                         // Seconds Card
                         Rectangle {
-                            implicitWidth: 72
-                            implicitHeight: 88
+                            implicitWidth: 80
+                            implicitHeight: 96
                             radius: 16
                             color: Qt.rgba(255, 255, 255, 0.03)
                             border.color: secInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.08)
@@ -963,35 +1117,47 @@ Card {
                             ColumnLayout {
                                 anchors.fill: parent
                                 anchors.topMargin: 4
-                                anchors.bottomMargin: 4
+                                anchors.bottomMargin: 6
                                 spacing: 0
 
-                                QQC.Button {
+                                Rectangle {
                                     id: secUp
                                     Layout.alignment: Qt.AlignHCenter
-                                    implicitWidth: 40; implicitHeight: 20
-                                    background: Rectangle { color: secUp.hovered ? Qt.rgba(255, 255, 255, 0.06) : "transparent"; radius: 10 }
-                                    contentItem: DankIcon {
-                                        name: "arrow_drop_up"
-                                        size: 16
+                                    width: 32; height: 20
+                                    radius: 10
+                                    color: secUpArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
+                                    Behavior on color { ColorAnimation { duration: 150 } }
+                                    
+                                    MaterialSymbol {
+                                        text: "keyboard_arrow_up"
+                                        iconSize: 18
                                         color: "white"
+                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
-                                    onClicked: TimerStopwatchService.setupSecs = (TimerStopwatchService.setupSecs + 5) % 60
+                                    MouseArea {
+                                        id: secUpArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: TimerStopwatchService.setupSecs = (TimerStopwatchService.setupSecs + 1) % 60
+                                    }
                                 }
 
                                 TextInput {
                                     id: secInput
                                     text: String(TimerStopwatchService.setupSecs).padStart(2, '0')
-                                    font.family: "Inter"
-                                    font.pixelSize: 22
-                                    font.weight: Font.Bold
+                                    font.family: Theme.font.monospace
+                                    font.pixelSize: 24
+                                    font.weight: Font.DemiBold
                                     color: "white"
                                     selectByMouse: true
                                     horizontalAlignment: TextInput.AlignHCenter
                                     Layout.alignment: Qt.AlignHCenter
                                     validator: IntValidator { bottom: 0; top: 59 }
                                     inputMethodHints: Qt.ImhDigitsOnly
-                                    width: 32
+                                    width: 36
 
                                     onEditingFinished: {
                                         let val = parseInt(text);
@@ -1012,20 +1178,32 @@ Card {
                                     }
                                 }
 
-                                QQC.Button {
+                                Rectangle {
                                     id: secDown
                                     Layout.alignment: Qt.AlignHCenter
-                                    implicitWidth: 40; implicitHeight: 20
-                                    background: Rectangle { color: secDown.hovered ? Qt.rgba(255, 255, 255, 0.06) : "transparent"; radius: 10 }
-                                    contentItem: DankIcon {
-                                        name: "arrow_drop_down"
-                                        size: 16
+                                    width: 32; height: 20
+                                    radius: 10
+                                    color: secDownArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
+                                    Behavior on color { ColorAnimation { duration: 150 } }
+                                    
+                                    MaterialSymbol {
+                                        text: "keyboard_arrow_down"
+                                        iconSize: 18
                                         color: "white"
+                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
-                                    onClicked: TimerStopwatchService.setupSecs = (TimerStopwatchService.setupSecs - 5 + 60) % 60
+                                    MouseArea {
+                                        id: secDownArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: TimerStopwatchService.setupSecs = (TimerStopwatchService.setupSecs - 1 + 60) % 60
+                                    }
                                 }
 
-                                Text { text: "SECONDS"; font.family: "Inter"; font.pixelSize: 7; font.weight: Font.Bold; color: Qt.rgba(255, 255, 255, 0.4); Layout.alignment: Qt.AlignHCenter }
+                                Text { text: "SECONDS"; font.family: Theme.font.family; font.pixelSize: 8; font.weight: Font.Bold; color: Qt.rgba(255, 255, 255, 0.4); Layout.alignment: Qt.AlignHCenter }
                             }
                         }
                     }
@@ -1037,69 +1215,84 @@ Card {
 
                         Repeater {
                             model: [1, 3, 5, 10]
-                            QQC.Button {
+                            
+                            Rectangle {
                                 id: presetBtn
-                                implicitWidth: 44
-                                implicitHeight: 22
-                                background: Rectangle {
-                                    color: presetBtn.hovered ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Qt.rgba(255, 255, 255, 0.04)
-                                    border.color: presetBtn.hovered ? Theme.primary : Qt.rgba(255, 255, 255, 0.1)
-                                    border.width: 1
-                                    radius: 11
-                                }
-                                contentItem: Text {
+                                width: 56
+                                height: 24
+                                radius: 12
+                                color: presetArea.containsMouse ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Qt.rgba(255, 255, 255, 0.04)
+                                border.color: presetArea.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.1)
+                                border.width: 1
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                                Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                                Text {
                                     text: modelData + "m"
                                     color: "white"
-                                    font.family: "Inter"
-                                    font.pixelSize: 9
-                                    font.weight: Font.Bold
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
+                                    font.family: Theme.font.family
+                                    font.pixelSize: 10
+                                    font.weight: Font.DemiBold
+                                    anchors.centerIn: parent
                                 }
-                                onClicked: {
-                                    TimerStopwatchService.setupMins = modelData;
-                                    TimerStopwatchService.setupSecs = 0;
+                                MouseArea {
+                                    id: presetArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        TimerStopwatchService.setupMins = modelData;
+                                        TimerStopwatchService.setupSecs = 0;
+                                    }
                                 }
                             }
                         }
                     }
 
                     // Start Action Button (MD3 Elevated Pill)
-                    QQC.Button {
+                    Rectangle {
                         id: startTimerBtn
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.bottomMargin: 10
-                        implicitWidth: 100
-                        implicitHeight: 32
+                        Layout.bottomMargin: 14
+                        width: 120
+                        height: 38
+                        radius: 19
+                        
+                        readonly property bool canStart: (TimerStopwatchService.setupMins > 0 || TimerStopwatchService.setupSecs > 0)
+                        color: canStart ? Theme.primary : Qt.rgba(255, 255, 255, 0.03)
+                        Behavior on color { ColorAnimation { duration: 150 } }
 
-                        background: Rectangle {
-                            color: (TimerStopwatchService.setupMins > 0 || TimerStopwatchService.setupSecs > 0) ? Theme.primary : Qt.rgba(255, 255, 255, 0.03)
-                            radius: 16
-                        }
-
-                        contentItem: RowLayout {
-                            spacing: 4
-                            Layout.alignment: Qt.AlignHCenter
-                            DankIcon {
-                                name: "play_arrow"
-                                size: 14
-                                color: (TimerStopwatchService.setupMins > 0 || TimerStopwatchService.setupSecs > 0) ? Theme.onPrimary : Qt.rgba(255, 255, 255, 0.2)
+                        RowLayout {
+                            anchors.centerIn: parent
+                            spacing: 6
+                            MaterialSymbol {
+                                text: "play_arrow"
+                                iconSize: 18
+                                color: startTimerBtn.canStart ? Theme.onPrimary : Qt.rgba(255, 255, 255, 0.2)
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                Behavior on color { ColorAnimation { duration: 150 } }
                             }
                             Text {
                                 text: "Start"
-                                font.family: "Inter"
-                                font.pixelSize: 11
-                                font.weight: Font.Bold
-                                color: (TimerStopwatchService.setupMins > 0 || TimerStopwatchService.setupSecs > 0) ? Theme.onPrimary : Qt.rgba(255, 255, 255, 0.2)
+                                font.family: Theme.font.family
+                                font.pixelSize: 13
+                                font.weight: Font.DemiBold
+                                color: startTimerBtn.canStart ? Theme.onPrimary : Qt.rgba(255, 255, 255, 0.2)
+                                Behavior on color { ColorAnimation { duration: 150 } }
                             }
                         }
 
-                        enabled: (TimerStopwatchService.setupMins > 0 || TimerStopwatchService.setupSecs > 0)
-                        onClicked: {
-                            TimerStopwatchService.timerTotal = (TimerStopwatchService.setupMins * 60) + TimerStopwatchService.setupSecs;
-                            TimerStopwatchService.timerSeconds = TimerStopwatchService.timerTotal;
-                            TimerStopwatchService.timerSetupMode = false;
-                            TimerStopwatchService.timerRunning = true;
+                        MouseArea {
+                            anchors.fill: parent
+                            enabled: startTimerBtn.canStart
+                            cursorShape: startTimerBtn.canStart ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            onClicked: {
+                                TimerStopwatchService.timerTotal = (TimerStopwatchService.setupMins * 60) + TimerStopwatchService.setupSecs;
+                                TimerStopwatchService.timerSeconds = TimerStopwatchService.timerTotal;
+                                TimerStopwatchService.timerSetupMode = false;
+                                TimerStopwatchService.timerRunning = true;
+                            }
                         }
                     }
                 }
@@ -1111,89 +1304,131 @@ Card {
             ColumnLayout {
                 anchors.fill: parent
                 visible: root.activeTab === "stopwatch"
-                spacing: 12
+                spacing: 16
 
-                // Stopwatch time display (huge)
+                // Stopwatch time display (huge & clean monospace)
                 Text {
+                    id: swDisplay
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.topMargin: 12
+                    Layout.topMargin: 16
                     text: TimerStopwatchService.formatStopwatch(TimerStopwatchService.stopwatchTime)
                     font.family: Theme.font.monospace
-                    font.pixelSize: 32
-                    font.weight: Font.Bold
+                    font.pixelSize: 34
+                    font.weight: Font.DemiBold
                     color: "white"
+                    horizontalAlignment: Text.AlignHCenter
                 }
 
                 // Control Action Row (Play/Pause, Lap, Reset)
                 RowLayout {
                     Layout.alignment: Qt.AlignHCenter
-                    spacing: 12
+                    spacing: 16
+                    Layout.bottomMargin: 4
 
-                    // Play / Pause Toggle
-                    QQC.Button {
-                        id: swPlayBtn
-                        implicitWidth: 44
-                        implicitHeight: 36
-                        background: Rectangle {
-                            color: swPlayBtn.hovered ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
-                            radius: 8
+                    // Lap Button (Custom secondary outlined style)
+                    Rectangle {
+                        id: swLapBtn
+                        width: 40
+                        height: 40
+                        radius: 20
+                        readonly property bool canLap: TimerStopwatchService.swRunning
+                        color: canLap ? (lapArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : Qt.rgba(255, 255, 255, 0.03)) : "transparent"
+                        border.color: canLap ? (lapArea.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)) : Qt.rgba(255, 255, 255, 0.05)
+                        border.width: 1
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                        MaterialSymbol {
+                            text: "flag"
+                            iconSize: 18
+                            color: swLapBtn.canLap ? "white" : Qt.rgba(255, 255, 255, 0.2)
+                            anchors.centerIn: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
                         }
-                        contentItem: DankIcon {
-                            name: TimerStopwatchService.swRunning ? "pause" : "play_arrow"
-                            size: 18
-                            color: Theme.primary
-                        }
-                        onClicked: {
-                            if (!TimerStopwatchService.swRunning) {
-                                TimerStopwatchService.swStartTime = Date.now();
-                                TimerStopwatchService.swRunning = true;
-                            } else {
-                                TimerStopwatchService.swBaseTime = TimerStopwatchService.stopwatchTime;
-                                TimerStopwatchService.swRunning = false;
+
+                        MouseArea {
+                            id: lapArea
+                            anchors.fill: parent
+                            enabled: swLapBtn.canLap
+                            hoverEnabled: true
+                            cursorShape: swLapBtn.canLap ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            onClicked: {
+                                let formatted = TimerStopwatchService.formatStopwatch(TimerStopwatchService.stopwatchTime);
+                                TimerStopwatchService.swLaps.insert(0, { "lapNum": TimerStopwatchService.swLaps.count + 1, "lapTime": formatted });
                             }
                         }
                     }
 
-                    // Lap Button
-                    QQC.Button {
-                        id: swLapBtn
-                        implicitWidth: 44
-                        implicitHeight: 36
-                        enabled: TimerStopwatchService.swRunning
-                        background: Rectangle {
-                            color: swLapBtn.enabled ? (swLapBtn.hovered ? Qt.rgba(255, 255, 255, 0.08) : Qt.rgba(255, 255, 255, 0.03)) : "transparent"
-                            radius: 8
+                    // Play / Pause Toggle (Large primary Fab style)
+                    Rectangle {
+                        id: swPlayBtn
+                        width: 52
+                        height: 52
+                        radius: 26
+                        color: TimerStopwatchService.swRunning ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Theme.primary
+                        border.color: TimerStopwatchService.swRunning ? Theme.primary : "transparent"
+                        border.width: 1
+                        Behavior on color { ColorAnimation { duration: 150 } }
+
+                        MaterialSymbol {
+                            text: TimerStopwatchService.swRunning ? "pause" : "play_arrow"
+                            iconSize: 24
+                            color: TimerStopwatchService.swRunning ? Theme.primary : Theme.onPrimary
+                            anchors.centerIn: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            Behavior on color { ColorAnimation { duration: 150 } }
                         }
-                        contentItem: DankIcon {
-                            name: "outlined_flag" // Flags/Laps representation
-                            size: 18
-                            color: swLapBtn.enabled ? "#ffffff" : Qt.rgba(255, 255, 255, 0.2)
-                        }
-                        onClicked: {
-                            let formatted = TimerStopwatchService.formatStopwatch(TimerStopwatchService.stopwatchTime);
-                            TimerStopwatchService.swLaps.insert(0, { "lapNum": TimerStopwatchService.swLaps.count + 1, "lapTime": formatted });
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (!TimerStopwatchService.swRunning) {
+                                    TimerStopwatchService.swStartTime = Date.now();
+                                    TimerStopwatchService.swRunning = true;
+                                } else {
+                                    TimerStopwatchService.swBaseTime = TimerStopwatchService.stopwatchTime;
+                                    TimerStopwatchService.swRunning = false;
+                                }
+                            }
                         }
                     }
 
-                    // Reset Button
-                    QQC.Button {
+                    // Reset Button (Custom secondary outlined style)
+                    Rectangle {
                         id: swResetBtn
-                        implicitWidth: 44
-                        implicitHeight: 36
-                        background: Rectangle {
-                            color: swResetBtn.hovered ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
-                            radius: 8
+                        width: 40
+                        height: 40
+                        radius: 20
+                        color: resetArea.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.12) : Qt.rgba(255, 255, 255, 0.03)
+                        border.color: resetArea.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.15)
+                        border.width: 1
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                        MaterialSymbol {
+                            text: "replay"
+                            iconSize: 18
+                            color: resetArea.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.6)
+                            anchors.centerIn: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            Behavior on color { ColorAnimation { duration: 150 } }
                         }
-                        contentItem: DankIcon {
-                            name: "refresh"
-                            size: 18
-                            color: Theme.error
-                        }
-                        onClicked: {
-                            TimerStopwatchService.swRunning = false;
-                            TimerStopwatchService.stopwatchTime = 0;
-                            TimerStopwatchService.swBaseTime = 0;
-                            TimerStopwatchService.swLaps.clear();
+
+                        MouseArea {
+                            id: resetArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                TimerStopwatchService.swRunning = false;
+                                TimerStopwatchService.stopwatchTime = 0;
+                                TimerStopwatchService.swBaseTime = 0;
+                                TimerStopwatchService.swLaps.clear();
+                            }
                         }
                     }
                 }
@@ -1204,10 +1439,21 @@ Card {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Layout.bottomMargin: 4
-                    spacing: 4
+                    spacing: 6
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
                     model: TimerStopwatchService.swLaps
+
+                    add: Transition {
+                        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 200; easing.type: Easing.OutQuad }
+                        NumberAnimation { property: "scale"; from: 0.9; to: 1.0; duration: 200; easing.type: Easing.OutQuad }
+                    }
+                    remove: Transition {
+                        NumberAnimation { property: "opacity"; to: 0; duration: 150 }
+                    }
+                    displaced: Transition {
+                        NumberAnimation { properties: "y"; duration: 200; easing.type: Easing.OutQuad }
+                    }
 
                     QQC.ScrollBar.vertical: QQC.ScrollBar {
                         policy: QQC.ScrollBar.AsNeeded
@@ -1215,9 +1461,11 @@ Card {
 
                     delegate: Rectangle {
                         width: lapsList.width
-                        height: 26
-                        radius: 4
+                        height: 28
+                        radius: 8
                         color: Qt.rgba(255, 255, 255, 0.02)
+                        border.color: Qt.rgba(255, 255, 255, 0.04)
+                        border.width: 1
 
                         RowLayout {
                             anchors.fill: parent
@@ -1226,8 +1474,9 @@ Card {
 
                             Text {
                                 text: "Lap " + model.lapNum
-                                font.family: "Inter"
+                                font.family: Theme.font.family
                                 font.pixelSize: 11
+                                font.weight: Font.Medium
                                 color: Qt.rgba(255, 255, 255, 0.5)
                             }
 
@@ -1237,7 +1486,7 @@ Card {
                                 text: model.lapTime
                                 font.family: Theme.font.monospace
                                 font.pixelSize: 11
-                                font.weight: Font.Medium
+                                font.weight: Font.DemiBold
                                 color: "white"
                             }
                         }
@@ -1248,8 +1497,8 @@ Card {
                         anchors.centerIn: parent
                         visible: TimerStopwatchService.swLaps.count === 0
                         text: "No laps recorded"
-                        font.family: "Inter"
-                        font.pixelSize: 11
+                        font.family: Theme.font.family
+                        font.pixelSize: 12
                         color: Qt.rgba(255, 255, 255, 0.3)
                     }
                 }
@@ -1261,15 +1510,15 @@ Card {
             ColumnLayout {
                 anchors.fill: parent
                 visible: root.activeTab === "alarm"
-                spacing: 12
+                spacing: 14
 
                 // Alarm Creator Section (MD3 Card style)
                 Rectangle {
                     Layout.fillWidth: true
-                    implicitHeight: 76
+                    implicitHeight: 80
                     radius: 16
-                    color: Qt.rgba(255, 255, 255, 0.04)
-                    border.color: Qt.rgba(255, 255, 255, 0.08)
+                    color: Qt.rgba(255, 255, 255, 0.03)
+                    border.color: Qt.rgba(255, 255, 255, 0.06)
                     border.width: 1
 
                     RowLayout {
@@ -1280,14 +1529,14 @@ Card {
 
                         // Time Input Container (Pill Shaped card)
                         Rectangle {
-                            implicitWidth: 104
+                            implicitWidth: 112
                             implicitHeight: 48
                             radius: 24
-                            color: Qt.rgba(255, 255, 255, 0.06)
+                            color: Qt.rgba(255, 255, 255, 0.05)
                             border.color: (alarmHourInput.activeFocus || alarmMinInput.activeFocus) ? Theme.primary : Qt.rgba(255, 255, 255, 0.1)
                             border.width: 1
 
-                            RowLayout {
+                            Row {
                                 anchors.centerIn: parent
                                 spacing: 4
 
@@ -1295,15 +1544,16 @@ Card {
                                 TextInput {
                                     id: alarmHourInput
                                     text: String(root.alarmAddHour).padStart(2, '0')
-                                    font.family: "Inter"
+                                    font.family: Theme.font.monospace
                                     font.pixelSize: 18
-                                    font.weight: Font.Bold
+                                    font.weight: Font.DemiBold
                                     color: "white"
                                     selectByMouse: true
                                     horizontalAlignment: TextInput.AlignHCenter
+                                    anchors.verticalCenter: parent.verticalCenter
                                     validator: IntValidator { bottom: 1; top: 12 }
                                     inputMethodHints: Qt.ImhDigitsOnly
-                                    width: 24
+                                    width: 32
 
                                     onEditingFinished: {
                                         let val = parseInt(text);
@@ -1326,24 +1576,26 @@ Card {
                                 Text { 
                                     text: ":"
                                     color: Theme.primary
-                                    font.family: "Inter"
+                                    font.family: Theme.font.monospace
                                     font.pixelSize: 18
                                     font.weight: Font.Bold 
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 // Minute Input
                                 TextInput {
                                     id: alarmMinInput
                                     text: String(root.alarmAddMin).padStart(2, '0')
-                                    font.family: "Inter"
+                                    font.family: Theme.font.monospace
                                     font.pixelSize: 18
-                                    font.weight: Font.Bold
+                                    font.weight: Font.DemiBold
                                     color: "white"
                                     selectByMouse: true
                                     horizontalAlignment: TextInput.AlignHCenter
+                                    anchors.verticalCenter: parent.verticalCenter
                                     validator: IntValidator { bottom: 0; top: 59 }
                                     inputMethodHints: Qt.ImhDigitsOnly
-                                    width: 24
+                                    width: 32
 
                                     onEditingFinished: {
                                         let val = parseInt(text);
@@ -1370,50 +1622,58 @@ Card {
                             spacing: 4
                             Layout.alignment: Qt.AlignVCenter
 
-                            // AM/PM Toggle Button (MD3 Filter Chip)
-                            QQC.Button {
+                            // AM/PM Toggle Button (Custom filter chip)
+                            Rectangle {
                                 id: amPmBtn
-                                implicitWidth: 42
-                                implicitHeight: 22
-                                background: Rectangle {
-                                    color: root.alarmAddIsPM ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
-                                    border.color: root.alarmAddIsPM ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)
-                                    border.width: 1
-                                    radius: 11
-                                }
-                                contentItem: Text {
+                                width: 42
+                                height: 22
+                                radius: 11
+                                color: root.alarmAddIsPM ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
+                                border.color: root.alarmAddIsPM ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)
+                                border.width: 1
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                                Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                                Text {
                                     text: root.alarmAddIsPM ? "PM" : "AM"
                                     color: root.alarmAddIsPM ? Theme.primary : "white"
-                                    font.family: "Inter"
+                                    font.family: Theme.font.family
                                     font.pixelSize: 9
                                     font.weight: Font.Bold
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
+                                    anchors.centerIn: parent
                                 }
-                                onClicked: root.alarmAddIsPM = !root.alarmAddIsPM
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: root.alarmAddIsPM = !root.alarmAddIsPM
+                                }
                             }
 
-                            // Repeat Toggle Button (MD3 Filter Chip)
-                            QQC.Button {
+                            // Repeat Toggle Button (Custom filter chip)
+                            Rectangle {
                                 id: repeatBtn
-                                implicitWidth: 42
-                                implicitHeight: 22
-                                background: Rectangle {
-                                    color: root.alarmAddRepeatMode === "daily" ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
-                                    border.color: root.alarmAddRepeatMode === "daily" ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)
-                                    border.width: 1
-                                    radius: 11
-                                }
-                                contentItem: Text {
+                                width: 42
+                                height: 22
+                                radius: 11
+                                color: root.alarmAddRepeatMode === "daily" ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
+                                border.color: root.alarmAddRepeatMode === "daily" ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)
+                                border.width: 1
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                                Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                                Text {
                                     text: root.alarmAddRepeatMode === "daily" ? "Daily" : "Once"
                                     color: root.alarmAddRepeatMode === "daily" ? Theme.primary : "white"
-                                    font.family: "Inter"
+                                    font.family: Theme.font.family
                                     font.pixelSize: 9
                                     font.weight: Font.Bold
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
+                                    anchors.centerIn: parent
                                 }
-                                onClicked: root.alarmAddRepeatMode = (root.alarmAddRepeatMode === "once" ? "daily" : "once")
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: root.alarmAddRepeatMode = (root.alarmAddRepeatMode === "once" ? "daily" : "once")
+                                }
                             }
                         }
 
@@ -1439,7 +1699,7 @@ Card {
                                     anchors.rightMargin: 8
                                     verticalAlignment: TextInput.AlignVCenter
                                     color: "white"
-                                    font.family: "Inter"
+                                    font.family: Theme.font.family
                                     font.pixelSize: 10
                                     clip: true
 
@@ -1462,73 +1722,89 @@ Card {
                                 Item { Layout.fillWidth: true }
 
                                 // Cancel Edit Button
-                                QQC.Button {
+                                Rectangle {
                                     id: cancelEditBtn
                                     visible: root.editingAlarmIndex !== -1
-                                    implicitWidth: 22
-                                    implicitHeight: 22
-                                    background: Rectangle {
-                                        color: Qt.rgba(255, 255, 255, 0.05)
-                                        border.color: Qt.rgba(255, 255, 255, 0.15)
-                                        border.width: 1
-                                        radius: 11
-                                    }
-                                    contentItem: DankIcon {
-                                        name: "close"
-                                        size: 11
+                                    width: 22
+                                    height: 22
+                                    radius: 11
+                                    color: cancelArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : Qt.rgba(255, 255, 255, 0.03)
+                                    border.color: cancelArea.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)
+                                    border.width: 1
+                                    Behavior on color { ColorAnimation { duration: 150 } }
+
+                                    MaterialSymbol {
+                                        text: "close"
+                                        iconSize: 12
                                         color: "white"
+                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
-                                    onClicked: {
-                                        root.editingAlarmIndex = -1;
-                                        labelInput.text = "";
-                                        var now = new Date();
-                                        var h = now.getHours();
-                                        root.alarmAddHour = (h % 12) === 0 ? 12 : (h % 12);
-                                        root.alarmAddMin = now.getMinutes();
-                                        root.alarmAddIsPM = h >= 12;
+                                    MouseArea {
+                                        id: cancelArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.editingAlarmIndex = -1;
+                                            labelInput.text = "";
+                                            var now = new Date();
+                                            var h = now.getHours();
+                                            root.alarmAddHour = (h % 12) === 0 ? 12 : (h % 12);
+                                            root.alarmAddMin = now.getMinutes();
+                                            root.alarmAddIsPM = h >= 12;
+                                        }
                                     }
                                 }
 
                                 // Add / Save Button (MD3 Filled Icon Button)
-                                QQC.Button {
+                                Rectangle {
                                     id: addAlarmBtn
-                                    implicitWidth: 44
-                                    implicitHeight: 22
-                                    background: Rectangle {
-                                        color: Theme.primary
-                                        radius: 11
-                                    }
-                                    contentItem: DankIcon {
-                                        name: root.editingAlarmIndex === -1 ? "add" : "check"
-                                        size: 13
+                                    width: 44
+                                    height: 22
+                                    radius: 11
+                                    color: Theme.primary
+
+                                    MaterialSymbol {
+                                        text: root.editingAlarmIndex === -1 ? "add" : "check"
+                                        iconSize: 14
                                         color: Theme.onPrimary
+                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
-                                    onClicked: {
-                                        if (root.editingAlarmIndex === -1) {
-                                            TimerStopwatchService.alarms.append({
-                                                "hour": root.alarmAddHour,
-                                                "minute": root.alarmAddMin,
-                                                "isPM": root.alarmAddIsPM,
-                                                "label": labelInput.text.trim() || "Alarm",
-                                                "enabled": true,
-                                                "repeatMode": root.alarmAddRepeatMode,
-                                                "lastTriggeredMinute": -1
-                                            });
-                                        } else {
-                                            TimerStopwatchService.alarms.setProperty(root.editingAlarmIndex, "hour", root.alarmAddHour);
-                                            TimerStopwatchService.alarms.setProperty(root.editingAlarmIndex, "minute", root.alarmAddMin);
-                                            TimerStopwatchService.alarms.setProperty(root.editingAlarmIndex, "isPM", root.alarmAddIsPM);
-                                            TimerStopwatchService.alarms.setProperty(root.editingAlarmIndex, "label", labelInput.text.trim() || "Alarm");
-                                            TimerStopwatchService.alarms.setProperty(root.editingAlarmIndex, "repeatMode", root.alarmAddRepeatMode);
-                                            root.editingAlarmIndex = -1;
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            if (root.editingAlarmIndex === -1) {
+                                                TimerStopwatchService.alarms.append({
+                                                    "hour": root.alarmAddHour,
+                                                    "minute": root.alarmAddMin,
+                                                    "isPM": root.alarmAddIsPM,
+                                                    "label": labelInput.text.trim() || "Alarm",
+                                                    "enabled": true,
+                                                    "repeatMode": root.alarmAddRepeatMode,
+                                                    "lastTriggeredMinute": -1
+                                                });
+                                            } else {
+                                                TimerStopwatchService.alarms.setProperty(root.editingAlarmIndex, "hour", root.alarmAddHour);
+                                                TimerStopwatchService.alarms.setProperty(root.editingAlarmIndex, "minute", root.alarmAddMin);
+                                                TimerStopwatchService.alarms.setProperty(root.editingAlarmIndex, "isPM", root.alarmAddIsPM);
+                                                TimerStopwatchService.alarms.setProperty(root.editingAlarmIndex, "label", labelInput.text.trim() || "Alarm");
+                                                TimerStopwatchService.alarms.setProperty(root.editingAlarmIndex, "repeatMode", root.alarmAddRepeatMode);
+                                                root.editingAlarmIndex = -1;
+                                            }
+                                            labelInput.text = "";
+                                            var now = new Date();
+                                            var h = now.getHours();
+                                            root.alarmAddHour = (h % 12) === 0 ? 12 : (h % 12);
+                                            root.alarmAddMin = now.getMinutes();
+                                            root.alarmAddIsPM = h >= 12;
+                                            TimerStopwatchService.saveAlarms();
                                         }
-                                        labelInput.text = "";
-                                        var now = new Date();
-                                        var h = now.getHours();
-                                        root.alarmAddHour = (h % 12) === 0 ? 12 : (h % 12);
-                                        root.alarmAddMin = now.getMinutes();
-                                        root.alarmAddIsPM = h >= 12;
-                                        TimerStopwatchService.saveAlarms();
                                     }
                                 }
                             }
@@ -1541,10 +1817,21 @@ Card {
                     id: alarmsList
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing: 8
+                    spacing: 6
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
                     model: TimerStopwatchService.alarms
+
+                    add: Transition {
+                        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 200; easing.type: Easing.OutQuad }
+                        NumberAnimation { property: "scale"; from: 0.9; to: 1.0; duration: 200; easing.type: Easing.OutQuad }
+                    }
+                    remove: Transition {
+                        NumberAnimation { property: "opacity"; to: 0; duration: 150 }
+                    }
+                    displaced: Transition {
+                        NumberAnimation { properties: "y"; duration: 200; easing.type: Easing.OutQuad }
+                    }
 
                     QQC.ScrollBar.vertical: QQC.ScrollBar {
                         policy: QQC.ScrollBar.AsNeeded
@@ -1553,11 +1840,12 @@ Card {
                     delegate: Rectangle {
                         id: alarmRow
                         width: alarmsList.width
-                        height: 54
-                        radius: 16
-                        color: alarmHover.hovered ? Qt.rgba(255, 255, 255, 0.05) : Qt.rgba(255, 255, 255, 0.02)
-                        border.color: Qt.rgba(255, 255, 255, 0.05)
+                        height: 52
+                        radius: 12
+                        color: alarmHover.hovered ? Qt.rgba(255, 255, 255, 0.04) : Qt.rgba(255, 255, 255, 0.01)
+                        border.color: Qt.rgba(255, 255, 255, 0.04)
                         border.width: 1
+                        Behavior on color { ColorAnimation { duration: 150 } }
 
                         HoverHandler {
                             id: alarmHover
@@ -1565,32 +1853,34 @@ Card {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
+                            anchors.leftMargin: 12
+                            anchors.rightMargin: 12
                             spacing: 12
 
                             // Alarm Time & Tag Column (MD3-like spacing)
                             ColumnLayout {
-                                spacing: 2
+                                spacing: 1
                                 Layout.alignment: Qt.AlignVCenter
 
                                 RowLayout {
                                     spacing: 4
                                     Text {
                                         text: String(model.hour).padStart(2, '0') + ":" + String(model.minute).padStart(2, '0')
-                                        font.family: "Inter"
+                                        font.family: Theme.font.monospace
                                         font.pixelSize: 18
-                                        font.weight: Font.Bold
+                                        font.weight: Font.DemiBold
                                         color: model.enabled ? "white" : Qt.rgba(255, 255, 255, 0.35)
+                                        Behavior on color { ColorAnimation { duration: 150 } }
                                     }
                                     Text {
                                         text: model.isPM ? "PM" : "AM"
-                                        font.family: "Inter"
+                                        font.family: Theme.font.family
                                         font.pixelSize: 10
-                                        font.weight: Font.Medium
+                                        font.weight: Font.DemiBold
                                         color: model.enabled ? Theme.primary : Qt.rgba(255, 255, 255, 0.25)
                                         Layout.alignment: Qt.AlignBottom
                                         Layout.bottomMargin: 2
+                                        Behavior on color { ColorAnimation { duration: 150 } }
                                     }
                                 }
 
@@ -1598,28 +1888,31 @@ Card {
                                     spacing: 6
                                     Text {
                                         text: model.label
-                                        font.family: "Inter"
+                                        font.family: Theme.font.family
                                         font.pixelSize: 10
                                         color: model.enabled ? Qt.rgba(255, 255, 255, 0.6) : Qt.rgba(255, 255, 255, 0.3)
                                         elide: Text.ElideRight
-                                        Layout.maximumWidth: 100
+                                        Layout.maximumWidth: 120
+                                        Behavior on color { ColorAnimation { duration: 150 } }
                                     }
                                     // Repeat Pill Indicator
                                     Rectangle {
                                         implicitWidth: 36
                                         implicitHeight: 14
                                         radius: 7
-                                        color: model.enabled ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : Qt.rgba(255, 255, 255, 0.05)
+                                        color: model.enabled ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : Qt.rgba(255, 255, 255, 0.04)
                                         border.color: model.enabled ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.25) : "transparent"
                                         border.width: 1
+                                        Behavior on color { ColorAnimation { duration: 150 } }
 
                                         Text {
                                             anchors.centerIn: parent
                                             text: (model.repeatMode === "daily" ? "Daily" : "Once")
-                                            font.family: "Inter"
+                                            font.family: Theme.font.family
                                             font.pixelSize: 8
                                             font.weight: Font.Bold
                                             color: model.enabled ? Theme.primary : Qt.rgba(255, 255, 255, 0.25)
+                                            Behavior on color { ColorAnimation { duration: 150 } }
                                         }
                                     }
                                 }
@@ -1632,66 +1925,82 @@ Card {
                                 spacing: 8
                                 Layout.alignment: Qt.AlignVCenter
 
-                                // Edit Alarm Button
-                                QQC.Button {
+                                // Edit Alarm Button (Custom centered icon button)
+                                Rectangle {
                                     id: alarmEditBtn
                                     visible: alarmHover.hovered
-                                    implicitWidth: 28
-                                    implicitHeight: 28
+                                    width: 28
+                                    height: 28
+                                    radius: 14
+                                    color: editArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
+                                    Behavior on color { ColorAnimation { duration: 150 } }
 
-                                    background: Rectangle {
-                                        color: alarmEditBtn.hovered ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
-                                        radius: 14
+                                    MaterialSymbol {
+                                        text: "edit"
+                                        iconSize: 15
+                                        color: editArea.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.6)
+                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
 
-                                    contentItem: DankIcon {
-                                        name: "edit"
-                                        size: 14
-                                        color: Qt.rgba(255, 255, 255, 0.7)
-                                    }
-
-                                    onClicked: {
-                                        root.alarmAddHour = model.hour;
-                                        root.alarmAddMin = model.minute;
-                                        root.alarmAddIsPM = model.isPM;
-                                        labelInput.text = model.label;
-                                        root.alarmAddRepeatMode = model.repeatMode || "once";
-                                        root.editingAlarmIndex = index;
+                                    MouseArea {
+                                        id: editArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.alarmAddHour = model.hour;
+                                            root.alarmAddMin = model.minute;
+                                            root.alarmAddIsPM = model.isPM;
+                                            labelInput.text = model.label;
+                                            root.alarmAddRepeatMode = model.repeatMode || "once";
+                                            root.editingAlarmIndex = index;
+                                        }
                                     }
                                 }
 
-                                // Delete Alarm Button
-                                QQC.Button {
+                                // Delete Alarm Button (Custom centered icon button)
+                                Rectangle {
                                     id: alarmDelBtn
                                     visible: alarmHover.hovered
-                                    implicitWidth: 28
-                                    implicitHeight: 28
+                                    width: 28
+                                    height: 28
+                                    radius: 14
+                                    color: delAlarmArea.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.12) : "transparent"
+                                    Behavior on color { ColorAnimation { duration: 150 } }
 
-                                    background: Rectangle {
-                                        color: alarmDelBtn.hovered ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15) : "transparent"
-                                        radius: 14
+                                    MaterialSymbol {
+                                        text: "delete"
+                                        iconSize: 15
+                                        color: delAlarmArea.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.6)
+                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
 
-                                    contentItem: DankIcon {
-                                        name: "delete"
-                                        size: 14
-                                        color: Theme.error
-                                    }
-
-                                    onClicked: {
-                                        TimerStopwatchService.alarms.remove(index);
-                                        TimerStopwatchService.saveAlarms();
+                                    MouseArea {
+                                        id: delAlarmArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            TimerStopwatchService.alarms.remove(index);
+                                            TimerStopwatchService.saveAlarms();
+                                        }
                                     }
                                 }
 
                                 // MD3 Style Switch (Enable/Disable toggle)
                                 Rectangle {
+                                    id: switchTrack
                                     width: 34
                                     height: 20
                                     radius: 10
                                     color: model.enabled ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)
                                     border.color: model.enabled ? "transparent" : Qt.rgba(255, 255, 255, 0.25)
                                     border.width: model.enabled ? 0 : 1.5
+                                    Behavior on color { ColorAnimation { duration: 150 } }
 
                                     Rectangle {
                                         width: model.enabled ? 14 : 10
@@ -1704,6 +2013,7 @@ Card {
                                         Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
                                         Behavior on width { NumberAnimation { duration: 120 } }
                                         Behavior on height { NumberAnimation { duration: 120 } }
+                                        Behavior on color { ColorAnimation { duration: 150 } }
                                     }
 
                                     MouseArea {

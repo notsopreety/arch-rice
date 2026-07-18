@@ -29,13 +29,11 @@ FloatingWindow {
 
     Component.onCompleted: {
         GlobalStates.systemMonitorOpen = true;
-        SystemUsage.active = true;
     }
 
     Component.onDestruction: {
         GlobalStates.systemMonitorOpen = false;
         GlobalStates.systemMonitorIndex = 0;
-        SystemUsage.active = false;
     }
 
     // Main Panel Background

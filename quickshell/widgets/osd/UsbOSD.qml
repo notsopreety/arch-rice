@@ -14,7 +14,7 @@ import "../"
 PanelWindow {
     id: root
 
-    property var focusedScreen: Quickshell.screens.find(s => s.name === (Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : ""))
+    property var focusedScreen: Quickshell.screens.find(s => s.name === (Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "")) || Quickshell.screens[0]
 
     property string eventType: ""
     property string deviceNode: ""

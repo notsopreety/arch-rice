@@ -28,11 +28,6 @@ PanelWindow {
 
     color: "transparent"
     visible: false
-    Binding {
-        target: SystemUsage
-        property: "active"
-        value: dashWindow.visible
-    }
 
     // ── Glassmorphism toggle ──────────────────────────────────────────────
     property bool glassmorphism: false

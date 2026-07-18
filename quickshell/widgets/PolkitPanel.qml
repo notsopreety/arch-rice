@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 
 /**
  * Polkit authentication panel.
@@ -23,9 +24,20 @@ Scope {
                 id: panelWindow
                 required property var modelData
                 screen: modelData
-                
+
                 readonly property bool isActive: GlobalStates.activeScreen === modelData
                 visible: PolkitService.active && isActive
+
+                // ── Glassmorphism toggle ───────────────────────────────────
+                property bool glassmorphism: false
+                FileView {
+                    id: glassFlag
+                    path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+                    Component.onCompleted: { try { glassFlag.reload(); panelWindow.glassmorphism = true; } catch(e) { panelWindow.glassmorphism = false; } }
+                    onLoaded: panelWindow.glassmorphism = true
+                    onLoadFailed: panelWindow.glassmorphism = false
+                }
+                // ─────────────────────────────────────────────────────────
 
                 anchors {
                     top: true
@@ -61,7 +73,29 @@ Scope {
                     width: 450 * Appearance.effectiveScale
                     implicitHeight: contentCol.implicitHeight + (40 * Appearance.effectiveScale)
                     radius: Appearance.rounding.card
-                    color: Theme.surfaceContainerHigh
+                    color: panelWindow.glassmorphism
+                        ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.35)
+                        : Theme.surfaceContainerHigh
+                    border.width: panelWindow.glassmorphism ? 1 : 0
+                    border.color: panelWindow.glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : "transparent"
+
+                    Behavior on color { ColorAnimation { duration: 400; easing.type: Easing.OutCubic } }
+                    Behavior on border.color { ColorAnimation { duration: 400; easing.type: Easing.OutCubic } }
+
+                    // Glossy top highlight (glass mode only)
+                    Rectangle {
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.margins: 1
+                        height: parent.height * 0.45
+                        radius: parent.radius
+                        visible: panelWindow.glassmorphism
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.10) }
+                            GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+                        }
+                    }
                     
                     ColumnLayout {
                         id: contentCol
@@ -117,7 +151,9 @@ Scope {
                                     y: -8 * Appearance.effectiveScale
                                     width: labelText.width + (8 * Appearance.effectiveScale)
                                     height: 16 * Appearance.effectiveScale
-                                    color: Theme.surfaceContainerHigh
+                                    color: panelWindow.glassmorphism
+                                        ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.35)
+                                        : Theme.surfaceContainerHigh
                                     
                                     StyledText {
                                         id: labelText

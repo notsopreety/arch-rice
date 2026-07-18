@@ -10,10 +10,7 @@ Item {
     implicitWidth: 772
     implicitHeight: 410
 
-    // Stagger / Toggle active status of system usage service when tab is loaded or visible
-    Component.onCompleted: {
-        SystemUsage.active = true;
-    }
+
 
     ColumnLayout {
         anchors.fill: parent

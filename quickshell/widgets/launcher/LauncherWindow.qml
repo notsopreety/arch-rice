@@ -93,6 +93,28 @@ PanelWindow {
     property string _activeQuery: ""
     property string _activeCat: "All"
 
+    // Glassmorphism Detector
+    property bool glassmorphism: false
+    FileView {
+        id: glassmorphismFlagFile
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        preload: true
+        watchChanges: true
+        onFileChanged: glassmorphismReloadTimer.restart()
+        Component.onCompleted: {
+            try { glassmorphismFlagFile.reload(); launcherWindow.glassmorphism = true; } catch(e) { launcherWindow.glassmorphism = false; }
+        }
+        onLoaded: launcherWindow.glassmorphism = true
+        onLoadFailed: launcherWindow.glassmorphism = false
+    }
+    Timer {
+        id: glassmorphismReloadTimer
+        interval: 200; repeat: false
+        onTriggered: {
+            try { glassmorphismFlagFile.reload(); } catch(e) {}
+        }
+    }
+
     property var filteredAppList: {
         var query = _activeQuery;
         var cat = _activeCat;
@@ -237,9 +259,27 @@ PanelWindow {
             id: cardBg
             anchors.fill: parent
             radius: 28
-            color: Qt.rgba(launcherWindow.col_surface.r, launcherWindow.col_surface.g, launcherWindow.col_surface.b, 0.22)
-            border.color: Qt.rgba(launcherWindow.col_outline.r, launcherWindow.col_outline.g, launcherWindow.col_outline.b, 0.18)
+            color: launcherWindow.glassmorphism
+                ? Qt.rgba(launcherWindow.col_surface.r, launcherWindow.col_surface.g, launcherWindow.col_surface.b, 0.22)
+                : launcherWindow.col_surface
+            border.color: launcherWindow.glassmorphism
+                ? Qt.rgba(1, 1, 1, 0.18)
+                : launcherWindow.col_outline_variant
             border.width: 1
+
+            // Glassmorphic vertical gloss overlay
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                visible: launcherWindow.glassmorphism
+                gradient: Gradient {
+                    orientation: Gradient.Vertical
+                    GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.14) }
+                    GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.03) }
+                    GradientStop { position: 0.46; color: Qt.rgba(1, 1, 1, 0.0) }
+                    GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+                }
+            }
 
             MouseArea {
                 anchors.fill: parent
@@ -275,7 +315,7 @@ PanelWindow {
                         y: 0
                         height: 14
                         width: labelText.implicitWidth + 8
-                        color: "#1c1310" // Blended card surface color
+                        color: launcherWindow.glassmorphism ? "transparent" : launcherWindow.col_surface
                         
                         Text {
                             id: labelText
@@ -533,10 +573,12 @@ PanelWindow {
 
                                 color: (ma.containsMouse || (gridDelegate.GridView.isCurrentItem && grid.activeFocus))
                                     ? Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.15)
-                                    : Qt.rgba(launcherWindow.col_surface_container_high.r, launcherWindow.col_surface_container_high.g, launcherWindow.col_surface_container_high.b, 0.4)
+                                    : (launcherWindow.glassmorphism
+                                        ? Qt.rgba(launcherWindow.col_surface_container_high.r, launcherWindow.col_surface_container_high.g, launcherWindow.col_surface_container_high.b, 0.4)
+                                        : launcherWindow.col_surface_container_high)
                                 border.color: (ma.containsMouse || (gridDelegate.GridView.isCurrentItem && grid.activeFocus))
                                     ? Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.35)
-                                    : Qt.rgba(1, 1, 1, 0.06)
+                                    : (launcherWindow.glassmorphism ? Qt.rgba(1, 1, 1, 0.06) : launcherWindow.col_outline_variant)
                                 border.width: 1
 
                                 Behavior on radius { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }

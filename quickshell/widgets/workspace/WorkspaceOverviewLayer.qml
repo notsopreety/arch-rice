@@ -53,12 +53,12 @@ Item {
     readonly property int workspaceOverviewCellAcceptedButtons: Qt.LeftButton
     readonly property int workspaceOverviewWindowAcceptedButtons: Qt.LeftButton | Qt.RightButton
     
-    readonly property color activeBorderColor: Theme.primary
-    property color cardColor: glassmorphism ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.35) : Theme.surfaceContainerHigh
-    property color cardBorderColor: glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-    property color workspaceColor: glassmorphism ? Qt.rgba(Theme.background.r, Theme.background.g, Theme.background.b, 0.35) : Theme.surfaceContainer
-    property color workspaceHoverColor: glassmorphism ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.5) : Theme.surfaceContainerHighest
-    readonly property color workspaceBorderHoverColor: Theme.primary
+    readonly property color activeBorderColor: Theme.primary || "#6750a4"
+    property color cardColor: glassmorphism ? Qt.rgba((Theme.surfaceContainerHigh || "#312828").r, (Theme.surfaceContainerHigh || "#312828").g, (Theme.surfaceContainerHigh || "#312828").b, 0.35) : (Theme.surfaceContainerHigh || "#312828")
+    property color cardBorderColor: glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba((Theme.outlineVariant || "#524344").r, (Theme.outlineVariant || "#524344").g, (Theme.outlineVariant || "#524344").b, 0.5)
+    property color workspaceColor: glassmorphism ? Qt.rgba((Theme.background || "#1c1b1f").r, (Theme.background || "#1c1b1f").g, (Theme.background || "#1c1b1f").b, 0.35) : (Theme.surfaceContainer || "#261d1e")
+    property color workspaceHoverColor: glassmorphism ? Qt.rgba((Theme.surfaceContainerHigh || "#312828").r, (Theme.surfaceContainerHigh || "#312828").g, (Theme.surfaceContainerHigh || "#312828").b, 0.5) : (Theme.surfaceContainerHigh || "#312828")
+    readonly property color workspaceBorderHoverColor: Theme.primary || "#6750a4"
     
     readonly property real workspaceImplicitWidth: {
         const reserved = monitorData && monitorData.reserved ? monitorData.reserved : [0, 0, 0, 0];

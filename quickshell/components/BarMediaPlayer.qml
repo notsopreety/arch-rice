@@ -16,7 +16,8 @@ RowLayout {
             if (hovered && MprisController.activePlayer) {
                 GlobalStates.openMediaNotch(root.QsWindow.window.screen);
             } else {
-                GlobalStates.closeMediaNotchWithDelay();
+                GlobalStates.stopMediaNotchTimer();
+                GlobalStates.mediaNotchOpen = false;
             }
         }
     }

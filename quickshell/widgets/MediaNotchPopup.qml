@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import Qt5Compat.GraphicalEffects
 import "../core"
 import "../services"
@@ -26,6 +27,28 @@ Variants {
         
         readonly property string notchStyle: (Config.ready && Config.options.media && Config.options.media.notchMediaStyle) ? Config.options.media.notchMediaStyle : "mini"
         readonly property bool isFull: notchStyle === "full"
+
+        // Glassmorphism detector
+        property bool glassmorphism: false
+        FileView {
+            id: glassmorphismFlagFile
+            path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+            preload: true
+            watchChanges: true
+            onFileChanged: glassmorphismReloadTimer.restart()
+            Component.onCompleted: {
+                try { glassmorphismFlagFile.reload(); popupWindow.glassmorphism = true; } catch(e) { popupWindow.glassmorphism = false; }
+            }
+            onLoaded: popupWindow.glassmorphism = true
+            onLoadFailed: popupWindow.glassmorphism = false
+        }
+        Timer {
+            id: glassmorphismReloadTimer
+            interval: 200; repeat: false
+            onTriggered: {
+                try { glassmorphismFlagFile.reload(); } catch(e) {}
+            }
+        }
 
         // Positioning: Center top, below status bar
         WlrLayershell.layer: WlrLayer.Top
@@ -53,10 +76,29 @@ Variants {
             width: parent.width - (20 * Appearance.effectiveScale)
             anchors.horizontalCenter: parent.horizontalCenter
             height: isFull ? (fullLoader.item ? fullLoader.item.implicitHeight : 118 * Appearance.effectiveScale) : (miniLayout.implicitHeight + (12 * Appearance.effectiveScale))
-            color: isFull ? "transparent" : Theme.surfaceContainerHigh
-            border.color: isFull ? "transparent" : Theme.outlineVariant
+            
+            color: popupWindow.glassmorphism 
+                ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.45) 
+                : (isFull ? "transparent" : Theme.surfaceContainerHigh)
+            border.color: popupWindow.glassmorphism 
+                ? Qt.rgba(1, 1, 1, 0.18) 
+                : (isFull ? "transparent" : Theme.outlineVariant)
             border.width: isFull ? 0 : 1
             radius: Appearance.rounding.button
+
+            // Glassmorphic gloss overlay
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                visible: popupWindow.glassmorphism && !popupWindow.isFull
+                gradient: Gradient {
+                    orientation: Gradient.Vertical
+                    GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.14) }
+                    GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.03) }
+                    GradientStop { position: 0.46; color: Qt.rgba(1, 1, 1, 0.0) }
+                    GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+                }
+            }
 
             // Animation for entry
             opacity: (GlobalStates.mediaNotchOpen && (GlobalStates.activeMediaNotchScreen === null || GlobalStates.activeMediaNotchScreen === modelData)) ? 1 : 0
@@ -69,8 +111,12 @@ Variants {
             HoverHandler {
                 id: popupHoverHandler
                 onHoveredChanged: {
-                    if (hovered && Config.options.media.enableMediaHover) GlobalStates.openMediaNotch(modelData);
-                    else GlobalStates.closeMediaNotchWithDelay();
+                    if (hovered && Config.options.media.enableMediaHover) {
+                        GlobalStates.openMediaNotch(modelData);
+                    } else {
+                        GlobalStates.stopMediaNotchTimer();
+                        GlobalStates.mediaNotchOpen = false;
+                    }
                 }
             }
 
