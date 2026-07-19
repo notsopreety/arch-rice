@@ -26,6 +26,12 @@ Item {
     property real topRightRadius: 18
     property real bottomLeftRadius: 18
     property real bottomRightRadius: 18
+    property bool glassmorphism: false
+
+    // Hyprland `hyprctl clients` coordinates (windowData.size, windowData.at) are already
+    // in the same coordinate space as `hyprctl monitors` pos/size.
+    // The workspace cell is sized based on monitor.width * scale.
+    // So we just multiply window size and position by `scale`.
 
     readonly property real widthRatio: {
         if (!widgetMonitor || !monitorData)
@@ -43,21 +49,26 @@ Item {
         const monitorHeight = monitorData.transform & 1 ? monitorData.width : monitorData.height;
         return monitorHeight > 0 ? (widgetHeight * monitorData.scale) / (monitorHeight * widgetMonitor.scale) : 1;
     }
-    property real screenPaddingFactor: 0.90
+
+    property real screenPaddingFactor: 1.00
+
+    // monitorRenderWidth/Height are in pixel space (same as workspace cell sizing)
     readonly property real monitorRenderWidth: (monitorData && monitorData.width ? monitorData.width : 1920) * widthRatio * scale
     readonly property real monitorRenderHeight: (monitorData && monitorData.height ? monitorData.height : 1080) * heightRatio * scale
     readonly property real screenPaddingX: monitorRenderWidth * ((1.0 - screenPaddingFactor) / 2.0)
     readonly property real screenPaddingY: monitorRenderHeight * ((1.0 - screenPaddingFactor) / 2.0)
 
-    readonly property real targetWindowWidth: Math.max(52, (windowData && windowData.size ? windowData.size[0] : 240) * scale * widthRatio * screenPaddingFactor)
-    readonly property real targetWindowHeight: Math.max(38, (windowData && windowData.size ? windowData.size[1] : 140) * scale * heightRatio * screenPaddingFactor)
+    readonly property real targetWindowWidth: Math.max(32, (windowData && windowData.size ? windowData.size[0] : 240) * scale * widthRatio * screenPaddingFactor)
+    readonly property real targetWindowHeight: Math.max(24, (windowData && windowData.size ? windowData.size[1] : 140) * scale * heightRatio * screenPaddingFactor)
+
     readonly property real initX: {
         if (!windowData || !monitorData)
             return xOffset;
 
         const reserved = monitorData.reserved ? monitorData.reserved : [0, 0, 0, 0];
         const position = windowData.at ? windowData.at : [monitorData.x, monitorData.y];
-        return Math.max((position[0] - monitorData.x - reserved[0]) * widthRatio * scale, 0) * screenPaddingFactor + xOffset + screenPaddingX;
+        const monitorOriginX = monitorData.x;
+        return Math.max((position[0] - monitorOriginX - reserved[0]) * widthRatio * scale, 0) * screenPaddingFactor + xOffset + screenPaddingX;
     }
     readonly property real initY: {
         if (!windowData || !monitorData)
@@ -65,7 +76,8 @@ Item {
 
         const reserved = monitorData.reserved ? monitorData.reserved : [0, 0, 0, 0];
         const position = windowData.at ? windowData.at : [monitorData.x, monitorData.y];
-        return Math.max((position[1] - monitorData.y - reserved[1]) * heightRatio * scale, 0) * screenPaddingFactor + yOffset + screenPaddingY;
+        const monitorOriginY = monitorData.y;
+        return Math.max((position[1] - monitorOriginY - reserved[1]) * heightRatio * scale, 0) * screenPaddingFactor + yOffset + screenPaddingY;
     }
     readonly property string iconLookupName: {
         if (!windowData)
@@ -106,45 +118,19 @@ Item {
         return winClass.includes(query) || winTitle.includes(query);
     }
 
-    readonly property bool compactMode: Math.min(targetWindowWidth, targetWindowHeight) < 120
+    // compactMode: show icon overlay when window is very tiny in the overview
+    readonly property bool compactMode: Math.min(targetWindowWidth, targetWindowHeight) < 60
     readonly property bool previewActive: visible && opacity > 0 && !!toplevel
     x: initX
     y: initY
     width: targetWindowWidth
     height: targetWindowHeight
-    opacity: !windowData ? 0 : (!matchesSearch ? 0.12 : (widgetMonitor && windowData.monitor === widgetMonitor.id ? 1 : 0.46))
 
-    Behavior on x {
-        enabled: !root.draggingActive
+    readonly property bool isActiveWindow: toplevel && toplevel.activated
+    readonly property real baseOpacity: root.glassmorphism ? (isActiveWindow ? 0.65 : 0.60) : 1.0
+    opacity: !windowData ? 0 : (!matchesSearch ? 0.12 : (widgetMonitor && windowData.monitor === widgetMonitor.id ? baseOpacity : 0.46))
 
-        NumberAnimation {
-            duration: 160
-            easing.type: Easing.OutCubic
-        }
-    }
 
-    Behavior on y {
-        enabled: !root.draggingActive
-
-        NumberAnimation {
-            duration: 160
-            easing.type: Easing.OutCubic
-        }
-    }
-
-    Behavior on width {
-        NumberAnimation {
-            duration: 160
-            easing.type: Easing.OutCubic
-        }
-    }
-
-    Behavior on height {
-        NumberAnimation {
-            duration: 160
-            easing.type: Easing.OutCubic
-        }
-    }
 
     ClippingRectangle {
         anchors.fill: parent
@@ -156,8 +142,11 @@ Item {
         bottomLeftRadius: root.bottomLeftRadius
         bottomRightRadius: root.bottomRightRadius
         border.width: 1
-        border.color: root.hovered ? "#77ffffff" : "#33ffffff"
+        border.color: root.glassmorphism
+            ? (root.hovered ? "#77ffffff" : "#33ffffff")
+            : (root.hovered ? Theme.primary : Qt.rgba(Theme.outlineVariant.r, Theme.outlineVariant.g, Theme.outlineVariant.b, 0.4))
 
+        // Live screencopy — always rendered, not gated on compactMode
         ScreencopyView {
             anchors.fill: parent
             captureSource: root.previewActive ? root.toplevel : null
@@ -172,10 +161,11 @@ Item {
                 : (root.hovered ? "#18000000" : "#08000000")
         }
 
+        // Center icon — only shown when truly tiny (compactMode)
         Image {
             id: appIcon
 
-            readonly property real iconSize: Math.max(18, Math.min(root.width, root.height) * (root.compactMode ? 0.52 : 0.32))
+            readonly property real iconSize: Math.max(14, Math.min(root.width, root.height) * 0.52)
 
             anchors.centerIn: parent
             visible: root.compactMode
@@ -194,7 +184,7 @@ Item {
             }
         }
 
-        // App Icon Badge in the bottom-right corner
+        // App Icon Badge in the bottom-right corner — shown when NOT compactMode
         Rectangle {
             id: iconBadge
             anchors.right: parent.right

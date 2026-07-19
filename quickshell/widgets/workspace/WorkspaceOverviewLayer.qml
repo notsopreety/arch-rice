@@ -54,7 +54,7 @@ Item {
     readonly property int workspaceOverviewWindowAcceptedButtons: Qt.LeftButton | Qt.RightButton
     
     readonly property color activeBorderColor: Theme.primary || "#6750a4"
-    property color cardColor: glassmorphism ? Qt.rgba((Theme.surfaceContainerHigh || "#312828").r, (Theme.surfaceContainerHigh || "#312828").g, (Theme.surfaceContainerHigh || "#312828").b, 0.35) : (Theme.surfaceContainerHigh || "#312828")
+    property color cardColor: glassmorphism ? Qt.rgba((Theme.surfaceContainerHigh || "#312828").r, (Theme.surfaceContainerHigh || "#312828").g, (Theme.surfaceContainerHigh || "#312828").b, 0.22) : (Theme.surfaceContainerHigh || "#312828")
     property color cardBorderColor: glassmorphism ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba((Theme.outlineVariant || "#524344").r, (Theme.outlineVariant || "#524344").g, (Theme.outlineVariant || "#524344").b, 0.5)
     property color workspaceColor: glassmorphism ? Qt.rgba((Theme.background || "#1c1b1f").r, (Theme.background || "#1c1b1f").g, (Theme.background || "#1c1b1f").b, 0.35) : (Theme.surfaceContainer || "#261d1e")
     property color workspaceHoverColor: glassmorphism ? Qt.rgba((Theme.surfaceContainerHigh || "#312828").r, (Theme.surfaceContainerHigh || "#312828").g, (Theme.surfaceContainerHigh || "#312828").b, 0.5) : (Theme.surfaceContainerHigh || "#312828")
@@ -191,6 +191,20 @@ Item {
             border.width: 1
             border.color: "#12ffffff"
             visible: root.glassmorphism
+        }
+
+        // Glassmorphic vertical gloss overlay
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            visible: root.glassmorphism
+            gradient: Gradient {
+                orientation: Gradient.Vertical
+                GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.14) }
+                GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.03) }
+                GradientStop { position: 0.46; color: Qt.rgba(1, 1, 1, 0.0) }
+                GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+            }
         }
 
         Column {
@@ -454,6 +468,7 @@ Item {
                         bottomLeftRadius: Math.max((workspaceAtLeft && workspaceAtBottom ? root.largeWorkspaceRadius : root.smallWorkspaceRadius) - Math.max(distanceFromLeftEdge, distanceFromBottomEdge), root.windowCornerRadius)
                         bottomRightRadius: Math.max((workspaceAtRight && workspaceAtBottom ? root.largeWorkspaceRadius : root.smallWorkspaceRadius) - Math.max(distanceFromRightEdge, distanceFromBottomEdge), root.windowCornerRadius)
                         z: Drag.active ? 99999 : (windowData && windowData.fullscreen ? 30 : 20) + (windowData && windowData.floating ? 5 : 0)
+                        glassmorphism: root.glassmorphism
 
                         Timer {
                             id: restoreTilePosition
