@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../theme"
 import "../services"
+import "../core"
 
 Item {
     id: root
@@ -84,12 +85,12 @@ Item {
     }
 
     implicitWidth: layout.implicitWidth
-    implicitHeight: Styling.barHeight - Styling.paddingSmall * 2
+    implicitHeight: (Styling.barHeight - Styling.paddingSmall * 2) * Appearance.effectiveScale
 
     Rectangle {
         id: activePill
         z: 0
-        height: 20
+        height: 20 * Appearance.effectiveScale
         radius: height / 2
         color: Theme.primary
 
@@ -110,7 +111,7 @@ Item {
     RowLayout {
         id: layout
         anchors.centerIn: parent
-        spacing: 6
+        spacing: 6 * Appearance.effectiveScale
 
         Repeater {
             id: workspaceRepeater

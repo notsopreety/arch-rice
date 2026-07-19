@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import "../theme"
+import "../core"
 
 Item {
     id: root
@@ -13,8 +14,8 @@ Item {
 
     signal clicked()
 
-    implicitWidth: 20
-    implicitHeight: 20
+    implicitWidth: 20 * Appearance.effectiveScale
+    implicitHeight: 20 * Appearance.effectiveScale
 
     // Detailed background capsule for each workspace button
     Rectangle {
@@ -48,7 +49,7 @@ Item {
         anchors.centerIn: parent
         text: root.workspaceId.toString()
         font.family: Theme.font.family
-        font.pixelSize: 10
+        font.pixelSize: 10 * Appearance.effectiveScale
         font.weight: root.isActive ? Font.Bold : Font.Normal
         
         color: {

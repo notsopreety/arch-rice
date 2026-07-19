@@ -18,7 +18,7 @@ Item {
         id: flowerImage
         source: "../../assets/flowers.png"
         fillMode: Image.PreserveAspectFit
-        width: 800
+        width: 800 * Appearance.effectiveScale
         sourceSize.width: 800
         opacity: 1.0
         anchors.horizontalCenter: parent.horizontalCenter
@@ -31,7 +31,7 @@ Item {
         id: sakuraImage
         source: "../../assets/sakura.png"
         fillMode: Image.PreserveAspectFit
-        width: 350
+        width: 350 * Appearance.effectiveScale
         sourceSize.width: 350
         opacity: 1.0
         anchors.top: parent.top

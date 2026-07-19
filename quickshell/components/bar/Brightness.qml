@@ -4,6 +4,7 @@ import Quickshell
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 
 Item {
     id: root
@@ -16,12 +17,12 @@ Item {
     readonly property int percentage: brightness.percentage
 
     implicitWidth: brightnessRow.implicitWidth
-    implicitHeight: 20
+    implicitHeight: 20 * Appearance.effectiveScale
 
     RowLayout {
         id: brightnessRow
         anchors.centerIn: parent
-        spacing: 3
+        spacing: 3 * Appearance.effectiveScale
 
         DankIcon {
             id: brightnessIcon
@@ -30,7 +31,7 @@ Item {
                 if (percentage >= 35) return "brightness_medium"
                 return "brightness_low"
             }
-            size: 14
+            size: 14 * Appearance.effectiveScale
             color: isHovered ? matugen.primary : Qt.rgba(1, 1, 1, 0.85)
             scale: isHovered ? 1.08 : 1.0
             
@@ -42,7 +43,7 @@ Item {
             id: brightnessText
             text: percentage
             font.family: "Inter"
-            font.pixelSize: 10
+            font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Medium
             color: isHovered ? matugen.primary : Qt.rgba(1, 1, 1, 0.65)
             Behavior on color { ColorAnimation { duration: 120 } }

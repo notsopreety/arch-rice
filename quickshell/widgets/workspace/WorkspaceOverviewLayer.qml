@@ -23,7 +23,7 @@ Item {
     property string textFontFamily: Theme.font.family
     property string heroFontFamily: Theme.font.family
     property string wallpaperPath: ""
-    property real windowCornerRadius: 15
+    property real windowCornerRadius: 15 * Appearance.effectiveScale
     property real scale: 0.18
     property int rows: 2
     property int columns: 5
@@ -46,10 +46,10 @@ Item {
         return Math.max(1, Math.min(100, workspaceId || 1));
     }
     readonly property int workspaceGroup: Math.floor((effectiveActiveWorkspaceId - 1) / workspacesShown)
-    readonly property real workspaceSpacing: 6
-    readonly property real outerPadding: 14
-    readonly property real largeWorkspaceRadius: 30
-    readonly property real smallWorkspaceRadius: 16
+    readonly property real workspaceSpacing: 6 * Appearance.effectiveScale
+    readonly property real outerPadding: 14 * Appearance.effectiveScale
+    readonly property real largeWorkspaceRadius: 30 * Appearance.effectiveScale
+    readonly property real smallWorkspaceRadius: 16 * Appearance.effectiveScale
     readonly property int workspaceOverviewCellAcceptedButtons: Qt.LeftButton
     readonly property int workspaceOverviewWindowAcceptedButtons: Qt.LeftButton | Qt.RightButton
     
@@ -197,7 +197,7 @@ Item {
             id: contentLayout
 
             anchors.centerIn: parent
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
             width: workspaceStage.width
 
             Rectangle {
@@ -348,7 +348,7 @@ Item {
                                         anchors.centerIn: parent
                                         text: workspaceCell.workspaceValue
                                         font.family: root.heroFontFamily
-                                        font.pixelSize: 42
+                                        font.pixelSize: 42 * Appearance.effectiveScale
                                         font.weight: Font.Bold
                                         color: root.effectiveActiveWorkspaceId === workspaceCell.workspaceValue ? Theme.primary : Qt.rgba(1, 1, 1, 0.25)
                                         visible: !workspaceCell.hasActiveWindows

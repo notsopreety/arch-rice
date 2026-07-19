@@ -5,13 +5,14 @@ import Quickshell.Services.UPower
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 
 // Samsung-style animated battery - Matches the reference image
 Item {
     id: root
     
     implicitWidth: batteryContainer.width
-    implicitHeight: 24
+    implicitHeight: 24 * Appearance.effectiveScale
     
     readonly property var battery: UPower.displayDevice
     readonly property bool isHovered: clickArea.containsMouse
@@ -93,7 +94,7 @@ Item {
         id: batteryContainer
         anchors.centerIn: parent
         width: showExpandedMode ? expandedPill.width : normalBattery.width
-        height: 24
+        height: 24 * Appearance.effectiveScale
         
         Behavior on width {
             NumberAnimation { 
@@ -109,7 +110,7 @@ Item {
         Row {
             id: normalBattery
             anchors.centerIn: parent
-            spacing: 4
+            spacing: 4 * Appearance.effectiveScale
             visible: !showExpandedMode
             opacity: showExpandedMode ? 0 : 1
             
@@ -119,8 +120,8 @@ Item {
             
             // Battery icon
             Item {
-                width: 22
-                height: 14
+                width: 22 * Appearance.effectiveScale
+                height: 14 * Appearance.effectiveScale
                 anchors.verticalCenter: parent.verticalCenter
                 
                 // Battery body
@@ -128,9 +129,9 @@ Item {
                     id: batteryBody
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    width: 20
-                    height: 12
-                    radius: 3
+                    width: 20 * Appearance.effectiveScale
+                    height: 12 * Appearance.effectiveScale
+                    radius: 3 * Appearance.effectiveScale
                     color: "transparent"
                     border.width: 1.5
                     border.color: compactBatteryColor
@@ -147,7 +148,7 @@ Item {
                         anchors.bottom: parent.bottom
                         anchors.margins: 2.5
                         width: Math.max(0, (parent.width - 5) * root.percentage)
-                        radius: 1.5
+                        radius: 1.5 * Appearance.effectiveScale
                         color: compactBatteryColor
                         
                         Behavior on width {
@@ -188,8 +189,8 @@ Item {
                     anchors.left: batteryBody.right
                     anchors.leftMargin: -1
                     anchors.verticalCenter: parent.verticalCenter
-                    width: 3
-                    height: 5
+                    width: 3 * Appearance.effectiveScale
+                    height: 5 * Appearance.effectiveScale
                     radius: 1.5
                     color: compactBatteryColor
                     
@@ -203,7 +204,7 @@ Item {
                     visible: isPluggedIn && !showExpandedMode
                     anchors.centerIn: batteryBody
                     name: "bolt"
-                    size: 9
+                    size: 9 * Appearance.effectiveScale
                     color: batteryLevel > 50 ? Qt.rgba(0,0,0,0.8) : Qt.rgba(1,1,1,0.9)
                     opacity: 0.9
                     
@@ -221,7 +222,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.showTime && root.timeString !== "" ? root.timeString : batteryLevel + "%"
                 font.family: "Inter"
-                font.pixelSize: 11
+                font.pixelSize: 11 * Appearance.effectiveScale
                 font.weight: (isWarning || isLow) ? Font.Bold : Font.Medium
                 color: compactBatteryColor
 
@@ -260,9 +261,9 @@ Item {
         Rectangle {
             id: expandedPill
             anchors.centerIn: parent
-            width: 52
-            height: 20
-            radius: 10
+            width: 52 * Appearance.effectiveScale
+            height: 20 * Appearance.effectiveScale
+            radius: 10 * Appearance.effectiveScale
             visible: showExpandedMode
             opacity: showExpandedMode ? 1 : 0
             color: matugen.surfaceDim
@@ -330,7 +331,7 @@ Item {
                 anchors.centerIn: parent
                 text: batteryLevel + "%"
                 font.family: "Inter"
-                font.pixelSize: 11
+                font.pixelSize: 11 * Appearance.effectiveScale
                 font.weight: Font.Bold
                 color: Qt.rgba(1, 1, 1, 0.95)
             }

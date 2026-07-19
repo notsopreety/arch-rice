@@ -4,6 +4,7 @@ import QtQuick.Controls 6.10
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 // Status Indicators - Caffeine, DND, and Recording dots in the bar
 Item {
     id: root
@@ -22,7 +23,7 @@ Item {
     readonly property bool hasActiveIndicators: caffeineActive || recordingActive || micMuted || updatesActive || devicesActive
     
     implicitWidth: hasActiveIndicators ? indicatorRow.implicitWidth : 0
-    implicitHeight: 28
+    implicitHeight: 28 * Appearance.effectiveScale
     
     visible: hasActiveIndicators
     opacity: hasActiveIndicators ? 1 : 0
@@ -37,14 +38,14 @@ Item {
     Row {
         id: indicatorRow
         anchors.centerIn: parent
-        spacing: 6
+        spacing: 6 * Appearance.effectiveScale
         
         // Caffeine indicator (coffee icon)
         Rectangle {
             id: caffeineIndicator
-            width: caffeineActive ? 22 : 0
-            height: 22
-            radius: 11
+            width: caffeineActive ? 22 * Appearance.effectiveScale : 0
+            height: 22 * Appearance.effectiveScale
+            radius: 11 * Appearance.effectiveScale
             color: Qt.rgba(matugen.primary.r, matugen.primary.g, matugen.primary.b, 0.2)
             visible: caffeineActive || width > 0
             
@@ -55,7 +56,7 @@ Item {
             DankIcon {
                 anchors.centerIn: parent
                 name: "coffee"
-                size: 12
+                size: 12 * Appearance.effectiveScale
                 color: matugen.primary
             }
             
@@ -79,9 +80,9 @@ Item {
         // Microphone Muted indicator
         Rectangle {
             id: micMutedIndicator
-            width: micMuted ? 22 : 0
-            height: 22
-            radius: 11
+            width: micMuted ? 22 * Appearance.effectiveScale : 0
+            height: 22 * Appearance.effectiveScale
+            radius: 11 * Appearance.effectiveScale
             color: Qt.rgba(matugen.primary.r, matugen.primary.g, matugen.primary.b, 0.2)
             visible: micMuted || width > 0
             
@@ -92,7 +93,7 @@ Item {
             DankIcon {
                 anchors.centerIn: parent
                 name: "mic_off"
-                size: 12
+                size: 12 * Appearance.effectiveScale
                 color: matugen.primary
             }
             
@@ -118,9 +119,9 @@ Item {
         // Recording indicator (red dot with timer)
         Rectangle {
             id: recIndicator
-            width: recordingActive ? recRow.implicitWidth + 16 : 0
-            height: 22
-            radius: 11
+            width: recordingActive ? recRow.implicitWidth + 16 * Appearance.effectiveScale : 0
+            height: 22 * Appearance.effectiveScale
+            radius: 11 * Appearance.effectiveScale
             color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.2)
             visible: recordingActive
 
@@ -145,11 +146,11 @@ Item {
             Row {
                 id: recRow
                 anchors.centerIn: parent
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
                 DankIcon {
                     anchors.verticalCenter: parent.verticalCenter
                     name: "videocam"
-                    size: 12
+                    size: 12 * Appearance.effectiveScale
                     color: Theme.error
                 }
                 Text {
@@ -160,7 +161,7 @@ Item {
                         return m + ":" + (s < 10 ? "0" : "") + s
                     }
                     font.family: "Inter"
-                    font.pixelSize: 11
+                    font.pixelSize: 11 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: Theme.error
                 }
@@ -186,9 +187,9 @@ Item {
         // System updates indicator
         Rectangle {
             id: updatesIndicator
-            width: updatesActive ? updatesRow.implicitWidth + 14 : 0
-            height: 22
-            radius: 11
+            width: updatesActive ? updatesRow.implicitWidth + 14 * Appearance.effectiveScale : 0
+            height: 22 * Appearance.effectiveScale
+            radius: 11 * Appearance.effectiveScale
             color: Qt.rgba(matugen.primary.r, matugen.primary.g, matugen.primary.b, 0.2)
             visible: updatesActive
             clip: true
@@ -200,12 +201,12 @@ Item {
             Row {
                 id: updatesRow
                 anchors.centerIn: parent
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
                 
                 DankIcon {
                     anchors.verticalCenter: parent.verticalCenter
                     name: "system_update_alt"
-                    size: 12
+                    size: 12 * Appearance.effectiveScale
                     color: matugen.primary
                 }
                 
@@ -213,7 +214,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: updatesService.updateCount
                     font.family: "Inter"
-                    font.pixelSize: 11
+                    font.pixelSize: 11 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: matugen.primary
                 }

@@ -3,6 +3,7 @@ import Quickshell
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 
 // Network pill — expand completes fully, then text fades in cleanly
 Item {
@@ -20,7 +21,7 @@ Item {
     readonly property string networkName: network.isWired ? network.wiredConnectionName : (network.active ? network.active.ssid : "")
 
     // Gap baked into labelBox so implicitWidth = icon + labelBox with no jumps
-    readonly property int expandedLabelWidth: 58  // includes left gap
+    readonly property real expandedLabelWidth: 58 * Appearance.effectiveScale  // includes left gap
 
     // textReady: flips true only after the expand animation fully completes
     property bool textReady: false
@@ -41,7 +42,7 @@ Item {
 
     // implicitWidth tracks labelBox.width live — no Behavior needed here
     implicitWidth: iconText.implicitWidth + labelBox.width
-    implicitHeight: 20
+    implicitHeight: 20 * Appearance.effectiveScale
 
     // ── Icon ─────────────────────────────────────────────────────────────────
     DankIcon {
@@ -57,7 +58,7 @@ Item {
             if (signalStrength >= 25) return "network_wifi_2_bar"
             return "network_wifi_1_bar"
         }
-        size: 14
+        size: 14 * Appearance.effectiveScale
 
         color: {
             if (!isEnabled)    return isHovered ? Theme.error    : Qt.rgba(1, 1, 1, 0.35)
@@ -75,7 +76,7 @@ Item {
         id: labelBox
         anchors.left: iconText.right
         anchors.verticalCenter: parent.verticalCenter
-        height: 16
+        height: 16 * Appearance.effectiveScale
         clip: true
 
         // Collapse immediately on hover-out for a snappy feel
@@ -88,10 +89,10 @@ Item {
         Text {
             id: staticLabel
             visible: !isConnected
-            x: 6
+            x: 6 * Appearance.effectiveScale
             anchors.verticalCenter: parent.verticalCenter
             font.family: "Inter"
-            font.pixelSize: 10
+            font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Normal
             text: !isEnabled ? "Off" : "No WiFi"
 
@@ -111,7 +112,7 @@ Item {
             visible: isConnected
             anchors.verticalCenter: parent.verticalCenter
             font.family: "Inter"
-            font.pixelSize: 10
+            font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Medium
             text: networkName
 

@@ -8,7 +8,7 @@ import "../core"
 
 RowLayout {
     id: root
-    spacing: 10
+    spacing: 10 * Appearance.effectiveScale
 
     HoverHandler {
         id: mediaHoverHandler
@@ -55,13 +55,13 @@ RowLayout {
     Item {
         id: infoClickArea
         width: visualizerRow.implicitWidth
-        height: 16
+        height: 16 * Appearance.effectiveScale
         Layout.alignment: Qt.AlignVCenter
 
         RowLayout {
             id: visualizerRow
             anchors.fill: parent
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
 
             // 1. Vertical Bar Visualizer
             BarAudioVisualizer {
@@ -72,8 +72,8 @@ RowLayout {
             // 2. Infinitely Animated Title Marquee (R to L)
             Item {
                 id: titleContainer
-                width: 60
-                height: 16
+                width: 60 * Appearance.effectiveScale
+                height: 16 * Appearance.effectiveScale
                 clip: true
                 Layout.alignment: Qt.AlignVCenter
 
@@ -86,9 +86,9 @@ RowLayout {
                         return artist !== "" ? (title + " - " + artist) : title;
                     }
                     font.family: Theme.font.family
-                    font.pixelSize: 11
+                    font.pixelSize: 11 * Appearance.effectiveScale
                     font.weight: Font.Medium
-                    color: "white" // Bright text, no dark colors!
+                    color: "white"
                     y: (parent.height - height) / 2
 
                     // Marquee Infinite Right-to-Left animation
@@ -121,13 +121,13 @@ RowLayout {
 
     // 3. Playback Controls: Prev, Play/Pause, Next
     Row {
-        spacing: 8
+        spacing: 8 * Appearance.effectiveScale
         Layout.alignment: Qt.AlignVCenter
 
         // Prev Button
         DankIcon {
             name: "skip_previous"
-            size: 12
+            size: 12 * Appearance.effectiveScale
             color: "white"
             
             MouseArea {
@@ -144,7 +144,7 @@ RowLayout {
         // Play/Pause Button
         DankIcon {
             name: root.isPlaying ? "pause" : "play_arrow"
-            size: 12
+            size: 12 * Appearance.effectiveScale
             color: Theme.primary
             
             MouseArea {
@@ -161,7 +161,7 @@ RowLayout {
         // Next Button
         DankIcon {
             name: "skip_next"
-            size: 12
+            size: 12 * Appearance.effectiveScale
             color: "white"
             
             MouseArea {

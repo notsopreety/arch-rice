@@ -8,7 +8,7 @@ import "../../widgets"
 
 RowLayout {
     id: root
-    spacing: 4
+    spacing: 4 * Appearance.effectiveScale
     readonly property bool hasItems: SystemTray.items.length > 0
 
     property var trayItems: SystemTray.items
@@ -41,9 +41,9 @@ RowLayout {
             id: delegateRoot
             required property SystemTrayItem modelData
             
-            Layout.preferredWidth: 24
-            Layout.preferredHeight: 24
-            radius: 4
+            Layout.preferredWidth: 24 * Appearance.effectiveScale
+            Layout.preferredHeight: 24 * Appearance.effectiveScale
+            radius: 4 * Appearance.effectiveScale
             color: "transparent"
             
             property var currentMenu: null
@@ -51,8 +51,8 @@ RowLayout {
             Image {
                 id: trayIcon
                 anchors.centerIn: parent
-                width: 16
-                height: 16
+                width: 16 * Appearance.effectiveScale
+                height: 16 * Appearance.effectiveScale
                 source: {
                     const icon = modelData.icon ?? ""
                     if (typeof icon === "string" && icon.includes("?path=")) {

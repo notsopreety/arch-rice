@@ -4,6 +4,7 @@ import Quickshell.Bluetooth
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 
 // Bluetooth pill — expand completes fully, then text fades in cleanly
 Item {
@@ -26,7 +27,7 @@ Item {
     }
 
     // Gap baked into labelBox so implicitWidth = icon + labelBox with no jumps
-    readonly property int expandedLabelWidth: 62  // includes left gap
+    readonly property real expandedLabelWidth: 62 * Appearance.effectiveScale  // includes left gap
 
     // textReady: flips true only after the expand animation fully completes
     property bool textReady: false
@@ -47,7 +48,7 @@ Item {
 
     // implicitWidth tracks labelBox.width live — no Behavior needed here
     implicitWidth: iconText.implicitWidth + labelBox.width
-    implicitHeight: 20
+    implicitHeight: 20 * Appearance.effectiveScale
 
     // ── Icon ─────────────────────────────────────────────────────────────────
     DankIcon {
@@ -60,7 +61,7 @@ Item {
             if (hasConnection) return "bluetooth_connected"
             return "bluetooth"
         }
-        size: 14
+        size: 14 * Appearance.effectiveScale
 
         color: {
             if (!isEnabled)    return isHovered ? Theme.error    : Qt.rgba(1, 1, 1, 0.35)
@@ -78,7 +79,7 @@ Item {
         id: labelBox
         anchors.left: iconText.right
         anchors.verticalCenter: parent.verticalCenter
-        height: 16
+        height: 16 * Appearance.effectiveScale
         clip: true
 
         // Collapse immediately on hover-out for a snappy feel
@@ -91,10 +92,10 @@ Item {
         Text {
             id: staticLabel
             visible: !hasConnection
-            x: 6
+            x: 6 * Appearance.effectiveScale
             anchors.verticalCenter: parent.verticalCenter
             font.family: "Inter"
-            font.pixelSize: 10
+            font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Normal
             text: !isEnabled ? "Off" : "No Device"
 
@@ -114,7 +115,7 @@ Item {
             visible: hasConnection
             anchors.verticalCenter: parent.verticalCenter
             font.family: "Inter"
-            font.pixelSize: 10
+            font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Medium
             text: deviceName
 

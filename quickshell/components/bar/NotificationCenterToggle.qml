@@ -3,6 +3,7 @@ import Quickshell
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 
 Item {
     id: root
@@ -17,7 +18,7 @@ Item {
     readonly property bool isHovered: mouse.containsMouse
     readonly property int unreadCount: notifs.unreadCount
 
-    implicitWidth: bell.implicitWidth + (badge.visible ? badge.width + 4 : 8)
+    implicitWidth: bell.implicitWidth + (badge.visible ? badge.width + 4 * Appearance.effectiveScale : 8 * Appearance.effectiveScale)
     implicitHeight: bell.implicitHeight
 
     MouseArea {
@@ -36,7 +37,7 @@ Item {
         id: bell
         anchors.centerIn: parent
         name: notifs.dnd ? "notifications_paused" : (unreadCount > 0 ? "notifications_active" : "notifications")
-        size: 18
+        size: 18 * Appearance.effectiveScale
         color: isActive || unreadCount > 0 || notifs.dnd
             ? matugen.primary
             : isHovered
@@ -62,11 +63,11 @@ Item {
     Rectangle {
         id: badge
         anchors.left: bell.right
-        anchors.leftMargin: 2
+        anchors.leftMargin: 2 * Appearance.effectiveScale
         anchors.top: bell.top
-        width: Math.max(16, badgeText.implicitWidth + 8)
-        height: 16
-        radius: 8
+        width: Math.max(16 * Appearance.effectiveScale, badgeText.implicitWidth + 8 * Appearance.effectiveScale)
+        height: 16 * Appearance.effectiveScale
+        radius: 8 * Appearance.effectiveScale
         color: Qt.rgba(matugen.primary.r, matugen.primary.g, matugen.primary.b, 0.9)
         visible: unreadCount > 0
 
@@ -75,7 +76,7 @@ Item {
             anchors.centerIn: parent
             text: unreadCount > 99 ? "99+" : `${unreadCount}`
             font.family: "Inter"
-            font.pixelSize: 9
+            font.pixelSize: 9 * Appearance.effectiveScale
             font.weight: Font.Bold
             color: matugen.background
         }

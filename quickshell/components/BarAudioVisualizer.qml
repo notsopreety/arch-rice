@@ -4,6 +4,7 @@ import Quickshell.Services.Mpris
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 
 Item {
     id: root
@@ -11,8 +12,8 @@ Item {
     property var activePlayer: null
     readonly property bool isPlaying: activePlayer !== null && activePlayer.playbackState === 1
 
-    width: 22
-    height: 14
+    width: 22 * Appearance.effectiveScale
+    height: 14 * Appearance.effectiveScale
 
     Loader {
         active: true
@@ -23,8 +24,8 @@ Item {
         }
     }
 
-    readonly property real maxBarHeight: 12
-    readonly property real minBarHeight: 3
+    readonly property real maxBarHeight: 12 * Appearance.effectiveScale
+    readonly property real minBarHeight: 3 * Appearance.effectiveScale
     readonly property real heightRange: maxBarHeight - minBarHeight
     property var barHeights: [minBarHeight, minBarHeight, minBarHeight, minBarHeight, minBarHeight, minBarHeight]
 
@@ -63,13 +64,13 @@ Item {
 
     Row {
         anchors.centerIn: parent
-        spacing: 1.5
+        spacing: 1.5 * Appearance.effectiveScale
 
         Repeater {
             model: 6
 
             Rectangle {
-                width: 2
+                width: 2 * Appearance.effectiveScale
                 height: root.barHeights[index]
                 radius: 1
                 color: Theme.primary

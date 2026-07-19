@@ -7,6 +7,7 @@ import "../theme"
 import "../components"
 import "../components/bar" as BarComponents
 import "../services"
+import "../core"
 import QtCore
 
 PanelWindow {
@@ -23,7 +24,7 @@ PanelWindow {
         source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/fonts/nerd-fonts/FiraCodeNerdFont-Regular.ttf"
     }
 
-    implicitHeight: Styling.barHeight
+    implicitHeight: Styling.barHeight * Appearance.effectiveScale
     color: "transparent"
 
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
@@ -41,10 +42,10 @@ PanelWindow {
     Item {
         id: barContainer
         anchors.fill: parent
-        anchors.leftMargin: 12
-        anchors.rightMargin: 12
-        anchors.topMargin: 4
-        anchors.bottomMargin: 4
+        anchors.leftMargin: 12 * Appearance.effectiveScale
+        anchors.rightMargin: 12 * Appearance.effectiveScale
+        anchors.topMargin: 4 * Appearance.effectiveScale
+        anchors.bottomMargin: 4 * Appearance.effectiveScale
 
         // ── Glassmorphism toggle (reads ~/.config/hypr/.glassmorphism_enabled) ──
         property bool glassmorphism: false
@@ -83,7 +84,7 @@ PanelWindow {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             height: parent.height
-            width: leftLayout.implicitWidth + 24
+            width: leftLayout.implicitWidth + 24 * Appearance.effectiveScale
             radius: height / 2
             color: barContainer.pillColor
             opacity: barContainer.pillOpacity
@@ -110,13 +111,13 @@ PanelWindow {
             RowLayout {
                 id: leftLayout
                 anchors.centerIn: parent
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
 
                 // OS Icon (Arch Linux logo)
                 Text {
                     text: ""
                     font.family: nerdFontLoader.name
-                    font.pixelSize: 16
+                    font.pixelSize: 16 * Appearance.effectiveScale
                     font.weight: Font.Bold
                     color: Theme.primary
                     Layout.alignment: Qt.AlignVCenter
@@ -133,7 +134,7 @@ PanelWindow {
                 // Vertical separator
                 Rectangle {
                     width: 1
-                    height: 14
+                    height: 14 * Appearance.effectiveScale
                     color: Theme.outlineVariant
                     Layout.alignment: Qt.AlignVCenter
                 }
@@ -150,10 +151,10 @@ PanelWindow {
         Rectangle {
             id: sysMonitorPill
             anchors.left: leftPill.right
-            anchors.leftMargin: 6
+            anchors.leftMargin: 6 * Appearance.effectiveScale
             anchors.verticalCenter: parent.verticalCenter
             height: parent.height
-            width: sysMonitorLayout.implicitWidth + 20
+            width: sysMonitorLayout.implicitWidth + 20 * Appearance.effectiveScale
             radius: height / 2
             color: barContainer.pillColor
             opacity: barContainer.pillOpacity
@@ -187,58 +188,58 @@ PanelWindow {
                 RowLayout {
                     id: sysMonitorLayout
                     anchors.centerIn: parent
-                    spacing: 10
+                    spacing: 10 * Appearance.effectiveScale
 
                     // Dynamic colors based on usage intensity
                     readonly property color cpuColor: SystemUsage.cpuPerc > 0.8 ? "#ffb4ab" : SystemUsage.cpuPerc > 0.5 ? "#dac58c" : Theme.primary
                     readonly property color memColor: SystemUsage.memPerc > 0.85 ? "#ffb4ab" : SystemUsage.memPerc > 0.65 ? "#dac58c" : Theme.secondary
 
                     Row {
-                        spacing: 4
+                        spacing: 4 * Appearance.effectiveScale
                         DankIcon {
                             name: "developer_board"
-                            size: 12
+                            size: 12 * Appearance.effectiveScale
                             color: sysMonitorLayout.cpuColor
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
                             text: Math.round(SystemUsage.cpuPerc * 100) + "%"
                             font.family: Theme.font.family
-                            font.pixelSize: 11
+                            font.pixelSize: 11 * Appearance.effectiveScale
                             color: sysMonitorLayout.cpuColor
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
 
                     Row {
-                        spacing: 4
+                        spacing: 4 * Appearance.effectiveScale
                         DankIcon {
                             name: "thermostat"
-                            size: 12
+                            size: 12 * Appearance.effectiveScale
                             color: SystemUsage.cpuTemp > 85 ? "#ffb4ab" : SystemUsage.cpuTemp > 70 ? "#dac58c" : Theme.primary
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
                             text: Math.round(SystemUsage.cpuTemp) + "°C"
                             font.family: Theme.font.family
-                            font.pixelSize: 11
+                            font.pixelSize: 11 * Appearance.effectiveScale
                             color: SystemUsage.cpuTemp > 85 ? "#ffb4ab" : SystemUsage.cpuTemp > 70 ? "#dac58c" : Theme.primary
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
 
                     Row {
-                        spacing: 4
+                        spacing: 4 * Appearance.effectiveScale
                         DankIcon {
                             name: "memory"
-                            size: 12
+                            size: 12 * Appearance.effectiveScale
                             color: sysMonitorLayout.memColor
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
                             text: Math.round(SystemUsage.memPerc * 100) + "%"
                             font.family: Theme.font.family
-                            font.pixelSize: 11
+                            font.pixelSize: 11 * Appearance.effectiveScale
                             color: sysMonitorLayout.memColor
                             anchors.verticalCenter: parent.verticalCenter
                         }
@@ -254,7 +255,7 @@ PanelWindow {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
                 height: parent.height
-                width: showLyricsMode ? Math.min(Math.max(400, lyricsIsland.maxTextWidth + 60), parent.width > 0 ? parent.width - 600 : 1000) : centerLayout.implicitWidth + 24
+                width: showLyricsMode ? Math.min(Math.max(400 * Appearance.effectiveScale, lyricsIsland.maxTextWidth + 60 * Appearance.effectiveScale), parent.width > 0 ? parent.width - 600 * Appearance.effectiveScale : 1000) : centerLayout.implicitWidth + 24 * Appearance.effectiveScale
                 Behavior on width { NumberAnimation { duration: 350; easing.type: Easing.OutCubic } }
                 radius: height / 2
                 color: barContainer.pillColor
@@ -339,7 +340,7 @@ PanelWindow {
                 id: centerLayout
                 visible: !centerPill.showLyricsMode
                 anchors.centerIn: parent
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
 
                 BarMediaPlayer {
                     id: barMediaPlayer
@@ -348,7 +349,7 @@ PanelWindow {
 
                 Rectangle {
                     width: 1
-                    height: 14
+                    height: 14 * Appearance.effectiveScale
                     color: Theme.outlineVariant
                     Layout.alignment: Qt.AlignVCenter
                     visible: barMediaPlayer.visible
@@ -373,7 +374,7 @@ PanelWindow {
 
                 Rectangle {
                     width: 1
-                    height: 14
+                    height: 14 * Appearance.effectiveScale
                     color: Theme.outlineVariant
                     Layout.alignment: Qt.AlignVCenter
                 }
@@ -398,7 +399,7 @@ PanelWindow {
                 // Divider line for Alarm Indicator
                 Rectangle {
                     width: 1
-                    height: 14
+                    height: 14 * Appearance.effectiveScale
                     color: Theme.outlineVariant
                     Layout.alignment: Qt.AlignVCenter
                     visible: alarmIndicator.visible
@@ -410,14 +411,14 @@ PanelWindow {
                     Layout.alignment: Qt.AlignVCenter
                     visible: TimerStopwatchService.alarmActive
                     
-                    implicitWidth: alarmIndicatorRow.implicitWidth + 12
-                    implicitHeight: 24
+                    implicitWidth: alarmIndicatorRow.implicitWidth + 12 * Appearance.effectiveScale
+                    implicitHeight: 24 * Appearance.effectiveScale
                     cursorShape: Qt.PointingHandCursor
                     hoverEnabled: true
 
                     Rectangle {
                         anchors.fill: parent
-                        radius: 12
+                        radius: 12 * Appearance.effectiveScale
                         color: alarmFlashTimer.flashState ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.25) : Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.1)
                         border.color: Theme.error
                         border.width: 1
@@ -439,7 +440,7 @@ PanelWindow {
 
                         DankIcon {
                             name: "alarm"
-                            size: 13
+                            size: 13 * Appearance.effectiveScale
                             color: Theme.error
                             
                             RotationAnimator on rotation {
@@ -454,7 +455,7 @@ PanelWindow {
                         Text {
                             text: "Dismiss: " + TimerStopwatchService.activeAlarmLabel
                             font.family: "Inter"
-                            font.pixelSize: 10
+                            font.pixelSize: 10 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: "white"
                         }
@@ -469,7 +470,7 @@ PanelWindow {
                 Rectangle {
                     id: tsDivider
                     width: 1
-                    height: 14
+                    height: 14 * Appearance.effectiveScale
                     color: Theme.outlineVariant
                     Layout.alignment: Qt.AlignVCenter
                     visible: timerWidget.visible || stopwatchWidget.visible
@@ -479,19 +480,19 @@ PanelWindow {
                 Row {
                     id: timerWidget
                     Layout.alignment: Qt.AlignVCenter
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
                     visible: !TimerStopwatchService.timerSetupMode
 
                     DankIcon {
                         name: "hourglass"
-                        size: 12
+                        size: 12 * Appearance.effectiveScale
                         color: TimerStopwatchService.timerRunning ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
                         anchors.verticalCenter: parent.verticalCenter
                     }
                     Text {
                         text: TimerStopwatchService.formatTimer(TimerStopwatchService.timerSeconds)
                         font.family: Theme.font.monospace
-                        font.pixelSize: 11
+                        font.pixelSize: 11 * Appearance.effectiveScale
                         color: TimerStopwatchService.timerRunning ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -500,7 +501,7 @@ PanelWindow {
                 // Divider between timer and stopwatch if both visible
                 Rectangle {
                     width: 1
-                    height: 10
+                    height: 10 * Appearance.effectiveScale
                     color: Qt.rgba(Theme.outlineVariant.r, Theme.outlineVariant.g, Theme.outlineVariant.b, 0.5)
                     Layout.alignment: Qt.AlignVCenter
                     visible: timerWidget.visible && stopwatchWidget.visible
@@ -510,12 +511,12 @@ PanelWindow {
                 Row {
                     id: stopwatchWidget
                     Layout.alignment: Qt.AlignVCenter
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
                     visible: TimerStopwatchService.stopwatchTime > 0
 
                     DankIcon {
                         name: "timer"
-                        size: 12
+                        size: 12 * Appearance.effectiveScale
                         color: TimerStopwatchService.swRunning ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -530,7 +531,7 @@ PanelWindow {
                             return pad(mins) + ":" + pad(secs) + "." + tenths;
                         }
                         font.family: Theme.font.monospace
-                        font.pixelSize: 11
+                        font.pixelSize: 11 * Appearance.effectiveScale
                         color: TimerStopwatchService.swRunning ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -541,8 +542,8 @@ PanelWindow {
             Item {
                 id: lyricsIsland
                 anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: 20
+                anchors.leftMargin: 20 * Appearance.effectiveScale
+                anchors.rightMargin: 20 * Appearance.effectiveScale
                 visible: centerPill.showLyricsMode
                 opacity: centerPill.showLyricsMode ? 1.0 : 0.0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
@@ -627,7 +628,7 @@ PanelWindow {
                             return artist !== "" ? (title + " - " + artist) : title;
                         }
                         font.family: Theme.font.family
-                        font.pixelSize: 14
+                        font.pixelSize: 14 * Appearance.effectiveScale
                         font.weight: Font.Bold
                         color: Theme.primary
                         y: (parent.height - height) / 2
@@ -660,13 +661,13 @@ PanelWindow {
                     id: oldTextItem
                     visible: lyricsIsland.previousLyricText !== "" && !lyricsIsland.showMarquee
                     anchors.centerIn: parent
-                    anchors.verticalCenterOffset: -14 * lyricsIsland.lyricChangeProgress
+                    anchors.verticalCenterOffset: -14 * Appearance.effectiveScale * lyricsIsland.lyricChangeProgress
                     width: parent.width
                     text: lyricsIsland.previousLyricText
                     color: Theme.primary
                     opacity: 1 - lyricsIsland.lyricChangeProgress
                     font.family: Theme.font.family
-                    font.pixelSize: 14
+                    font.pixelSize: 14 * Appearance.effectiveScale
                     font.weight: Font.Bold
                     horizontalAlignment: Text.AlignHCenter
                     elide: Text.ElideRight
@@ -676,13 +677,13 @@ PanelWindow {
                     id: newTextItem
                     visible: lyricsIsland.activeLyricText !== "" && !lyricsIsland.showMarquee
                     anchors.centerIn: parent
-                    anchors.verticalCenterOffset: lyricsIsland.previousLyricText !== "" ? 12 * (1 - lyricsIsland.lyricChangeProgress) : 0
+                    anchors.verticalCenterOffset: lyricsIsland.previousLyricText !== "" ? 12 * Appearance.effectiveScale * (1 - lyricsIsland.lyricChangeProgress) : 0
                     width: parent.width
                     text: lyricsIsland.activeLyricText
                     color: Theme.primary
                     opacity: lyricsIsland.previousLyricText !== "" ? lyricsIsland.lyricChangeProgress : 1
                     font.family: Theme.font.family
-                    font.pixelSize: 14
+                    font.pixelSize: 14 * Appearance.effectiveScale
                     font.weight: Font.Bold
                     horizontalAlignment: Text.AlignHCenter
                     elide: Text.ElideRight
@@ -695,13 +696,13 @@ PanelWindow {
             id: rightPills
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 6
+            spacing: 6 * Appearance.effectiveScale
 
             // Connectivity Pill (WiFi + Bluetooth)
             Rectangle {
                 id: connectivityPill
                 height: barContainer.height
-                width: connectivityLayout.implicitWidth + 24
+                width: connectivityLayout.implicitWidth + 24 * Appearance.effectiveScale
                 radius: height / 2
                 color: barContainer.pillColor
                 opacity: barContainer.pillOpacity
@@ -727,7 +728,7 @@ PanelWindow {
                 RowLayout {
                     id: connectivityLayout
                     anchors.centerIn: parent
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
 
                     BarComponents.Network {
                         id: wifiWidget
@@ -736,7 +737,7 @@ PanelWindow {
 
                     Rectangle {
                         width: 1
-                        height: 12
+                        height: 12 * Appearance.effectiveScale
                         color: Theme.outlineVariant
                         Layout.alignment: Qt.AlignVCenter
                     }
@@ -752,7 +753,7 @@ PanelWindow {
             Rectangle {
                 id: audioPill
                 height: barContainer.height
-                width: audioLayout.implicitWidth + 24
+                width: audioLayout.implicitWidth + 24 * Appearance.effectiveScale
                 radius: height / 2
                 color: barContainer.pillColor
                 opacity: barContainer.pillOpacity
@@ -778,7 +779,7 @@ PanelWindow {
                 RowLayout {
                     id: audioLayout
                     anchors.centerIn: parent
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
 
                     BarComponents.Brightness {
                         id: brightnessWidget
@@ -787,7 +788,7 @@ PanelWindow {
 
                     Rectangle {
                         width: 1
-                        height: 12
+                        height: 12 * Appearance.effectiveScale
                         color: Theme.outlineVariant
                         Layout.alignment: Qt.AlignVCenter
                     }
@@ -803,7 +804,7 @@ PanelWindow {
             Rectangle {
                 id: controlPill
                 height: barContainer.height
-                width: controlLayout.implicitWidth + 24
+                width: controlLayout.implicitWidth + 24 * Appearance.effectiveScale
                 radius: height / 2
                 color: barContainer.pillColor
                 opacity: barContainer.pillOpacity
@@ -829,7 +830,7 @@ PanelWindow {
                 RowLayout {
                     id: controlLayout
                     anchors.centerIn: parent
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
 
                     BarComponents.StatusIndicators {
                         id: statusIndicatorsWidget
@@ -838,7 +839,7 @@ PanelWindow {
 
                     Rectangle {
                         width: 1
-                        height: 12
+                        height: 12 * Appearance.effectiveScale
                         color: Theme.outlineVariant
                         Layout.alignment: Qt.AlignVCenter
                         visible: statusIndicatorsWidget.visible
@@ -851,7 +852,7 @@ PanelWindow {
 
                     Rectangle {
                         width: 1
-                        height: 12
+                        height: 12 * Appearance.effectiveScale
                         color: Theme.outlineVariant
                         Layout.alignment: Qt.AlignVCenter
                     }
@@ -863,7 +864,7 @@ PanelWindow {
 
                     Rectangle {
                         width: 1
-                        height: 12
+                        height: 12 * Appearance.effectiveScale
                         color: Theme.outlineVariant
                         Layout.alignment: Qt.AlignVCenter
                     }
@@ -875,7 +876,7 @@ PanelWindow {
 
                     Rectangle {
                         width: 1
-                        height: 12
+                        height: 12 * Appearance.effectiveScale
                         color: Theme.outlineVariant
                         Layout.alignment: Qt.AlignVCenter
                         visible: systemTrayWidget.visible

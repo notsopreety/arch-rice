@@ -4,6 +4,7 @@ import Quickshell
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 
 Item {
     id: root
@@ -17,12 +18,12 @@ Item {
     readonly property int percentage: audio.percentage
 
     implicitWidth: volumeRow.implicitWidth
-    implicitHeight: 20
+    implicitHeight: 20 * Appearance.effectiveScale
 
     RowLayout {
         id: volumeRow
         anchors.centerIn: parent
-        spacing: 3
+        spacing: 3 * Appearance.effectiveScale
 
         DankIcon {
             id: volumeIcon
@@ -32,7 +33,7 @@ Item {
                 if (percentage >= 30) return "volume_down"
                 return "volume_mute"
             }
-            size: 14
+            size: 14 * Appearance.effectiveScale
             color: isMuted
                 ? Qt.rgba(1, 1, 1, 0.3)
                 : isHovered ? matugen.primary : Qt.rgba(1, 1, 1, 0.85)
@@ -45,7 +46,7 @@ Item {
             id: volumeText
             text: percentage
             font.family: "Inter"
-            font.pixelSize: 10
+            font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Medium
             color: isMuted
                 ? Qt.rgba(1, 1, 1, 0.3)

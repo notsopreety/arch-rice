@@ -4,21 +4,22 @@ import Quickshell
 import "../../theme"
 import "../../services"
 import "../../components"
- 
+import "../../core"
+
 Item {
     id: root
-    
+
     readonly property var matugen: Theme
     readonly property bool isActive: ControlCenterService.visible
     readonly property bool isHovered: toggleMouse.containsMouse
     
-    implicitWidth: controlCenterIcon.implicitWidth + 8
+    implicitWidth: controlCenterIcon.implicitWidth + 8 * Appearance.effectiveScale
     implicitHeight: controlCenterIcon.implicitHeight
     
     MouseArea {
         id: toggleMouse
         anchors.fill: parent
-        anchors.margins: -4  // Larger hit area
+        anchors.margins: -4
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         
@@ -32,7 +33,7 @@ Item {
         id: controlCenterIcon
         anchors.centerIn: parent
         name: "settings"
-        size: 18
+        size: 18 * Appearance.effectiveScale
         
         color: {
             if (isActive) return matugen.primary
