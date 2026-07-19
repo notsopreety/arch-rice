@@ -9,6 +9,7 @@ import Quickshell.Io
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 
 PanelWindow {
     id: powermenuWindow
@@ -98,8 +99,8 @@ PanelWindow {
         Item {
             id: menuContainer
             anchors.centerIn: parent
-            width: buttonsRow.implicitWidth + 56
-            height: buttonsRow.implicitHeight + 56
+            width: buttonsRow.implicitWidth + 56 * Appearance.effectiveScale
+            height: buttonsRow.implicitHeight + 56 * Appearance.effectiveScale
 
             ParallelAnimation {
                 id: openAnim
@@ -111,9 +112,9 @@ PanelWindow {
             DropShadow {
                 anchors.fill: menuCard
                 source: menuCard
-                verticalOffset: 16
+                verticalOffset: 16 * Appearance.effectiveScale
                 horizontalOffset: 0
-                radius: 48
+                radius: 48 * Appearance.effectiveScale
                 samples: 65
                 spread: 0.04
                 color: Qt.rgba(0, 0, 0, 0.5)
@@ -158,7 +159,7 @@ PanelWindow {
                 Row {
                     id: buttonsRow
                     anchors.centerIn: parent
-                    spacing: Styling.spacingSmall
+                    spacing: Styling.spacingSmall * Appearance.effectiveScale
 
                     Repeater {
                         model: [
@@ -172,8 +173,8 @@ PanelWindow {
 
                         delegate: Item {
                             id: btnDelegate
-                            width: 120
-                            height: 140
+                            width: 120 * Appearance.effectiveScale
+                            height: 140 * Appearance.effectiveScale
 
                             // Pressed down scaling
                             transform: Scale {
@@ -194,13 +195,13 @@ PanelWindow {
                                 id: btnShape
                                 anchors.fill: parent
 
-                                property real defaultR: 16
-                                property real hoverR: 56
+                                property real defaultR: 16 * Appearance.effectiveScale
+                                property real hoverR: 56 * Appearance.effectiveScale
 
-                                property real tlr: ma.containsMouse ? hoverR : (modelData.isFirst ? 28 : defaultR)
-                                property real trr: ma.containsMouse ? hoverR : (modelData.isLast  ? 28 : defaultR)
-                                property real blr: ma.containsMouse ? hoverR : (modelData.isFirst ? 28 : defaultR)
-                                property real brr: ma.containsMouse ? hoverR : (modelData.isLast  ? 28 : defaultR)
+                                property real tlr: ma.containsMouse ? hoverR : (modelData.isFirst ? 28 * Appearance.effectiveScale : defaultR)
+                                property real trr: ma.containsMouse ? hoverR : (modelData.isLast  ? 28 * Appearance.effectiveScale : defaultR)
+                                property real blr: ma.containsMouse ? hoverR : (modelData.isFirst ? 28 * Appearance.effectiveScale : defaultR)
+                                property real brr: ma.containsMouse ? hoverR : (modelData.isLast  ? 28 * Appearance.effectiveScale : defaultR)
 
                                 Behavior on tlr { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
                                 Behavior on trr { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
@@ -252,19 +253,19 @@ PanelWindow {
 
                             ColumnLayout {
                                 anchors.centerIn: parent
-                                spacing: 8
+                                spacing: 8 * Appearance.effectiveScale
 
                                 // Circular icon wrapper
                                 Item {
                                     Layout.alignment: Qt.AlignHCenter
-                                    width: 52
-                                    height: 52
+                                    width: 52 * Appearance.effectiveScale
+                                    height: 52 * Appearance.effectiveScale
 
                                                                     MaterialShape {
                                         id: hoverShape
                                         anchors.centerIn: parent
-                                        width: 52
-                                        height: 52
+                                        width: 52 * Appearance.effectiveScale
+                                        height: 52 * Appearance.effectiveScale
                                         color: {
                                             if (modelData.isPrimary)
                                                 return ma.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.45) : Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.25);
@@ -307,16 +308,16 @@ PanelWindow {
                                     // Icon with wobble & scale animations
                                     Item {
                                         anchors.centerIn: parent
-                                        width: 36; height: 36
+                                        width: 36 * Appearance.effectiveScale; height: 36 * Appearance.effectiveScale
 
                                         transform: [
                                             Rotation {
                                                 id: iconWobble
-                                                origin.x: 18; origin.y: 18
+                                                origin.x: 18 * Appearance.effectiveScale; origin.y: 18 * Appearance.effectiveScale
                                                 angle: 0
                                             },
                                             Scale {
-                                                origin.x: 18; origin.y: 18
+                                                origin.x: 18 * Appearance.effectiveScale; origin.y: 18 * Appearance.effectiveScale
                                                 xScale: ma.containsMouse ? 1.15 : 1.0
                                                 yScale: xScale
                                                 Behavior on xScale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
@@ -326,7 +327,7 @@ PanelWindow {
                                         DankIcon {
                                             anchors.centerIn: parent
                                             name: modelData.icon
-                                            size: 26
+                                            size: 26 * Appearance.effectiveScale
                                             color: {
                                                 if (modelData.isPrimary)
                                                     return ma.containsMouse ? Theme.error : Qt.rgba(Theme.error.r + 0.1, Theme.error.g + 0.1, Theme.error.b + 0.1, 0.9);
@@ -356,7 +357,7 @@ PanelWindow {
                                     text: modelData.name
                                     horizontalAlignment: Text.AlignHCenter
                                     font.family: Theme.font.family
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     lineHeight: 1.2
                                     color: {
@@ -370,8 +371,8 @@ PanelWindow {
                                 // Keybind indicator badge
                                 Rectangle {
                                     Layout.alignment: Qt.AlignHCenter
-                                    width: 22; height: 22
-                                    radius: 6
+                                    width: 22 * Appearance.effectiveScale; height: 22 * Appearance.effectiveScale
+                                    radius: 6 * Appearance.effectiveScale
                                     color: {
                                         if (modelData.isPrimary)
                                             return ma.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.25) : Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.1);
@@ -395,7 +396,7 @@ PanelWindow {
                                         anchors.centerIn: parent
                                         text: modelData.key
                                         font.family: Theme.font.family
-                                        font.pixelSize: 10
+                                        font.pixelSize: 10 * Appearance.effectiveScale
                                         font.weight: Font.Bold
                                         color: {
                                             if (modelData.isPrimary)

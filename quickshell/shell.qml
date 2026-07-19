@@ -142,10 +142,7 @@ ShellRoot {
         model: Quickshell.screens
         delegate: MediaPlaybackOSD { modelData: item }
     }
-    Variants {
-        model: Quickshell.screens
-        delegate: MediaVolumeOSD { modelData: item }
-    }
+
 
 
     // Custom Desktop Notification Toast Manager

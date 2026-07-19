@@ -115,7 +115,7 @@ PanelWindow {
         NumberAnimation {
             target: canvasTransform
             property: "x"
-            to: canvas.width + 40
+            to: canvas.width + 40 * Appearance.effectiveScale
             duration: Appearance.animation.elementMoveExit.duration
             easing.type: Easing.BezierSpline
             easing.bezierCurve: Appearance.animationCurves.emphasized
@@ -154,13 +154,13 @@ PanelWindow {
         // Floating Card Container (aligned right, below status bar)
         Rectangle {
             id: canvas
-            width: 400
-            height: Math.min(950, parent.height - 80)
+            width: 400 * Appearance.effectiveScale
+            height: Math.min(950 * Appearance.effectiveScale, parent.height - 80 * Appearance.effectiveScale)
             anchors.right: parent.right
-            anchors.rightMargin: 16
-            y: 50 // Placed nicely below the top status bar
+            anchors.rightMargin: 16 * Appearance.effectiveScale
+            y: 50 * Appearance.effectiveScale // Placed nicely below the top status bar
 
-            radius: 24
+            radius: 24 * Appearance.effectiveScale
             color: window.glassmorphism ? window.glassCanvasBg : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.85)
             border.color: window.glassmorphism ? window.glassBorder : Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.2)
             border.width: 1
@@ -187,7 +187,7 @@ PanelWindow {
 
             transform: Translate {
                 id: canvasTransform
-                x: canvas.width + 40
+                x: canvas.width + 40 * Appearance.effectiveScale
             }
 
             // Click interceptor to prevent clicks on the card from closing it
@@ -215,7 +215,7 @@ PanelWindow {
                     id: notificationIsland
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    radius: 20
+                    radius: 20 * Appearance.effectiveScale
                     color: window.glassmorphism ? window.glassIslandBg : Qt.rgba(Theme.surfaceContainerLow.r, Theme.surfaceContainerLow.g, Theme.surfaceContainerLow.b, 0.95)
                     border.color: window.glassmorphism ? window.glassBorder : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.15)
                     border.width: 1
@@ -225,8 +225,8 @@ PanelWindow {
                     ColumnLayout {
                         id: islandColumn
                         anchors.fill: parent
-                        anchors.margins: 16
-                        spacing: 12
+                        anchors.margins: 16 * Appearance.effectiveScale
+                        spacing: 12 * Appearance.effectiveScale
 
                         // ── Notifications Content Area ──
                         Item {
@@ -238,7 +238,7 @@ PanelWindow {
                                 id: placeholder
                                 anchors.centerIn: parent
                                 visible: window.visibleNotifications.length === 0
-                                spacing: 8
+                                spacing: 8 * Appearance.effectiveScale
 
                                 onVisibleChanged: {
                                     if (visible && bellBg && typeof bellBg.randomizeShape === "function") {
@@ -248,8 +248,8 @@ PanelWindow {
 
                                 Item {
                                     Layout.alignment: Qt.AlignCenter
-                                    implicitWidth: 80
-                                    implicitHeight: 80
+                                    implicitWidth: 80 * Appearance.effectiveScale
+                                    implicitHeight: 80 * Appearance.effectiveScale
 
                                     MaterialShape {
                                         id: bellBg
@@ -283,7 +283,7 @@ PanelWindow {
                                         id: bellIcon
                                         anchors.centerIn: parent
                                         name: Notifs.dnd ? "notifications_off" : "notifications"
-                                        size: 44
+                                        size: 44 * Appearance.effectiveScale
                                         color: "#ffffff"
 
                                         transform: Rotation {
@@ -320,7 +320,7 @@ PanelWindow {
                                     Layout.alignment: Qt.AlignHCenter
                                     text: "You're all caught up"
                                     font.family: "Inter"
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     color: window.textMutedColor
                                 }
@@ -331,7 +331,7 @@ PanelWindow {
                                 id: listView
                                 anchors.fill: parent
                                 clip: true
-                                spacing: 6
+                                spacing: 6 * Appearance.effectiveScale
                                 visible: window.visibleNotifications.length > 0
                                 model: window.visibleNotifications
 
@@ -358,9 +358,9 @@ PanelWindow {
                                     property bool expanded: false
 
                                     width: listView.width
-                                    height: content.implicitHeight + 14
+                                    height: content.implicitHeight + 14 * Appearance.effectiveScale
                                     Behavior on height { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-                                    radius: 14
+                                    radius: 14 * Appearance.effectiveScale
 
                                     SequentialAnimation {
                                         id: delegateDismissAnim
@@ -417,24 +417,24 @@ PanelWindow {
                                     ColumnLayout {
                                         id: content
                                         anchors.fill: parent
-                                        anchors.margins: 10
-                                        spacing: 6
+                                        anchors.margins: 10 * Appearance.effectiveScale
+                                        spacing: 6 * Appearance.effectiveScale
 
                                         RowLayout {
                                             Layout.fillWidth: true
-                                            spacing: 8
+                                            spacing: 8 * Appearance.effectiveScale
 
                                             Rectangle {
-                                                Layout.preferredWidth: 32
-                                                Layout.preferredHeight: 32
-                                                radius: 10
+                                                Layout.preferredWidth: 32 * Appearance.effectiveScale
+                                                Layout.preferredHeight: 32 * Appearance.effectiveScale
+                                                radius: 10 * Appearance.effectiveScale
                                                 color: Qt.rgba(window.urgencyColor(cardDelegate.modelData.urgency).r, window.urgencyColor(cardDelegate.modelData.urgency).g, window.urgencyColor(cardDelegate.modelData.urgency).b, 0.12)
 
                                                 Image {
                                                     id: appIconImg
                                                     anchors.centerIn: parent
-                                                    width: 18
-                                                    height: 18
+                                                    width: 18 * Appearance.effectiveScale
+                                                    height: 18 * Appearance.effectiveScale
                                                     source: window.iconSourceFor(cardDelegate.modelData)
                                                     visible: status === Image.Ready
                                                 }
@@ -444,20 +444,20 @@ PanelWindow {
                                                     visible: !appIconImg.visible
                                                     text: (cardDelegate.modelData.appName ?? "N").slice(0, 1).toUpperCase()
                                                     font.family: "Inter"
-                                                    font.pixelSize: 14
+                                                    font.pixelSize: 14 * Appearance.effectiveScale
                                                     font.weight: Font.Bold
                                                     color: window.urgencyColor(cardDelegate.modelData.urgency)
                                                 }
                                             }
 
                                             ColumnLayout {
-                                                Layout.fillWidth: true; spacing: 1
+                                                Layout.fillWidth: true; spacing: 1 * Appearance.effectiveScale
 
                                                 Text {
                                                     Layout.fillWidth: true
                                                     text: cardDelegate.modelData.summary || "Notification"
                                                     font.family: "Inter"
-                                                    font.pixelSize: 12
+                                                    font.pixelSize: 12 * Appearance.effectiveScale
                                                     font.weight: Font.DemiBold
                                                     color: window.textColor
                                                     elide: Text.ElideRight
@@ -467,20 +467,20 @@ PanelWindow {
                                                     Layout.fillWidth: true
                                                     text: cardDelegate.modelData.appName || "Unknown app"
                                                     font.family: "Inter"
-                                                    font.pixelSize: 10
+                                                    font.pixelSize: 10 * Appearance.effectiveScale
                                                     color: window.textMutedColor
                                                     elide: Text.ElideRight
                                                 }
                                             }
 
                                             ColumnLayout {
-                                                spacing: 2
+                                                spacing: 2 * Appearance.effectiveScale
 
                                                 Rectangle {
                                                     Layout.alignment: Qt.AlignRight
-                                                    width: 6
-                                                    height: 6
-                                                    radius: 3
+                                                    width: 6 * Appearance.effectiveScale
+                                                    height: 6 * Appearance.effectiveScale
+                                                    radius: 3 * Appearance.effectiveScale
                                                     visible: !cardDelegate.modelData.read
                                                     color: Theme.primary
                                                 }
@@ -489,19 +489,19 @@ PanelWindow {
                                                     Layout.alignment: Qt.AlignRight
                                                     text: cardDelegate.modelData.timeString
                                                     font.family: "Inter"
-                                                    font.pixelSize: 9
+                                                    font.pixelSize: 9 * Appearance.effectiveScale
                                                     color: window.textMutedColor
                                                 }
                                             }
 
                                             // Circular expand/chevron indicator
                                             Rectangle {
-                                                Layout.preferredWidth: 20; Layout.preferredHeight: 20; radius: 10
+                                                Layout.preferredWidth: 20 * Appearance.effectiveScale; Layout.preferredHeight: 20 * Appearance.effectiveScale; radius: 10 * Appearance.effectiveScale
                                                 color: "#1d1b20"
                                                 DankIcon {
                                                     anchors.centerIn: parent
                                                     name: cardDelegate.expanded ? "expand_less" : "expand_more"
-                                                    size: 14
+                                                    size: 14 * Appearance.effectiveScale
                                                     color: "#ffffff"
                                                 }
                                                 MouseArea {
@@ -520,13 +520,13 @@ PanelWindow {
                                             maximumLineCount: cardDelegate.expanded ? 6 : 2
                                             elide: Text.ElideRight
                                             font.family: "Inter"
-                                            font.pixelSize: 10
+                                            font.pixelSize: 10 * Appearance.effectiveScale
                                             color: window.textMutedColor
                                         }
 
                                         RowLayout {
                                             Layout.fillWidth: true
-                                            spacing: 6
+                                            spacing: 6 * Appearance.effectiveScale
                                             visible: cardDelegate.expanded && cardDelegate.modelData.actions && cardDelegate.modelData.actions.length > 0
 
                                             Repeater {
@@ -534,9 +534,9 @@ PanelWindow {
 
                                                 Rectangle {
                                                     required property var modelData
-                                                    Layout.preferredHeight: 24
-                                                    Layout.preferredWidth: Math.min(120, label.implicitWidth + 14)
-                                                    radius: 12
+                                                    Layout.preferredHeight: 24 * Appearance.effectiveScale
+                                                    Layout.preferredWidth: Math.min(120 * Appearance.effectiveScale, label.implicitWidth + 14 * Appearance.effectiveScale)
+                                                    radius: 12 * Appearance.effectiveScale
                                                     color: actionMouse.containsMouse
                                                         ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.18)
                                                         : Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12)
@@ -546,7 +546,7 @@ PanelWindow {
                                                         anchors.centerIn: parent
                                                         text: modelData.text
                                                         font.family: "Inter"
-                                                        font.pixelSize: 10
+                                                        font.pixelSize: 10 * Appearance.effectiveScale
                                                         font.weight: Font.Medium
                                                         color: Theme.primary
                                                     }
@@ -567,15 +567,15 @@ PanelWindow {
 
                                         RowLayout {
                                             Layout.fillWidth: true
-                                            spacing: 6
+                                            spacing: 6 * Appearance.effectiveScale
                                             visible: cardDelegate.expanded
 
                                             Item { Layout.fillWidth: true }
 
                                             Rectangle {
-                                                Layout.preferredWidth: 64
-                                                Layout.preferredHeight: 24
-                                                radius: 12
+                                                Layout.preferredWidth: 64 * Appearance.effectiveScale
+                                                Layout.preferredHeight: 24 * Appearance.effectiveScale
+                                                radius: 12 * Appearance.effectiveScale
                                                 color: closeMouse.containsMouse
                                                     ? Qt.rgba(255, 255, 255, 0.12)
                                                     : Qt.rgba(255, 255, 255, 0.06)
@@ -584,7 +584,7 @@ PanelWindow {
                                                     anchors.centerIn: parent
                                                     text: cardDelegate.modelData.closed ? "Dismissed" : "Dismiss"
                                                     font.family: "Inter"
-                                                    font.pixelSize: 9
+                                                    font.pixelSize: 9 * Appearance.effectiveScale
                                                     color: window.textColor
                                                 }
 
@@ -601,9 +601,9 @@ PanelWindow {
                                             }
 
                                             Rectangle {
-                                                Layout.preferredWidth: 58
-                                                Layout.preferredHeight: 24
-                                                radius: 12
+                                                Layout.preferredWidth: 58 * Appearance.effectiveScale
+                                                Layout.preferredHeight: 24 * Appearance.effectiveScale
+                                                radius: 12 * Appearance.effectiveScale
                                                 color: deleteMouse.containsMouse
                                                     ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.16)
                                                     : Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.10)
@@ -612,7 +612,7 @@ PanelWindow {
                                                     anchors.centerIn: parent
                                                     text: "Delete"
                                                     font.family: "Inter"
-                                                    font.pixelSize: 9
+                                                    font.pixelSize: 9 * Appearance.effectiveScale
                                                     color: Theme.error
                                                 }
 
@@ -629,22 +629,23 @@ PanelWindow {
 
                                 footer: Item {
                                     width: listView.width
-                                    height: 6
+                                    height: 6 * Appearance.effectiveScale
                                 }
                             }
                         }
 
                         // ── Bottom Action Row ──
                         RowLayout {
+                            id: bottomActionRow
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 40
-                            spacing: 8
+                            Layout.preferredHeight: 40 * Appearance.effectiveScale
+                            spacing: 8 * Appearance.effectiveScale
 
                             // DND/Silent Toggle Button
                             Rectangle {
-                                Layout.preferredWidth: 56
-                                Layout.preferredHeight: 40
-                                radius: 20
+                                Layout.preferredWidth: 56 * Appearance.effectiveScale
+                                Layout.preferredHeight: 40 * Appearance.effectiveScale
+                                radius: 20 * Appearance.effectiveScale
                                 color: Notifs.dnd 
                                     ? (window.glassmorphism ? Qt.rgba(Theme.primaryContainer.r, Theme.primaryContainer.g, Theme.primaryContainer.b, 0.5) : Theme.primaryContainer)
                                     : (window.glassmorphism ? window.glassActionBg : Theme.surfaceContainerHigh)
@@ -656,7 +657,7 @@ PanelWindow {
                                 DankIcon {
                                     anchors.centerIn: parent
                                     name: Notifs.dnd ? "notifications_off" : "notifications_active"
-                                    size: 20
+                                    size: 20 * Appearance.effectiveScale
                                     color: Notifs.dnd ? Theme.onPrimaryContainer : "#ffffff"
                                 }
 
@@ -670,8 +671,8 @@ PanelWindow {
                             // Notification Count Pill
                             Rectangle {
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 40
-                                radius: 20
+                                Layout.preferredHeight: 40 * Appearance.effectiveScale
+                                radius: 20 * Appearance.effectiveScale
                                 color: window.glassmorphism ? window.glassActionBg : Theme.surfaceContainerHigh
                                 border.color: window.glassmorphism ? window.glassBorder : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
                                 border.width: 1
@@ -684,7 +685,7 @@ PanelWindow {
                                         ? `${window.visibleNotifications.length} notification${window.visibleNotifications.length === 1 ? "" : "s"}`
                                         : "No notifications"
                                     font.family: "Inter"
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     color: "#ffffff"
                                 }
@@ -692,9 +693,9 @@ PanelWindow {
 
                             // Clear All/Delete Sweep Button
                             Rectangle {
-                                Layout.preferredWidth: 56
-                                Layout.preferredHeight: 40
-                                radius: 20
+                                Layout.preferredWidth: 56 * Appearance.effectiveScale
+                                Layout.preferredHeight: 40 * Appearance.effectiveScale
+                                radius: 20 * Appearance.effectiveScale
                                 color: window.glassmorphism ? window.glassActionBg : Theme.surfaceContainerHigh
                                 border.color: window.glassmorphism ? window.glassBorder : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
                                 border.width: 1
@@ -705,7 +706,7 @@ PanelWindow {
                                 DankIcon {
                                     anchors.centerIn: parent
                                     name: "delete_sweep"
-                                    size: 20
+                                    size: 20 * Appearance.effectiveScale
                                     color: "#ffffff"
                                 }
 

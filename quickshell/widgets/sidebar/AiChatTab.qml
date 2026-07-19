@@ -5,6 +5,7 @@ import Quickshell
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 
 Item {
     id: root

@@ -5,6 +5,7 @@ import "../../services"
 import "../../components"
 import "../../core"
 import "../"
+import "../../core"
 
 Card {
     id: root
@@ -16,19 +17,19 @@ Card {
     required property real usage // 0 to 1
     required property real temperature
 
-    implicitWidth: 340
-    implicitHeight: 180
+    implicitWidth: 340 * Appearance.effectiveScale
+    implicitHeight: 180 * Appearance.effectiveScale
 
     RowLayout {
         anchors.fill: parent
-        anchors.margins: 8
-        spacing: 16
+        anchors.margins: 8 * Appearance.effectiveScale
+        spacing: 16 * Appearance.effectiveScale
 
         // Left Side: Circular Canvas Meter
         Item {
             id: circularProgress
-            width: 100
-            height: 100
+            width: 100 * Appearance.effectiveScale
+            height: 100 * Appearance.effectiveScale
             Layout.alignment: Qt.AlignVCenter
 
             Canvas {
@@ -46,19 +47,19 @@ Card {
 
                     var centreX = width / 2;
                     var centreY = height / 2;
-                    var radius = Math.min(width, height) / 2 - 8;
+                    var radius = Math.min(width, height) / 2 - (8 * Appearance.effectiveScale);
 
                     // Draw background track
                     ctx.beginPath();
                     ctx.strokeStyle = Qt.rgba(255, 255, 255, 0.08);
-                    ctx.lineWidth = 6;
+                    ctx.lineWidth = 6 * Appearance.effectiveScale;
                     ctx.arc(centreX, centreY, radius, 0, 2 * Math.PI);
                     ctx.stroke();
 
                     // Draw progress fill
                     ctx.beginPath();
                     ctx.strokeStyle = root.accent;
-                    ctx.lineWidth = 6;
+                    ctx.lineWidth = 6 * Appearance.effectiveScale;
                     ctx.lineCap = "round";
                     // Arc starts from top (-Math.PI/2)
                     var startAngle = -Math.PI / 2;
@@ -75,11 +76,11 @@ Card {
             // Text / Icon in center of the gauge
             Column {
                 anchors.centerIn: parent
-                spacing: 2
+                spacing: 2 * Appearance.effectiveScale
 
                 DankIcon {
                     name: root.icon
-                    size: 20
+                    size: 20 * Appearance.effectiveScale
                     color: root.accent
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
@@ -87,7 +88,7 @@ Card {
                 Text {
                     text: Math.round(root.usage * 100) + "%"
                     font.family: Theme.font.family
-                    font.pixelSize: 14
+                    font.pixelSize: 14 * Appearance.effectiveScale
                     font.weight: Font.Bold
                     color: "white"
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -98,20 +99,20 @@ Card {
         // Right Side: Info details (Name, Usage description, Temp bar)
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
 
             Column {
                 Layout.fillWidth: true
-                spacing: 2
+                spacing: 2 * Appearance.effectiveScale
 
                 Text {
                     text: root.label === "CPU" ? SystemUsage.cpuModel : root.label
                     font.family: Theme.font.family
-                    font.pixelSize: 15
+                    font.pixelSize: 15 * Appearance.effectiveScale
                     font.weight: Font.Bold
                     color: root.accent
                     elide: Text.ElideRight
-                    width: 250
+                    width: 250 * Appearance.effectiveScale
                 }
 
                 Text {
@@ -119,28 +120,28 @@ Card {
                         ? `${SystemUsage.cpuCores} Cores / ${SystemUsage.cpuThreads} Threads | Freq: ${SystemUsage.cpuFreq}`
                         : root.subLabel
                     font.family: Theme.font.family
-                    font.pixelSize: 11
+                    font.pixelSize: 11 * Appearance.effectiveScale
                     color: Qt.rgba(255, 255, 255, 0.6)
                     elide: Text.ElideRight
-                    width: 250
+                    width: 250 * Appearance.effectiveScale
                 }
             }
 
             // Temperature Details & Graph Row
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 16
+                spacing: 16 * Appearance.effectiveScale
 
                 Column {
-                    Layout.preferredWidth: 140
-                    spacing: 4
+                    Layout.preferredWidth: 140 * Appearance.effectiveScale
+                    spacing: 4 * Appearance.effectiveScale
 
                     RowLayout {
                         width: parent.width
                         
                         DankIcon {
                             name: "thermostat"
-                            size: 16
+                            size: 16 * Appearance.effectiveScale
                             color: root.temperature > 80 ? "#ffb4ab" : root.accent
                             Layout.alignment: Qt.AlignVCenter
                         }
@@ -148,7 +149,7 @@ Card {
                         Text {
                             text: isNaN(root.temperature) || root.temperature <= 0 ? "N/A" : Math.round(root.temperature) + "°C"
                             font.family: Theme.font.family
-                            font.pixelSize: 12
+                            font.pixelSize: 12 * Appearance.effectiveScale
                             font.weight: Font.Medium
                             color: "white"
                         }
@@ -156,9 +157,9 @@ Card {
 
                     // Temp progress bar
                     Rectangle {
-                        width: 130
-                        height: 6
-                        radius: 3
+                        width: 130 * Appearance.effectiveScale
+                        height: 6 * Appearance.effectiveScale
+                        radius: 3 * Appearance.effectiveScale
                         color: Qt.rgba(255, 255, 255, 0.08)
 
                         Rectangle {
@@ -177,7 +178,7 @@ Card {
                 // CPU History Graph
                 Item {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 70
+                    Layout.preferredHeight: 70 * Appearance.effectiveScale
                     visible: root.label === "CPU"
 
                     Canvas {
@@ -205,7 +206,7 @@ Card {
 
                             // Draw subtle background grid
                             ctx.strokeStyle = Qt.rgba(255, 255, 255, 0.05);
-                            ctx.lineWidth = 1;
+                            ctx.lineWidth = 1 * Appearance.effectiveScale;
                             
                             // Horizontal grid lines (20%, 40%, 60%, 80%)
                             for (var yLine = 1; yLine < 5; yLine++) {
@@ -227,10 +228,10 @@ Card {
 
                             // Draw grid text labels
                             ctx.fillStyle = Qt.rgba(255, 255, 255, 0.3);
-                            ctx.font = "8px sans-serif";
+                            ctx.font = (8 * Appearance.effectiveScale) + "px sans-serif";
                             ctx.textBaseline = "middle";
                             ctx.textAlign = "left";
-                            ctx.fillText("100%", 4, 6);
+                            ctx.fillText("100%", 4 * Appearance.effectiveScale, 6 * Appearance.effectiveScale);
                             ctx.fillText("80%", 4, h * 1 / 5);
                             ctx.fillText("60%", 4, h * 2 / 5);
                             ctx.fillText("40%", 4, h * 3 / 5);
@@ -242,7 +243,7 @@ Card {
                             // Draw sparkline path
                             ctx.beginPath();
                             ctx.strokeStyle = root.accent;
-                            ctx.lineWidth = 2;
+                            ctx.lineWidth = 2 * Appearance.effectiveScale;
                             for (var i = 0; i < history.length; i++) {
                                 var x = i * stepX;
                                 var y = h - (history[i] * (h - 4)) - 2;
@@ -273,19 +274,19 @@ Card {
         id: viewMoreLink
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.topMargin: 12
-        anchors.rightMargin: 12
+        anchors.topMargin: 12 * Appearance.effectiveScale
+        anchors.rightMargin: 12 * Appearance.effectiveScale
         width: contentRow.width
         height: contentRow.height
 
         Row {
             id: contentRow
-            spacing: 4
+            spacing: 4 * Appearance.effectiveScale
 
             Text {
                 text: "View More"
                 font.family: Theme.font.family
-                font.pixelSize: 11
+                font.pixelSize: 11 * Appearance.effectiveScale
                 font.weight: Font.DemiBold
                 color: linkMouseArea.containsMouse ? root.accent : Qt.rgba(255, 255, 255, 0.7)
                 font.underline: linkMouseArea.containsMouse
@@ -295,7 +296,7 @@ Card {
 
             DankIcon {
                 name: "arrow_forward"
-                size: 14
+                size: 14 * Appearance.effectiveScale
                 color: linkMouseArea.containsMouse ? root.accent : Qt.rgba(255, 255, 255, 0.7)
                 anchors.verticalCenter: parent.verticalCenter
                 

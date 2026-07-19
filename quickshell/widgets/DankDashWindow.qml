@@ -9,6 +9,7 @@ import Quickshell.Io
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 
 PanelWindow {
     id: dashWindow
@@ -238,17 +239,17 @@ PanelWindow {
         Item {
             id: dashContainer
             anchors.horizontalCenter: parent.horizontalCenter
-            width: 820
-            height: 520
+            width: 820 * Appearance.effectiveScale
+            height: 520 * Appearance.effectiveScale
 
-            y: 50
+            y: 50 * Appearance.effectiveScale
 
             // Drop shadow for the main card
             DropShadow {
                 anchors.fill: dashCard
                 source: dashCard
-                verticalOffset: 16
-                radius: 48
+                verticalOffset: 16 * Appearance.effectiveScale
+                radius: 48 * Appearance.effectiveScale
                 samples: 65
                 color: Qt.rgba(0, 0, 0, 0.4)
                 transparentBorder: true
@@ -331,36 +332,36 @@ PanelWindow {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: 24
-                    spacing: 16
+                    anchors.margins: 24 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
                     z: 1 // Keep above blurred background
 
                     // Tabs Header Row
                     Item {
                         Layout.fillWidth: true
-                        implicitHeight: 52
+                        implicitHeight: 52 * Appearance.effectiveScale
 
                         // Tabs Selector
                         Row {
                             anchors.centerIn: parent
-                            spacing: 32
+                            spacing: 32 * Appearance.effectiveScale
 
                             Repeater {
                                 model: dashWindow.tabs
 
                                 delegate: Item {
-                                    width: 80
-                                    height: 52
+                                    width: 80 * Appearance.effectiveScale
+                                    height: 52 * Appearance.effectiveScale
                                     
                                     property bool isActive: index === dashWindow.currentTabIndex
 
                                     Column {
                                         anchors.centerIn: parent
-                                        spacing: 6
+                                        spacing: 6 * Appearance.effectiveScale
 
                                         DankIcon {
                                             name: modelData.icon
-                                            size: 18
+                                            size: 18 * Appearance.effectiveScale
                                             color: isActive ? Theme.primary : "white"
                                             anchors.horizontalCenter: parent.horizontalCenter
                                         }
@@ -368,7 +369,7 @@ PanelWindow {
                                         Text {
                                             text: modelData.name
                                             font.family: Theme.font.family
-                                            font.pixelSize: 11
+                                            font.pixelSize: 11 * Appearance.effectiveScale
                                             font.weight: isActive ? Font.Bold : Font.Normal
                                             color: isActive ? Theme.primary : "white"
                                             anchors.horizontalCenter: parent.horizontalCenter
@@ -379,9 +380,9 @@ PanelWindow {
                                     Rectangle {
                                         anchors.bottom: parent.bottom
                                         anchors.horizontalCenter: parent.horizontalCenter
-                                        width: 50
-                                        height: 3
-                                        radius: 1.5
+                                        width: 50 * Appearance.effectiveScale
+                                        height: 3 * Appearance.effectiveScale
+                                        radius: 1.5 * Appearance.effectiveScale
                                         color: Theme.primary
                                         visible: isActive
                                     }
@@ -430,10 +431,10 @@ PanelWindow {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.bottom: parent.bottom
-                            anchors.leftMargin: -24
-                            anchors.rightMargin: -24
-                            anchors.bottomMargin: -24
-                            height: 180
+                            anchors.leftMargin: -24 * Appearance.effectiveScale
+                            anchors.rightMargin: -24 * Appearance.effectiveScale
+                            anchors.bottomMargin: -24 * Appearance.effectiveScale
+                            height: 180 * Appearance.effectiveScale
                             visible: false
                             Rectangle {
                                 anchors.fill: parent
@@ -446,10 +447,10 @@ PanelWindow {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.bottom: parent.bottom
-                            anchors.leftMargin: -24
-                            anchors.rightMargin: -24
-                            anchors.bottomMargin: -24
-                            height: 180
+                            anchors.leftMargin: -24 * Appearance.effectiveScale
+                            anchors.rightMargin: -24 * Appearance.effectiveScale
+                            anchors.bottomMargin: -24 * Appearance.effectiveScale
+                            height: 180 * Appearance.effectiveScale
                             z: 0
                             opacity: dashWindow.isPlaying ? 0.35 : 0.1
                             waveColor: Theme.primary
@@ -457,264 +458,174 @@ PanelWindow {
                             maskSource: waveMaskSource
                         }
 
-                        RowLayout {
+                        // Center Content: Album Art, Info, Seekbar, Playback controls
+                        ColumnLayout {
                             anchors.fill: parent
-                            anchors.margins: 12
-                            spacing: 32
+                            anchors.margins: 12 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            Layout.alignment: Qt.AlignHCenter
 
-                            // Left side spacer to help balance the layout
-                            Item { width: 32 }
-
-                            // Center Content: Album Art, Info, Seekbar, Playback controls
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                spacing: 16
+                            Item {
+                                width: 200 * Appearance.effectiveScale
+                                height: 200 * Appearance.effectiveScale
                                 Layout.alignment: Qt.AlignHCenter
 
-                                Item {
-                                    width: 200
-                                    height: 200
-                                    Layout.alignment: Qt.AlignHCenter
-
-                                    DankAlbumArt {
-                                        id: fullAlbumArt
-                                        anchors.fill: parent
-                                        activePlayer: dashWindow.activePlayer
-                                    }
-                                }
-
-                                Column {
-                                    Layout.fillWidth: true
-                                    Layout.alignment: Qt.AlignHCenter
-                                    spacing: 4
-
-                                    Text {
-                                        text: dashWindow.hasPlayer ? (dashWindow.activePlayer.trackTitle || dashWindow.activePlayer.title || "Unknown Track") : "No Active Players"
-                                        font.family: Theme.font.family
-                                        font.pixelSize: 20
-                                        font.weight: Font.Bold
-                                        color: "white"
-                                        horizontalAlignment: Text.AlignHCenter
-                                        elide: Text.ElideRight
-                                        width: 500
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                    }
-
-                                    Text {
-                                        text: dashWindow.hasPlayer ? (dashWindow.activePlayer.trackArtist || dashWindow.activePlayer.artist || "Unknown Artist") : "Play some music to begin"
-                                        font.family: Theme.font.family
-                                        font.pixelSize: 13
-                                        color: "#e7bdb3" // Light peach/pink
-                                        horizontalAlignment: Text.AlignHCenter
-                                        elide: Text.ElideRight
-                                        width: 500
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                    }
-                                }
-
-                                // Seekbar
-                                Item {
-                                    width: 440
-                                    height: 32
-                                    Layout.alignment: Qt.AlignHCenter
-
-                                    MediaSeekBar {
-                                        anchors.fill: parent
-                                        activePlayer: dashWindow.activePlayer
-                                        fillColor: Theme.primary
-                                        textColor: "white"
-                                    }
-                                }
-
-                                // Centered Playback controls
-                                RowLayout {
-                                    Layout.alignment: Qt.AlignHCenter
-                                    spacing: 28
-                                    visible: dashWindow.hasPlayer
-
-                                    // Shuffle Button
-                                    Text {
-                                        text: "󰒟"
-                                        font.family: Theme.font.monospace
-                                        font.pixelSize: 20
-                                        color: dashWindow.activePlayer && dashWindow.activePlayer.shuffle ? Theme.primary : Qt.rgba(1, 1, 1, 0.5)
-                                        
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: {
-                                                if (dashWindow.activePlayer && dashWindow.activePlayer.shuffleSupported) {
-                                                    dashWindow.activePlayer.shuffle = !dashWindow.activePlayer.shuffle
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    // Previous Button
-                                    Text {
-                                        text: "󰒮"
-                                        font.family: Theme.font.monospace
-                                        font.pixelSize: 24
-                                        color: "white"
-                                        
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: if (dashWindow.activePlayer) dashWindow.activePlayer.previous()
-                                        }
-                                    }
-
-                                    // Play/Pause Button
-                                    Rectangle {
-                                        width: 52
-                                        height: 52
-                                        radius: 26
-                                        color: Theme.primary
-
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: dashWindow.isPlaying ? "󰏤" : "󰐊"
-                                            font.family: Theme.font.monospace
-                                            font.pixelSize: 24
-                                            color: Theme.background
-                                        }
-
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: if (dashWindow.activePlayer) dashWindow.activePlayer.togglePlaying()
-                                        }
-                                    }
-
-                                    // Next Button
-                                    Text {
-                                        text: "󰒭"
-                                        font.family: Theme.font.monospace
-                                        font.pixelSize: 24
-                                        color: "white"
-                                        
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: if (dashWindow.activePlayer) dashWindow.activePlayer.next()
-                                        }
-                                    }
-
-                                    // Loop/Repeat Button
-                                    Text {
-                                        text: {
-                                            if (!dashWindow.activePlayer) return "󰑖";
-                                            switch (dashWindow.activePlayer.loopState) {
-                                            case MprisLoopState.Track:
-                                                return "󰑗"; // repeat-one / repeat-once
-                                            case MprisLoopState.Playlist:
-                                            default:
-                                                return "󰑖"; // repeat
-                                            }
-                                        }
-                                        font.family: Theme.font.monospace
-                                        font.pixelSize: 20
-                                        color: dashWindow.activePlayer && dashWindow.activePlayer.loopState !== MprisLoopState.None ? Theme.primary : Qt.rgba(1, 1, 1, 0.5)
-                                        
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: {
-                                                if (dashWindow.activePlayer) {
-                                                    var current = dashWindow.activePlayer.loopState;
-                                                    var nextState = MprisLoopState.None;
-                                                    if (current === MprisLoopState.None) {
-                                                        nextState = MprisLoopState.Playlist;
-                                                    } else if (current === MprisLoopState.Playlist) {
-                                                        nextState = MprisLoopState.Track;
-                                                    } else {
-                                                        nextState = MprisLoopState.None;
-                                                    }
-                                                    dashWindow.activePlayer.loopState = nextState;
-                                                }
-                                            }
-                                        }
-                                    }
+                                DankAlbumArt {
+                                    id: fullAlbumArt
+                                    anchors.fill: parent
+                                    activePlayer: dashWindow.activePlayer
                                 }
                             }
 
-                            // Right column: Extra Controls (Volume, Media Player, Output Devices)
-                            ColumnLayout {
-                                Layout.fillHeight: true
-                                spacing: 16
-                                Layout.alignment: Qt.AlignVCenter
+                            Column {
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignHCenter
+                                spacing: 4 * Appearance.effectiveScale
 
-                                // 1. Volume button
+                                Text {
+                                    text: dashWindow.hasPlayer ? (dashWindow.activePlayer.trackTitle || dashWindow.activePlayer.title || "Unknown Track") : "No Active Players"
+                                    font.family: Theme.font.family
+                                    font.pixelSize: 20 * Appearance.effectiveScale
+                                    font.weight: Font.Bold
+                                    color: "white"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    elide: Text.ElideRight
+                                    width: 500 * Appearance.effectiveScale
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
+
+                                Text {
+                                    text: dashWindow.hasPlayer ? (dashWindow.activePlayer.trackArtist || dashWindow.activePlayer.artist || "Unknown Artist") : "Play some music to begin"
+                                    font.family: Theme.font.family
+                                    font.pixelSize: 13 * Appearance.effectiveScale
+                                    color: "#e7bdb3" // Light peach/pink
+                                    horizontalAlignment: Text.AlignHCenter
+                                    elide: Text.ElideRight
+                                    width: 500 * Appearance.effectiveScale
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
+                            }
+
+                            // Seekbar
+                            Item {
+                                width: 440 * Appearance.effectiveScale
+                                height: 32 * Appearance.effectiveScale
+                                Layout.alignment: Qt.AlignHCenter
+
+                                MediaSeekBar {
+                                    anchors.fill: parent
+                                    activePlayer: dashWindow.activePlayer
+                                    fillColor: Theme.primary
+                                    textColor: "white"
+                                }
+                            }
+
+                            // Centered Playback controls
+                            RowLayout {
+                                Layout.alignment: Qt.AlignHCenter
+                                spacing: 28 * Appearance.effectiveScale
+                                visible: dashWindow.hasPlayer
+
+                                // Shuffle Button
+                                Text {
+                                    text: "󰒟"
+                                    font.family: Theme.font.monospace
+                                    font.pixelSize: 20 * Appearance.effectiveScale
+                                    color: dashWindow.activePlayer && dashWindow.activePlayer.shuffle ? Theme.primary : Qt.rgba(1, 1, 1, 0.5)
+                                    
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            if (dashWindow.activePlayer && dashWindow.activePlayer.shuffleSupported) {
+                                                dashWindow.activePlayer.shuffle = !dashWindow.activePlayer.shuffle
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // Previous Button
+                                Text {
+                                    text: "󰒮"
+                                    font.family: Theme.font.monospace
+                                    font.pixelSize: 24 * Appearance.effectiveScale
+                                    color: "white"
+                                    
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: if (dashWindow.activePlayer) dashWindow.activePlayer.previous()
+                                    }
+                                }
+
+                                // Play/Pause Button
                                 Rectangle {
-                                    id: volumeButton
-                                    width: 40
-                                    height: 40
-                                    radius: 20
-                                    color: (volumeButtonMouse.containsMouse || dashWindow.dropdownType === 1) ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.2) : Qt.rgba(255, 255, 255, 0.08)
-                                    border.color: (volumeButtonMouse.containsMouse || dashWindow.dropdownType === 1) ? Theme.primary : Qt.rgba(255, 255, 255, 0.12)
-                                    border.width: 1
+                                    width: 52 * Appearance.effectiveScale
+                                    height: 52 * Appearance.effectiveScale
+                                    radius: 26 * Appearance.effectiveScale
+                                    color: Theme.primary
 
                                     Text {
                                         anchors.centerIn: parent
-                                        text: {
-                                            if (dashWindow.systemVolume === 0) return "󰝟"; // Muted
-                                            if (dashWindow.systemVolume < 30) return "󰕿";
-                                            if (dashWindow.systemVolume < 70) return "󰖀";
-                                            return "󰕾";
-                                        }
+                                        text: dashWindow.isPlaying ? "󰏤" : "󰐊"
                                         font.family: Theme.font.monospace
-                                        font.pixelSize: 18
-                                        color: "white"
-                                    }
-
-                                    // Tooltip
-                                    Rectangle {
-                                        anchors.right: parent.left
-                                        anchors.rightMargin: 10
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        width: volumeTooltipText.implicitWidth + 16
-                                        height: 24
-                                        radius: 12
-                                        color: Qt.rgba(0, 0, 0, 0.8)
-                                        visible: volumeButtonMouse.containsMouse && dashWindow.dropdownType !== 1
-                                        z: 1000
-
-                                        Text {
-                                            id: volumeTooltipText
-                                            anchors.centerIn: parent
-                                            text: "Volume & Mute"
-                                            font.family: Theme.font.family
-                                            font.pixelSize: 10
-                                            color: "white"
-                                        }
+                                        font.pixelSize: 24 * Appearance.effectiveScale
+                                        color: Theme.background
                                     }
 
                                     MouseArea {
-                                        id: volumeButtonMouse
                                         anchors.fill: parent
-                                        hoverEnabled: true
                                         cursorShape: Qt.PointingHandCursor
-                                        onEntered: {
-                                            dropdownCloseTimer.stop();
-                                            var globalPos = volumeButton.mapToItem(dashWindow.contentItem, 0, 0);
-                                            dashWindow.dropdownAnchor = Qt.point(dashContainer.x + dashContainer.width, globalPos.y + volumeButton.height / 2);
-                                            dashWindow.dropdownRightEdge = true;
-                                            dashWindow.dropdownType = 1;
+                                        onClicked: if (dashWindow.activePlayer) dashWindow.activePlayer.togglePlaying()
+                                    }
+                                }
+
+                                // Next Button
+                                Text {
+                                    text: "󰒭"
+                                    font.family: Theme.font.monospace
+                                    font.pixelSize: 24 * Appearance.effectiveScale
+                                    color: "white"
+                                    
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: if (dashWindow.activePlayer) dashWindow.activePlayer.next()
+                                    }
+                                }
+
+                                // Loop/Repeat Button
+                                Text {
+                                    text: {
+                                        if (!dashWindow.activePlayer) return "󰑖";
+                                        switch (dashWindow.activePlayer.loopState) {
+                                        case MprisLoopState.Track:
+                                            return "󰑗"; // repeat-one / repeat-once
+                                        case MprisLoopState.Playlist:
+                                        default:
+                                            return "󰑖"; // repeat
                                         }
-                                        onExited: {
-                                            dropdownCloseTimer.restart();
-                                        }
+                                    }
+                                    font.family: Theme.font.monospace
+                                    font.pixelSize: 20 * Appearance.effectiveScale
+                                    color: dashWindow.activePlayer && dashWindow.activePlayer.loopState !== MprisLoopState.None ? Theme.primary : Qt.rgba(1, 1, 1, 0.5)
+                                    
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
                                         onClicked: {
-                                            if (dashWindow.systemVolume > 0) {
-                                                dashWindow.setSystemVolume(0);
-                                            } else {
-                                                dashWindow.setSystemVolume(50);
+                                            if (dashWindow.activePlayer) {
+                                                var current = dashWindow.activePlayer.loopState;
+                                                var nextState = MprisLoopState.None;
+                                                if (current === MprisLoopState.None) {
+                                                    nextState = MprisLoopState.Playlist;
+                                                } else if (current === MprisLoopState.Playlist) {
+                                                    nextState = MprisLoopState.Track;
+                                                } else {
+                                                    nextState = MprisLoopState.None;
+                                                }
+                                                dashWindow.activePlayer.loopState = nextState;
                                             }
-                                        }
-                                        onWheel: (wheel) => {
-                                            var step = wheel.angleDelta.y > 0 ? 5 : -5;
-                                            dashWindow.setSystemVolume(dashWindow.systemVolume + step);
                                         }
                                     }
                                 }

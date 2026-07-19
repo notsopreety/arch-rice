@@ -31,32 +31,62 @@ Singleton {
             fullKey: "file_url", 
             sampleKey: "sample_url",
             tagsKey: "tags" 
-        },
-        "danbooru": { 
-            name: "Danbooru",
-            url: "https://danbooru.donmai.us/posts.json", 
-            previewKey: "preview_file_url", 
-            fullKey: "file_url", 
-            sampleKey: "large_file_url",
-            tagsKey: "tag_string" 
         }
     })
 
-    readonly property var providerList: ["yande.re", "konachan", "danbooru"]
+    readonly property var providerList: ["yande.re", "konachan"]
 
-    readonly property bool _appInit: {
-        Qt.application.organization = "quickshell"
-        Qt.application.domain = "quickshell.org"
-        Qt.application.name = "quickshell"
-        return true
+    FileView {
+        id: keyFile
+        path: Quickshell.shellPath("settings.json")
+        blockLoading: true
+        blockWrites: true
+        watchChanges: true
+        onLoaded: {
+            try {
+                let content = keyFile.text().trim();
+                if (content.length > 0) {
+                    let obj = JSON.parse(content);
+                    if (obj) {
+                        let booru = obj.booru || {};
+                        if (booru.currentProvider !== undefined) {
+                            root.currentProvider = booru.currentProvider;
+                        }
+                        if (booru.nsfwEnabled !== undefined) {
+                            root.nsfwEnabled = booru.nsfwEnabled;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log("[BooruService] Failed to parse settings.json: " + e);
+            }
+        }
     }
 
-    Settings {
-        id: settings
-        category: "BooruService"
-        property alias currentProvider: root.currentProvider
-        property alias nsfwEnabled: root.nsfwEnabled
+    function saveSettings() {
+        try {
+            let obj = {};
+            try {
+                let currentContent = keyFile.text().trim();
+                if (currentContent.length > 0) {
+                    obj = JSON.parse(currentContent);
+                }
+            } catch (e) {}
+            
+            let booru = obj.booru || {};
+            if (booru.currentProvider !== currentProvider || booru.nsfwEnabled !== nsfwEnabled) {
+                booru.currentProvider = currentProvider;
+                booru.nsfwEnabled = nsfwEnabled;
+                obj.booru = booru;
+                keyFile.setText(JSON.stringify(obj, null, 2));
+            }
+        } catch (e) {
+            console.log("[BooruService] Failed to write settings.json: " + e);
+        }
     }
+
+    onCurrentProviderChanged: saveSettings()
+    onNsfwEnabledChanged: saveSettings()
 
     function search(tags) {
         searchTags = tags;
@@ -78,11 +108,7 @@ Singleton {
 
         let finalTags = searchTags;
         if (!nsfwEnabled) {
-            if (currentProvider === "danbooru") {
-                finalTags += " rating:g";
-            } else {
-                finalTags += " rating:safe";
-            }
+            finalTags += " rating:safe";
         }
 
         if (finalTags.trim() !== "") {

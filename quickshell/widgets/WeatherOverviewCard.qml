@@ -3,6 +3,7 @@ import QtQuick.Controls
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 
 Card {
     id: root
@@ -11,13 +12,13 @@ Card {
 
     Column {
         anchors.centerIn: parent
-        spacing: 8
+        spacing: 8 * Appearance.effectiveScale
         visible: !WeatherService.available
 
         Text {
             text: "󰖪"
             font.family: Theme.font.monospace
-            font.pixelSize: 24
+            font.pixelSize: 24 * Appearance.effectiveScale
             color: "white"
             anchors.horizontalCenter: parent.horizontalCenter
         }
@@ -25,7 +26,7 @@ Card {
         Text {
             text: "No Weather"
             font.family: Theme.font.family
-            font.pixelSize: 11
+            font.pixelSize: 11 * Appearance.effectiveScale
             color: "white"
             anchors.horizontalCenter: parent.horizontalCenter
         }
@@ -34,9 +35,9 @@ Card {
     Row {
         id: weatherRow
         anchors.left: parent.left
-        anchors.leftMargin: 8
+        anchors.leftMargin: 8 * Appearance.effectiveScale
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 8
+        spacing: 8 * Appearance.effectiveScale
         visible: WeatherService.available
 
         CustomIcon {
@@ -48,13 +49,13 @@ Card {
 
         Column {
             id: textCol
-            spacing: 2
+            spacing: 2 * Appearance.effectiveScale
             anchors.verticalCenter: parent.verticalCenter
 
             Text {
                 text: WeatherService.temp + "°C"
                 font.family: Theme.font.family
-                font.pixelSize: 22
+                font.pixelSize: 22 * Appearance.effectiveScale
                 color: "white"
                 font.weight: Font.Bold
             }
@@ -62,7 +63,7 @@ Card {
             Text {
                 text: WeatherService.condition
                 font.family: Theme.font.family
-                font.pixelSize: 11
+                font.pixelSize: 11 * Appearance.effectiveScale
                 color: "#e7bdb3"
                 elide: Text.ElideRight
                 width: root.width - weatherRow.anchors.leftMargin - textCol.x - 8

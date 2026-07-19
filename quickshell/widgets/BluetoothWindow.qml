@@ -10,6 +10,7 @@ import Quickshell.Bluetooth
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 
 PanelWindow {
     id: window
@@ -173,16 +174,16 @@ PanelWindow {
         // Floating Card Container positioned under the Bluetooth connectivity pill
         Item {
             id: container
-            width: 340
-            height: Math.min(560, mainColumn.implicitHeight + 32)
+            width: 340 * Appearance.effectiveScale
+            height: Math.min(560 * Appearance.effectiveScale, mainColumn.implicitHeight + 32 * Appearance.effectiveScale)
             anchors.right: parent.right
-            anchors.rightMargin: 140
+            anchors.rightMargin: 200 * Appearance.effectiveScale
 
             // Slide down animation when opening
             NumberAnimation on y {
                 id: slideInAnim
-                from: 20
-                to: 50
+                from: 20 * Appearance.effectiveScale
+                to: 50 * Appearance.effectiveScale
                 duration: 250
                 easing.type: Easing.OutCubic
             }
@@ -191,8 +192,8 @@ PanelWindow {
             DropShadow {
                 anchors.fill: card
                 source: card
-                verticalOffset: 16
-                radius: 48
+                verticalOffset: 16 * Appearance.effectiveScale
+                radius: 48 * Appearance.effectiveScale
                 samples: 65
                 color: Qt.rgba(0, 0, 0, 0.4)
                 transparentBorder: true
@@ -201,7 +202,7 @@ PanelWindow {
             Rectangle {
                 id: card
                 anchors.fill: parent
-                radius: 24
+                radius: 24 * Appearance.effectiveScale
                 color: window.cBg
                 border.color: window.cCardBorder
                 border.width: 1
@@ -227,18 +228,18 @@ PanelWindow {
                 ColumnLayout {
                     id: mainColumn
                     anchors.fill: parent
-                    anchors.margins: 16
+                    anchors.margins: 16 * Appearance.effectiveScale
                     spacing: 0
 
                     // ═══ HEADER: Bluetooth + Toggle ═══
                     RowLayout {
                         Layout.fillWidth: true
-                        Layout.bottomMargin: 8
+                        Layout.bottomMargin: 8 * Appearance.effectiveScale
 
                         Text {
                             text: "Bluetooth"
                             font.family: "Inter"
-                            font.pixelSize: 18
+                            font.pixelSize: 18 * Appearance.effectiveScale
                             font.weight: Font.DemiBold
                             color: window.cTextPrimary
                             Layout.fillWidth: true
@@ -246,13 +247,13 @@ PanelWindow {
 
                         // M3 Switch Pill
                         Item {
-                            width: 52
-                            height: 32
+                            width: 52 * Appearance.effectiveScale
+                            height: 32 * Appearance.effectiveScale
 
                             Rectangle {
                                 id: toggleTrack
                                 anchors.fill: parent
-                                radius: 16
+                                radius: 16 * Appearance.effectiveScale
                                 color: adapter?.enabled ? window.cAccent : Qt.rgba(window.cTextMuted.r, window.cTextMuted.g, window.cTextMuted.b, 0.15)
                                 border.width: adapter?.enabled ? 0 : 2
                                 border.color: adapter?.enabled ? "transparent" : Qt.rgba(window.cTextMuted.r, window.cTextMuted.g, window.cTextMuted.b, 0.4)
@@ -261,11 +262,11 @@ PanelWindow {
 
                             Rectangle {
                                 id: toggleThumb
-                                width: 24
-                                height: 24
-                                radius: 12
+                                width: 24 * Appearance.effectiveScale
+                                height: 24 * Appearance.effectiveScale
+                                radius: 12 * Appearance.effectiveScale
                                 anchors.verticalCenter: parent.verticalCenter
-                                x: adapter?.enabled ? toggleTrack.width - width - 4 : 4
+                                x: adapter?.enabled ? toggleTrack.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                                 color: adapter?.enabled ? "#ffffff" : Qt.rgba(window.cTextMuted.r, window.cTextMuted.g, window.cTextMuted.b, 0.6)
                                 Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
                                 Behavior on color { ColorAnimation { duration: 200 } }
@@ -274,7 +275,7 @@ PanelWindow {
                                     shadowEnabled: true
                                     shadowColor: Qt.rgba(0, 0, 0, 0.25)
                                     shadowBlur: 0.4
-                                    shadowVerticalOffset: 1
+                                    shadowVerticalOffset: 1 * Appearance.effectiveScale
                                 }
 
                                 // Checkmark icon when ON
@@ -282,7 +283,7 @@ PanelWindow {
                                     anchors.centerIn: parent
                                     text: "󰄬"
                                     font.family: "Material Design Icons"
-                                    font.pixelSize: 14
+                                    font.pixelSize: 14 * Appearance.effectiveScale
                                     color: window.cAccent
                                     opacity: adapter?.enabled ? 1.0 : 0.0
                                     Behavior on opacity { NumberAnimation { duration: 150 } }
@@ -300,7 +301,7 @@ PanelWindow {
                     // ═══ Adapter status text ═══
                     Text {
                         Layout.fillWidth: true
-                        Layout.bottomMargin: 12
+                        Layout.bottomMargin: 12 * Appearance.effectiveScale
                         text: {
                             if (!adapter) return "No adapter"
                             switch (adapter.state) {
@@ -314,7 +315,7 @@ PanelWindow {
                             }
                         }
                         font.family: "Inter"
-                        font.pixelSize: 12
+                        font.pixelSize: 12 * Appearance.effectiveScale
                         color: window.cTextMuted
                         visible: adapter && !adapter.enabled
                     }
@@ -322,20 +323,20 @@ PanelWindow {
                     // ═══ DEVICE NAME CARD ═══
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 48
-                        radius: 14
+                        Layout.preferredHeight: 48 * Appearance.effectiveScale
+                        radius: 14 * Appearance.effectiveScale
                         color: nameCardArea.containsMouse ? Qt.rgba(window.cTextPrimary.r, window.cTextPrimary.g, window.cTextPrimary.b, 0.06) : window.cCard
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 14
-                            spacing: 8
+                            anchors.leftMargin: 16 * Appearance.effectiveScale
+                            anchors.rightMargin: 14 * Appearance.effectiveScale
+                            spacing: 8 * Appearance.effectiveScale
 
                             Text {
                                 text: "Device name"
                                 font.family: "Inter"
-                                font.pixelSize: 14
+                                font.pixelSize: 14 * Appearance.effectiveScale
                                 color: window.cTextPrimary
                                 Layout.fillWidth: true
                             }
@@ -343,7 +344,7 @@ PanelWindow {
                             Text {
                                 text: adapter?.name || ""
                                 font.family: "Inter"
-                                font.pixelSize: 13
+                                font.pixelSize: 13 * Appearance.effectiveScale
                                 font.weight: Font.Medium
                                 color: window.cTextMuted
                                 elide: Text.ElideRight
@@ -352,7 +353,7 @@ PanelWindow {
                             Text {
                                 text: "󰅂"
                                 font.family: "Material Design Icons"
-                                font.pixelSize: 14
+                                font.pixelSize: 14 * Appearance.effectiveScale
                                 color: window.cTextMuted
                             }
                         }
@@ -369,7 +370,7 @@ PanelWindow {
                         }
                     }
 
-                    Item { Layout.preferredHeight: 10 }
+                    Item { Layout.preferredHeight: 10 * Appearance.effectiveScale }
 
                     // ═══ CONNECTED DEVICES ═══
                     Repeater {
@@ -377,9 +378,9 @@ PanelWindow {
 
                         delegate: Rectangle {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 68
-                            Layout.bottomMargin: connectedDevices.indexOf(modelData) < connectedDevices.length - 1 ? 0 : 6
-                            radius: 16
+                            Layout.preferredHeight: 68 * Appearance.effectiveScale
+                            Layout.bottomMargin: (connectedDevices.indexOf(modelData) < connectedDevices.length - 1 ? 0 : 6) * Appearance.effectiveScale
+                            radius: 16 * Appearance.effectiveScale
                             color: connCardArea.containsMouse ? Qt.rgba(window.cAccent.r, window.cAccent.g, window.cAccent.b, 0.12) : Qt.rgba(window.cAccent.r, window.cAccent.g, window.cAccent.b, 0.08)
                             border.width: 1
                             border.color: Qt.rgba(window.cAccent.r, window.cAccent.g, window.cAccent.b, 0.25)
@@ -388,21 +389,21 @@ PanelWindow {
 
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.margins: 14
-                                spacing: 12
+                                anchors.margins: 14 * Appearance.effectiveScale
+                                spacing: 12 * Appearance.effectiveScale
 
                                 // Icon
                                 Rectangle {
-                                    width: 40
-                                    height: 40
-                                    radius: 20
+                                    width: 40 * Appearance.effectiveScale
+                                    height: 40 * Appearance.effectiveScale
+                                    radius: 20 * Appearance.effectiveScale
                                     color: Qt.rgba(window.cAccent.r, window.cAccent.g, window.cAccent.b, 0.15)
 
                                     Text {
                                         anchors.centerIn: parent
                                         text: window.deviceIcon(modelData.icon)
                                         font.family: "Material Design Icons"
-                                        font.pixelSize: 20
+                                        font.pixelSize: 20 * Appearance.effectiveScale
                                         color: window.cAccent
                                     }
                                 }
@@ -410,12 +411,12 @@ PanelWindow {
                                 // Info
                                 ColumnLayout {
                                     Layout.fillWidth: true
-                                    spacing: 2
+                                    spacing: 2 * Appearance.effectiveScale
 
                                     Text {
                                         text: window.deviceDisplayName(modelData)
                                         font.family: "Inter"
-                                        font.pixelSize: 14
+                                        font.pixelSize: 14 * Appearance.effectiveScale
                                         font.weight: Font.DemiBold
                                         color: window.cTextPrimary
                                         elide: Text.ElideRight
@@ -425,16 +426,16 @@ PanelWindow {
                                     Text {
                                         text: window.deviceSubtitle(modelData)
                                         font.family: "Inter"
-                                        font.pixelSize: 11
+                                        font.pixelSize: 11 * Appearance.effectiveScale
                                         color: window.cAccent
                                     }
                                 }
 
                                 // Disconnect button
                                 Rectangle {
-                                    width: 32
-                                    height: 32
-                                    radius: 16
+                                    width: 32 * Appearance.effectiveScale
+                                    height: 32 * Appearance.effectiveScale
+                                    radius: 16 * Appearance.effectiveScale
                                     color: connDisconnectArea.containsMouse ? Qt.rgba(window.cError.r, window.cError.g, window.cError.b, 0.15) : "transparent"
                                     border.width: 1
                                     border.color: window.cError
@@ -443,7 +444,7 @@ PanelWindow {
                                         anchors.centerIn: parent
                                         text: "󰌊"
                                         font.family: "Material Design Icons"
-                                        font.pixelSize: 14
+                                        font.pixelSize: 14 * Appearance.effectiveScale
                                         color: window.cError
                                     }
 
@@ -476,11 +477,11 @@ PanelWindow {
                     // ═══ PAIRED DEVICES ═══
                     Text {
                         Layout.fillWidth: true
-                        Layout.bottomMargin: 8
-                        Layout.topMargin: connectedDevices.length > 0 ? 6 : 0
+                        Layout.bottomMargin: 8 * Appearance.effectiveScale
+                        Layout.topMargin: (connectedDevices.length > 0 ? 6 : 0) * Appearance.effectiveScale
                         text: "Paired devices"
                         font.family: "Inter"
-                        font.pixelSize: 13
+                        font.pixelSize: 13 * Appearance.effectiveScale
                         font.weight: Font.Medium
                         color: window.cTextSecondary
                         visible: pairedDevices.length > 0
@@ -488,16 +489,16 @@ PanelWindow {
 
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: pairedColumn.implicitHeight + 8
-                        Layout.bottomMargin: 10
-                        radius: 16
+                        Layout.preferredHeight: pairedColumn.implicitHeight + 8 * Appearance.effectiveScale
+                        Layout.bottomMargin: 10 * Appearance.effectiveScale
+                        radius: 16 * Appearance.effectiveScale
                         color: window.cCard
                         visible: pairedDevices.length > 0
 
                         ColumnLayout {
                             id: pairedColumn
                             anchors.fill: parent
-                            anchors.margins: 4
+                            anchors.margins: 4 * Appearance.effectiveScale
                             spacing: 0
 
                             Repeater {
@@ -505,9 +506,9 @@ PanelWindow {
 
                                 delegate: Rectangle {
                                     Layout.fillWidth: true
-                                    Layout.preferredHeight: 56
+                                    Layout.preferredHeight: 56 * Appearance.effectiveScale
                                     color: pairedArea.containsMouse ? Qt.rgba(window.cTextPrimary.r, window.cTextPrimary.g, window.cTextPrimary.b, 0.05) : "transparent"
-                                    radius: 12
+                                    radius: 12 * Appearance.effectiveScale
                                     scale: pairedArea.containsMouse ? 1.015 : 1.0
 
                                     Behavior on color { ColorAnimation { duration: 150 } }
@@ -517,7 +518,7 @@ PanelWindow {
 
                                     RowLayout {
                                         anchors.fill: parent
-                                        anchors.leftMargin: 12
+                                        anchors.leftMargin: 12 * Appearance.effectiveScale
                                         anchors.rightMargin: 12
                                         spacing: 12
 
@@ -735,9 +736,9 @@ PanelWindow {
 
                                     delegate: Rectangle {
                                         Layout.fillWidth: true
-                                        Layout.preferredHeight: 56
+                                        Layout.preferredHeight: 56 * Appearance.effectiveScale
                                         color: availArea.containsMouse ? Qt.rgba(window.cTextPrimary.r, window.cTextPrimary.g, window.cTextPrimary.b, 0.05) : "transparent"
-                                        radius: 12
+                                        radius: 12 * Appearance.effectiveScale
                                         scale: availArea.containsMouse ? 1.015 : 1.0
 
                                         Behavior on color { ColorAnimation { duration: 150 } }
@@ -747,25 +748,25 @@ PanelWindow {
 
                                         RowLayout {
                                             anchors.fill: parent
-                                            anchors.leftMargin: 12
-                                            anchors.rightMargin: 12
-                                            spacing: 12
+                                            anchors.leftMargin: 12 * Appearance.effectiveScale
+                                            anchors.rightMargin: 12 * Appearance.effectiveScale
+                                            spacing: 12 * Appearance.effectiveScale
 
                                             Text {
                                                 text: window.deviceIcon(modelData.icon)
                                                 font.family: "Material Design Icons"
-                                                font.pixelSize: 18
+                                                font.pixelSize: 18 * Appearance.effectiveScale
                                                 color: window.cTextSecondary
                                             }
 
                                             ColumnLayout {
                                                 Layout.fillWidth: true
-                                                spacing: 2
+                                                spacing: 2 * Appearance.effectiveScale
 
                                                 Text {
                                                     text: window.deviceDisplayName(modelData)
                                                     font.family: "Inter"
-                                                    font.pixelSize: 14
+                                                    font.pixelSize: 14 * Appearance.effectiveScale
                                                     color: window.cTextPrimary
                                                     elide: Text.ElideRight
                                                     Layout.fillWidth: true
@@ -774,16 +775,16 @@ PanelWindow {
                                                 Text {
                                                     text: window.deviceSubtitle(modelData)
                                                     font.family: "Inter"
-                                                    font.pixelSize: 11
+                                                    font.pixelSize: 11 * Appearance.effectiveScale
                                                     color: window.cTextMuted
                                                 }
                                             }
 
                                             // Pair button
                                             Rectangle {
-                                                width: 32
-                                                height: 32
-                                                radius: 16
+                                                width: 32 * Appearance.effectiveScale
+                                                height: 32 * Appearance.effectiveScale
+                                                radius: 16 * Appearance.effectiveScale
                                                 color: availPairArea.containsMouse ? Qt.rgba(window.cAccent.r, window.cAccent.g, window.cAccent.b, 0.15) : "transparent"
                                                 border.width: 1
                                                 border.color: availPairArea.containsMouse ? window.cAccent : "transparent"
@@ -792,7 +793,7 @@ PanelWindow {
                                                     anchors.centerIn: parent
                                                     text: modelData.pairing ? "󰑐" : "󰌘"
                                                     font.family: "Material Design Icons"
-                                                    font.pixelSize: 14
+                                                    font.pixelSize: 14 * Appearance.effectiveScale
                                                     color: window.cAccent
                                                 }
 

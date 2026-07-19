@@ -8,13 +8,14 @@ import Quickshell.Io
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 
 Item {
     id: root
     focus: true
 
-    implicitWidth: 700
-    implicitHeight: 410
+    implicitWidth: 700 * Appearance.effectiveScale
+    implicitHeight: 410 * Appearance.effectiveScale
 
     property int gridIndex: 0
     property string currentWallpaperPath: ""
@@ -218,23 +219,23 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.leftMargin: 16
-        anchors.rightMargin: 16
-        anchors.bottomMargin: -10
-        anchors.topMargin: -12
-        spacing: 8
+        anchors.leftMargin: 16 * Appearance.effectiveScale
+        anchors.rightMargin: 16 * Appearance.effectiveScale
+        anchors.bottomMargin: -10 * Appearance.effectiveScale
+        anchors.topMargin: -12 * Appearance.effectiveScale
+        spacing: 8 * Appearance.effectiveScale
 
         // Search Input Box (identical to EmojiBoard)
         Item {
             Layout.fillWidth: true
-            height: 48
+            height: 48 * Appearance.effectiveScale
 
             // Outlined container Rectangle
             Rectangle {
                 id: searchBg
                 anchors.fill: parent
-                anchors.topMargin: 4
-                radius: 8
+                anchors.topMargin: 4 * Appearance.effectiveScale
+                radius: 8 * Appearance.effectiveScale
                 color: "transparent"
                 border.color: searchInput.activeFocus ? Theme.primary : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
                 border.width: searchInput.activeFocus ? 2 : 1
@@ -244,10 +245,10 @@ Item {
 
             // Floating Label overlapping top border
             Rectangle {
-                x: 12
-                y: -2
-                height: 14
-                width: labelText.implicitWidth + 8
+                x: 12 * Appearance.effectiveScale
+                y: -2 * Appearance.effectiveScale
+                height: 14 * Appearance.effectiveScale
+                width: labelText.implicitWidth + 8 * Appearance.effectiveScale
                 color: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 1.0)
                 
                 Text {
@@ -255,7 +256,7 @@ Item {
                     anchors.centerIn: parent
                     text: "Search Wallpapers"
                     font.family: Theme.font.family
-                    font.pixelSize: 10
+                    font.pixelSize: 10 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: searchInput.activeFocus ? Theme.primary : Theme.outline
                     Behavior on color { ColorAnimation { duration: 180 } }
@@ -264,14 +265,14 @@ Item {
 
             RowLayout {
                 anchors.fill: parent
-                anchors.topMargin: 4
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 10
+                anchors.topMargin: 4 * Appearance.effectiveScale
+                anchors.leftMargin: 12 * Appearance.effectiveScale
+                anchors.rightMargin: 12 * Appearance.effectiveScale
+                spacing: 10 * Appearance.effectiveScale
 
                 DankIcon {
                     name: "search"
-                    size: 20
+                    size: 20 * Appearance.effectiveScale
                     color: searchInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
                     Layout.alignment: Qt.AlignVCenter
                     Behavior on color { ColorAnimation { duration: 180 } }
@@ -283,7 +284,7 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
                     color: "#ffffff"
                     font.family: Theme.font.family
-                    font.pixelSize: 13
+                    font.pixelSize: 13 * Appearance.effectiveScale
                     clip: true
                     selectByMouse: true
                     selectionColor: Theme.primary
@@ -323,7 +324,7 @@ Item {
                         anchors.centerIn: parent
                         text: "✕"
                         font.family: Theme.font.family
-                        font.pixelSize: 10
+                        font.pixelSize: 10 * Appearance.effectiveScale
                         color: "white"
                     }
 
@@ -360,8 +361,8 @@ Item {
                 // Selection/Hover Ring (outside the clipped card frame)
                 Rectangle {
                     anchors.fill: parent
-                    anchors.margins: 4
-                    radius: 16
+                    anchors.margins: 4 * Appearance.effectiveScale
+                    radius: 16 * Appearance.effectiveScale
                     color: "transparent"
                     border.color: index === root.gridIndex 
                         ? Theme.primary 
@@ -375,8 +376,8 @@ Item {
                 Rectangle {
                     id: cardFrame
                     anchors.fill: parent
-                    anchors.margins: 8
-                    radius: 12
+                    anchors.margins: 8 * Appearance.effectiveScale
+                    radius: 12 * Appearance.effectiveScale
                     color: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.4)
                     border.color: index === root.gridIndex 
                         ? Theme.primary 
@@ -399,7 +400,7 @@ Item {
                     Rectangle {
                         id: maskShape
                         anchors.fill: parent
-                        radius: 12
+                        radius: 12 * Appearance.effectiveScale
                         visible: false
                     }
 
@@ -445,20 +446,20 @@ Item {
                             anchors.bottom: parent.bottom
                             anchors.left: parent.left
                             anchors.right: parent.right
-                            anchors.margins: 8
-                            height: 26
-                            radius: 8
+                            anchors.margins: 8 * Appearance.effectiveScale
+                            height: 26 * Appearance.effectiveScale
+                            radius: 8 * Appearance.effectiveScale
                             color: Qt.rgba(0, 0, 0, 0.6)
                             border.color: Qt.rgba(255, 255, 255, 0.1)
                             border.width: 1
 
                             Text {
                                 anchors.centerIn: parent
-                                width: parent.width - 16
+                                width: parent.width - (16 * Appearance.effectiveScale)
                                 text: modelData.fileName ? modelData.fileName.replace(/\.[^/.]+$/, "") : ""
                                 color: "white"
                                 font.family: Theme.font.family
-                                font.pixelSize: 10
+                                font.pixelSize: 10 * Appearance.effectiveScale
                                 font.weight: Font.Medium
                                 elide: Text.ElideMiddle
                                 horizontalAlignment: Text.AlignHCenter
@@ -469,10 +470,10 @@ Item {
                         Rectangle {
                             anchors.top: parent.top
                             anchors.right: parent.right
-                            anchors.margins: 8
-                            width: 20
-                            height: 20
-                            radius: 10
+                            anchors.margins: 8 * Appearance.effectiveScale
+                            width: 20 * Appearance.effectiveScale
+                            height: 20 * Appearance.effectiveScale
+                            radius: 10 * Appearance.effectiveScale
                             color: Theme.primary
                             visible: {
                                 if (!modelData.filePath || !root.currentWallpaperPath) return false;
@@ -483,7 +484,7 @@ Item {
                                 anchors.centerIn: parent
                                 text: "󰄬"
                                 font.family: Theme.font.monospace
-                                font.pixelSize: 11
+                                font.pixelSize: 11 * Appearance.effectiveScale
                                 color: "white"
                             }
                         }

@@ -6,6 +6,7 @@ import Quickshell
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 
 Item {
     id: root
@@ -242,7 +243,7 @@ Item {
                 anchors.fill: parent
                 model: BooruService.images
                 cellWidth: parent.width / 2
-                cellHeight: 115
+                cellHeight: 115 * Appearance.effectiveScale
                 clip: true
                 boundsBehavior: Flickable.StopAtBounds
 

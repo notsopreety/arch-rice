@@ -4,6 +4,7 @@ import "../../theme"
 import "../../services"
 import "../../components"
 import "../"
+import "../../core"
 
 Card {
     id: root
@@ -11,8 +12,8 @@ Card {
     readonly property color dlColor: Theme.primary
     readonly property color ulColor: Theme.tertiary
 
-    implicitWidth: 260
-    implicitHeight: 200
+    implicitWidth: 260 * Appearance.effectiveScale
+    implicitHeight: 200 * Appearance.effectiveScale
 
     function formatSpeed(bytesPerSec) {
         if (bytesPerSec >= 1024 * 1024) {
@@ -37,16 +38,16 @@ Card {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 4
-        spacing: 8
+        anchors.margins: 4 * Appearance.effectiveScale
+        spacing: 8 * Appearance.effectiveScale
 
         RowLayout {
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
             Layout.alignment: Qt.AlignLeft
 
             DankIcon {
                 name: "router"
-                size: 18
+                size: 18 * Appearance.effectiveScale
                 color: dlColor
                 Layout.alignment: Qt.AlignVCenter
             }
@@ -54,7 +55,7 @@ Card {
             Text {
                 text: "Network"
                 font.family: Theme.font.family
-                font.pixelSize: 14
+                font.pixelSize: 14 * Appearance.effectiveScale
                 font.weight: Font.Bold
                 color: "white"
             }
@@ -98,7 +99,7 @@ Card {
 
                     // Draw subtle background grid
                     ctx.strokeStyle = Qt.rgba(255, 255, 255, 0.05);
-                    ctx.lineWidth = 1;
+                    ctx.lineWidth = 1 * Appearance.effectiveScale;
                     
                     // Horizontal grid lines (20%, 40%, 60%, 80%)
                     for (var yLine = 1; yLine < 5; yLine++) {
@@ -120,10 +121,10 @@ Card {
 
                     // Draw grid text labels
                     ctx.fillStyle = Qt.rgba(255, 255, 255, 0.3);
-                    ctx.font = "8px sans-serif";
+                    ctx.font = (8 * Appearance.effectiveScale) + "px sans-serif";
                     ctx.textBaseline = "middle";
                     ctx.textAlign = "left";
-                    ctx.fillText(root.formatShortSpeed(maxVal), 4, 6);
+                    ctx.fillText(root.formatShortSpeed(maxVal), 4 * Appearance.effectiveScale, 6 * Appearance.effectiveScale);
                     ctx.fillText(root.formatShortSpeed(maxVal * 0.8), 4, h * 1 / 5);
                     ctx.fillText(root.formatShortSpeed(maxVal * 0.6), 4, h * 2 / 5);
                     ctx.fillText(root.formatShortSpeed(maxVal * 0.4), 4, h * 3 / 5);
@@ -135,7 +136,7 @@ Card {
                     // Draw Download Graph
                     ctx.beginPath();
                     ctx.strokeStyle = root.dlColor;
-                    ctx.lineWidth = 2;
+                    ctx.lineWidth = 2 * Appearance.effectiveScale;
                     for (var d = 0; d < history.length; d++) {
                         var dx = d * stepX;
                         var dy = h - ((history[d].download / maxVal) * (h - 4)) - 2;
@@ -154,7 +155,7 @@ Card {
                     // Draw Upload Graph
                     ctx.beginPath();
                     ctx.strokeStyle = root.ulColor;
-                    ctx.lineWidth = 1.5;
+                    ctx.lineWidth = 1.5 * Appearance.effectiveScale;
                     for (var u = 0; u < history.length; u++) {
                         var ux = u * stepX;
                         var uy = h - ((history[u].upload / maxVal) * (h - 4)) - 2;
@@ -169,7 +170,7 @@ Card {
                 anchors.centerIn: parent
                 text: "Collecting data..."
                 font.family: Theme.font.family
-                font.pixelSize: 11
+                font.pixelSize: 11 * Appearance.effectiveScale
                 color: Qt.rgba(255, 255, 255, 0.4)
                 visible: !SystemUsage.networkHistory || SystemUsage.networkHistory.length < 2
             }
@@ -178,20 +179,20 @@ Card {
         // Values at bottom
         Column {
             Layout.fillWidth: true
-            spacing: 2
+            spacing: 2 * Appearance.effectiveScale
 
             RowLayout {
                 width: parent.width
 
                 Row {
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
                     DankIcon {
                         name: "arrow_downward"
-                        size: 12
+                        size: 12 * Appearance.effectiveScale
                         color: root.dlColor
                         anchors.verticalCenter: parent.verticalCenter
                     }
-                    Text { text: "Down"; font.family: Theme.font.family; font.pixelSize: 11; color: Qt.rgba(255, 255, 255, 0.6); anchors.verticalCenter: parent.verticalCenter }
+                    Text { text: "Down"; font.family: Theme.font.family; font.pixelSize: 11 * Appearance.effectiveScale; color: Qt.rgba(255, 255, 255, 0.6); anchors.verticalCenter: parent.verticalCenter }
                 }
 
                 Item { Layout.fillWidth: true }
@@ -199,7 +200,7 @@ Card {
                 Text {
                     text: root.formatSpeed(SystemUsage.downloadSpeed)
                     font.family: Theme.font.family
-                    font.pixelSize: 12
+                    font.pixelSize: 12 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: "white"
                 }
@@ -209,14 +210,14 @@ Card {
                 width: parent.width
 
                 Row {
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
                     DankIcon {
                         name: "arrow_upward"
-                        size: 12
+                        size: 12 * Appearance.effectiveScale
                         color: root.ulColor
                         anchors.verticalCenter: parent.verticalCenter
                     }
-                    Text { text: "Up"; font.family: Theme.font.family; font.pixelSize: 11; color: Qt.rgba(255, 255, 255, 0.6); anchors.verticalCenter: parent.verticalCenter }
+                    Text { text: "Up"; font.family: Theme.font.family; font.pixelSize: 11 * Appearance.effectiveScale; color: Qt.rgba(255, 255, 255, 0.6); anchors.verticalCenter: parent.verticalCenter }
                 }
 
                 Item { Layout.fillWidth: true }
@@ -224,7 +225,7 @@ Card {
                 Text {
                     text: root.formatSpeed(SystemUsage.uploadSpeed)
                     font.family: Theme.font.family
-                    font.pixelSize: 12
+                    font.pixelSize: 12 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: "white"
                 }

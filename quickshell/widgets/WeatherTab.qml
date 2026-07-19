@@ -3,37 +3,38 @@ import QtQuick.Layouts
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 
 Item {
     id: root
 
-    implicitWidth: 700
-    implicitHeight: 410
+    implicitWidth: 700 * Appearance.effectiveScale
+    implicitHeight: 410 * Appearance.effectiveScale
 
     property bool showHourly: false
 
     // ── UNAVAILABLE STATE ──
     Column {
         anchors.centerIn: parent
-        spacing: 24
+        spacing: 24 * Appearance.effectiveScale
         visible: !WeatherService.available
 
         Text {
             text: "󰖪"
             font.family: Theme.font.monospace
-            font.pixelSize: 48
+            font.pixelSize: 48 * Appearance.effectiveScale
             color: Qt.rgba(1, 1, 1, 0.5)
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
         Row {
-            spacing: 12
+            spacing: 12 * Appearance.effectiveScale
             anchors.horizontalCenter: parent.horizontalCenter
 
             Text {
                 text: "No Weather Data Available"
                 font.family: Theme.font.family
-                font.pixelSize: 16
+                font.pixelSize: 16 * Appearance.effectiveScale
                 color: Qt.rgba(1, 1, 1, 0.7)
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -42,7 +43,7 @@ Item {
                 id: refreshBtnUnavail
                 text: "󰑐"
                 font.family: Theme.font.monospace
-                font.pixelSize: 18
+                font.pixelSize: 18 * Appearance.effectiveScale
                 color: Qt.rgba(1, 1, 1, 0.4)
                 anchors.verticalCenter: parent.verticalCenter
                 property bool spinning: false
@@ -71,13 +72,13 @@ Item {
         id: mainColumn
         anchors.fill: parent
         visible: WeatherService.available
-        spacing: 10
+        spacing: 10 * Appearance.effectiveScale
 
         // ── HERO CARD ──
         Rectangle {
             id: heroCard
             width: parent.width
-            height: heroContent.height + 28
+            height: heroContent.height + 28 * Appearance.effectiveScale
             radius: Theme.rounding.normal
             color: Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.4)
             border.color: Theme.outlineVariant
@@ -86,8 +87,8 @@ Item {
             Column {
                 id: heroContent
                 x: 20; y: 14
-                width: parent.width - 40
-                spacing: 12
+                width: parent.width - (40 * Appearance.effectiveScale)
+                spacing: 12 * Appearance.effectiveScale
 
                 Item {
                     width: parent.width
@@ -98,7 +99,7 @@ Item {
                         id: heroLeft
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        spacing: 20
+                        spacing: 20 * Appearance.effectiveScale
 
                         CustomIcon {
                             source: WeatherService.googleIcon
@@ -108,22 +109,22 @@ Item {
                         }
 
                         Column {
-                            spacing: 3
+                            spacing: 3 * Appearance.effectiveScale
                             anchors.verticalCenter: parent.verticalCenter
 
                             Row {
-                                spacing: 4
+                                spacing: 4 * Appearance.effectiveScale
                                 Text {
                                     text: WeatherService.temp + "°"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 36
+                                    font.pixelSize: 36 * Appearance.effectiveScale
                                     font.weight: Font.Light
                                     color: "white"
                                 }
                                 Text {
                                     text: "C"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 14
+                                    font.pixelSize: 14 * Appearance.effectiveScale
                                     color: Qt.rgba(1, 1, 1, 0.7)
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
@@ -132,14 +133,14 @@ Item {
                             Text {
                                 text: WeatherService.condition
                                 font.family: Theme.font.family
-                                font.pixelSize: 14
+                                font.pixelSize: 14 * Appearance.effectiveScale
                                 color: Qt.rgba(1, 1, 1, 0.7)
                             }
 
                             Text {
                                 text: "Feels Like " + WeatherService.feelsLike + "°"
                                 font.family: Theme.font.family
-                                font.pixelSize: 11
+                                font.pixelSize: 11 * Appearance.effectiveScale
                                 color: Qt.rgba(1, 1, 1, 0.5)
                             }
 
@@ -151,7 +152,7 @@ Item {
                                     return parts.join(", ");
                                 }
                                 font.family: Theme.font.family
-                                font.pixelSize: 11
+                                font.pixelSize: 11 * Appearance.effectiveScale
                                 color: Qt.rgba(1, 1, 1, 0.5)
                                 visible: text.length > 0
                             }
@@ -178,26 +179,26 @@ Item {
                             ]
 
                             Row {
-                                spacing: 6
+                                spacing: 6 * Appearance.effectiveScale
                                 Text {
                                     text: modelData.icon
                                     font.family: Theme.font.monospace
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     color: Qt.rgba(1, 1, 1, 0.5)
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
                                 Column {
-                                    spacing: 2
+                                    spacing: 2 * Appearance.effectiveScale
                                     Text {
                                         text: modelData.label
                                         font.family: Theme.font.family
-                                        font.pixelSize: 10
+                                        font.pixelSize: 10 * Appearance.effectiveScale
                                         color: Qt.rgba(1, 1, 1, 0.5)
                                     }
                                     Text {
                                         text: modelData.value
                                         font.family: Theme.font.family
-                                        font.pixelSize: 13
+                                        font.pixelSize: 13 * Appearance.effectiveScale
                                         color: "white"
                                     }
                                 }
@@ -212,15 +213,15 @@ Item {
         Item {
             id: chipsRow
             width: parent.width
-            height: 30
+            height: 30 * Appearance.effectiveScale
 
             Row {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: 8
+                spacing: 8 * Appearance.effectiveScale
 
                 Rectangle {
-                    width: dailyChipText.width + 24; height: 28; radius: 14
+                    width: dailyChipText.width + 24 * Appearance.effectiveScale; height: 28; radius: 14
                     color: !root.showHourly ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.2) : Qt.rgba(1, 1, 1, 0.06)
                     border.color: !root.showHourly ? Theme.primary : Qt.rgba(1, 1, 1, 0.15)
                     border.width: 1
@@ -229,7 +230,7 @@ Item {
                 }
 
                 Rectangle {
-                    width: hourlyChipText.width + 24; height: 28; radius: 14
+                    width: hourlyChipText.width + 24 * Appearance.effectiveScale; height: 28; radius: 14
                     color: root.showHourly ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.2) : Qt.rgba(1, 1, 1, 0.06)
                     border.color: root.showHourly ? Theme.primary : Qt.rgba(1, 1, 1, 0.15)
                     border.width: 1
@@ -244,7 +245,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: "󰑐"
                 font.family: Theme.font.monospace
-                font.pixelSize: 18
+                font.pixelSize: 18 * Appearance.effectiveScale
                 color: Qt.rgba(1, 1, 1, 0.4)
                 property bool spinning: false
 
@@ -285,7 +286,7 @@ Item {
                 Row {
                     id: dailyRow
                     height: dailyFlickable.height
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
 
                     Repeater {
                         model: WeatherService.forecast
@@ -305,12 +306,12 @@ Item {
 
                             Column {
                                 anchors.centerIn: parent
-                                spacing: 8
+                                spacing: 8 * Appearance.effectiveScale
 
                                 Text {
                                     text: modelData.day || "--"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 11
+                                    font.pixelSize: 11 * Appearance.effectiveScale
                                     font.weight: index === 0 ? Font.Medium : Font.Normal
                                     color: index === 0 ? Theme.primary : "white"
                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -326,14 +327,14 @@ Item {
                                 Text {
                                     text: modelData.tempMin + "° / " + modelData.tempMax + "°"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 11
+                                    font.pixelSize: 11 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     color: index === 0 ? Theme.primary : "white"
                                     anchors.horizontalCenter: parent.horizontalCenter
                                 }
 
                                 Row {
-                                    spacing: 3
+                                    spacing: 3 * Appearance.effectiveScale
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     Text { text: "󰖗"; font.family: Theme.font.monospace; font.pixelSize: 9; color: Qt.rgba(1,1,1,0.5); anchors.verticalCenter: parent.verticalCenter }
                                     Text { text: modelData.precipitationProbability + "%"; font.family: Theme.font.family; font.pixelSize: 9; color: Qt.rgba(1,1,1,0.5); anchors.verticalCenter: parent.verticalCenter }
@@ -366,7 +367,7 @@ Item {
                 Row {
                     id: hourlyRow
                     height: hourlyFlickable.height
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
 
                     Repeater {
                         model: WeatherService.hourlyForecast
@@ -388,12 +389,12 @@ Item {
 
                             Column {
                                 anchors.centerIn: parent
-                                spacing: 6
+                                spacing: 6 * Appearance.effectiveScale
 
                                 Text {
                                     text: modelData.time || "--"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 10
+                                    font.pixelSize: 10 * Appearance.effectiveScale
                                     font.weight: isCurrent ? Font.Medium : Font.Normal
                                     color: isCurrent ? Theme.primary : "white"
                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -409,7 +410,7 @@ Item {
                                 Text {
                                     text: modelData.temp + "°"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     color: isCurrent ? Theme.primary : "white"
                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -418,20 +419,20 @@ Item {
                                 Text {
                                     text: "Feels " + modelData.feelsLike + "°"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 9
+                                    font.pixelSize: 9 * Appearance.effectiveScale
                                     color: Qt.rgba(1, 1, 1, 0.5)
                                     anchors.horizontalCenter: parent.horizontalCenter
                                 }
 
                                 Row {
-                                    spacing: 3
+                                    spacing: 3 * Appearance.effectiveScale
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     Text { text: "󰖗"; font.family: Theme.font.monospace; font.pixelSize: 7; color: Qt.rgba(1,1,1,0.5); anchors.verticalCenter: parent.verticalCenter }
                                     Text { text: modelData.humidity + "%"; font.family: Theme.font.family; font.pixelSize: 8; color: Qt.rgba(1,1,1,0.5); anchors.verticalCenter: parent.verticalCenter }
                                 }
 
                                 Row {
-                                    spacing: 3
+                                    spacing: 3 * Appearance.effectiveScale
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     Text { text: "󰖝"; font.family: Theme.font.monospace; font.pixelSize: 7; color: Qt.rgba(1,1,1,0.5); anchors.verticalCenter: parent.verticalCenter }
                                     Text { text: modelData.wind + " km/h"; font.family: Theme.font.family; font.pixelSize: 8; color: Qt.rgba(1,1,1,0.5); anchors.verticalCenter: parent.verticalCenter }

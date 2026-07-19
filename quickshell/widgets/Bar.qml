@@ -18,6 +18,11 @@ PanelWindow {
         right: true
     }
 
+    FontLoader {
+        id: nerdFontLoader
+        source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/fonts/nerd-fonts/FiraCodeNerdFont-Regular.ttf"
+    }
+
     implicitHeight: Styling.barHeight
     color: "transparent"
 
@@ -110,7 +115,7 @@ PanelWindow {
                 // OS Icon (Arch Linux logo)
                 Text {
                     text: ""
-                    font.family: Theme.font.monospace
+                    font.family: nerdFontLoader.name
                     font.pixelSize: 16
                     font.weight: Font.Bold
                     color: Theme.primary

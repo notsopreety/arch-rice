@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../core"
 import "../../theme"
 import "../../services"
 
@@ -14,7 +15,8 @@ Item {
     property bool isActive: true
     property bool showWeather: true
 
-    property int winSize: 220
+    property int baseWinSize: 220
+    readonly property real winSize: baseWinSize * Appearance.effectiveScale
     property int scallops: 12
     property int amplitude: 5
     property bool showNumbers: true
@@ -46,7 +48,7 @@ Item {
             if (clk.showWeather !== undefined) root.showWeather = clk.showWeather;
             if (clk.winX !== undefined) root.settingsX = clk.winX;
             if (clk.winY !== undefined) root.settingsY = clk.winY;
-            if (clk.winSize !== undefined) root.winSize = clk.winSize;
+            if (clk.winSize !== undefined) root.baseWinSize = clk.winSize;
             if (clk.scallops !== undefined) root.scallops = clk.scallops;
             if (clk.amplitude !== undefined) root.amplitude = clk.amplitude;
             if (clk.showNumbers !== undefined) root.showNumbers = clk.showNumbers;

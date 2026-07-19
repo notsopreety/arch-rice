@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell.Services.Mpris
 import "../theme"
 import "../components"
+import "../core"
 
 Card {
     id: root
@@ -38,13 +39,13 @@ Card {
 
     Column {
         anchors.centerIn: parent
-        spacing: 8
+        spacing: 8 * Appearance.effectiveScale
         visible: !root.hasPlayer
 
         Text {
             text: "󰎆"
             font.family: Theme.font.monospace
-            font.pixelSize: 24
+            font.pixelSize: 24 * Appearance.effectiveScale
             color: "white"
             anchors.horizontalCenter: parent.horizontalCenter
         }
@@ -52,7 +53,7 @@ Card {
         Text {
             text: "No Media"
             font.family: Theme.font.family
-            font.pixelSize: 11
+            font.pixelSize: 11 * Appearance.effectiveScale
             color: "white"
             anchors.horizontalCenter: parent.horizontalCenter
         }
@@ -60,27 +61,27 @@ Card {
 
     Column {
         anchors.top: parent.top
-        anchors.topMargin: 12
+        anchors.topMargin: 12 * Appearance.effectiveScale
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
-        spacing: 6
+        spacing: 6 * Appearance.effectiveScale
         visible: root.hasPlayer
 
         // Art and Titles wrapped in MouseArea to switch tabs
         MouseArea {
             width: parent.width
-            height: 104 // Height of Art (72) + Spacing (6) + Text block (26)
+            height: 104 * Appearance.effectiveScale // Height of Art (72) + Spacing (6) + Text block (26)
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: root.clicked()
 
             Column {
                 anchors.fill: parent
-                spacing: 6
+                spacing: 6 * Appearance.effectiveScale
 
                 Item {
-                    width: 72
-                    height: 72
+                    width: 72 * Appearance.effectiveScale
+                    height: 72 * Appearance.effectiveScale
                     anchors.horizontalCenter: parent.horizontalCenter
                     clip: false
 
@@ -92,12 +93,12 @@ Card {
 
                 Column {
                     width: parent.width
-                    spacing: 2
+                    spacing: 2 * Appearance.effectiveScale
 
                     Text {
                         text: root.activePlayer ? (root.activePlayer.trackTitle || "Unknown") : ""
                         font.family: Theme.font.family
-                        font.pixelSize: 11
+                        font.pixelSize: 11 * Appearance.effectiveScale
                         font.weight: Font.Medium
                         color: "white"
                         width: parent.width
@@ -108,7 +109,7 @@ Card {
                     Text {
                         text: root.activePlayer ? (root.activePlayer.trackArtist || "") : ""
                         font.family: Theme.font.family
-                        font.pixelSize: 9
+                        font.pixelSize: 9 * Appearance.effectiveScale
                         color: "#e7bdb3"
                         width: parent.width
                         elide: Text.ElideRight
@@ -119,9 +120,9 @@ Card {
         }
 
         Item {
-            width: parent.width - 24
+            width: parent.width - (24 * Appearance.effectiveScale)
             anchors.horizontalCenter: parent.horizontalCenter
-            height: 18
+            height: 18 * Appearance.effectiveScale
 
             MediaSeekBar {
                 anchors.fill: parent
@@ -132,13 +133,13 @@ Card {
         }
 
         Row {
-            spacing: 12
+            spacing: 12 * Appearance.effectiveScale
             anchors.horizontalCenter: parent.horizontalCenter
 
             Text {
                 text: "󰒮"
                 font.family: Theme.font.monospace
-                font.pixelSize: 14
+                font.pixelSize: 14 * Appearance.effectiveScale
                 color: "white"
                 anchors.verticalCenter: parent.verticalCenter
                 MouseArea {
@@ -148,16 +149,16 @@ Card {
             }
 
             Rectangle {
-                width: 28
-                height: 28
-                radius: 14
+                width: 28 * Appearance.effectiveScale
+                height: 28 * Appearance.effectiveScale
+                radius: 14 * Appearance.effectiveScale
                 color: Theme.primary
 
                 Text {
                     anchors.centerIn: parent
                     text: root.isPlaying ? "󰏤" : "󰐊"
                     font.family: Theme.font.monospace
-                    font.pixelSize: 14
+                    font.pixelSize: 14 * Appearance.effectiveScale
                     color: Theme.background
                 }
 
@@ -170,7 +171,7 @@ Card {
             Text {
                 text: "󰒭"
                 font.family: Theme.font.monospace
-                font.pixelSize: 14
+                font.pixelSize: 14 * Appearance.effectiveScale
                 color: "white"
                 anchors.verticalCenter: parent.verticalCenter
                 MouseArea {
@@ -185,9 +186,9 @@ Card {
         id: bongocat
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottomMargin: -16
-        width: parent.width + 12
-        height: 130
+        anchors.bottomMargin: -16 * Appearance.effectiveScale
+        width: parent.width + (12 * Appearance.effectiveScale)
+        height: 130 * Appearance.effectiveScale
         playing: root.isPlaying
         speed: 0.35 // Slow down the default animation speed further
         source: "file:///home/sawmer/.config/quickshell/assets/bongocat.gif"

@@ -9,6 +9,7 @@ import Quickshell.Wayland
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 
 PanelWindow {
     id: window
@@ -260,16 +261,16 @@ PanelWindow {
         // Floating Card Container positioned under the Wi-Fi connectivity pill
         Item {
             id: container
-            width: 340
-            height: Math.min(780, mainColumn.implicitHeight + 32)
+            width: 340 * Appearance.effectiveScale
+            height: Math.min(780 * Appearance.effectiveScale, mainColumn.implicitHeight + 32 * Appearance.effectiveScale)
             anchors.right: parent.right
-            anchors.rightMargin: 200
+            anchors.rightMargin: 260 * Appearance.effectiveScale
 
             // Slide down animation when opening
             NumberAnimation on y {
                 id: slideInAnim
-                from: 20
-                to: 50
+                from: 20 * Appearance.effectiveScale
+                to: 50 * Appearance.effectiveScale
                 duration: 250
                 easing.type: Easing.OutCubic
             }
@@ -278,8 +279,8 @@ PanelWindow {
             DropShadow {
                 anchors.fill: card
                 source: card
-                verticalOffset: 16
-                radius: 48
+                verticalOffset: 16 * Appearance.effectiveScale
+                radius: 48 * Appearance.effectiveScale
                 samples: 65
                 color: Qt.rgba(0, 0, 0, 0.4)
                 transparentBorder: true
@@ -288,7 +289,7 @@ PanelWindow {
             Rectangle {
                 id: card
                 anchors.fill: parent
-                radius: 24
+                radius: 24 * Appearance.effectiveScale
                 color: window.cBg
                 border.color: window.cCardBorder
                 border.width: 1
@@ -314,18 +315,18 @@ PanelWindow {
                 ColumnLayout {
                     id: mainColumn
                     anchors.fill: parent
-                    anchors.margins: 16
+                    anchors.margins: 16 * Appearance.effectiveScale
                     spacing: 0
 
                     // ═══ HEADER: Wi-Fi + Toggle ═══
                     RowLayout {
                         Layout.fillWidth: true
-                        Layout.bottomMargin: 12
+                        Layout.bottomMargin: 12 * Appearance.effectiveScale
 
                         Text {
                             text: "Wi-Fi"
                             font.family: "Inter"
-                            font.pixelSize: 18
+                            font.pixelSize: 18 * Appearance.effectiveScale
                             font.weight: Font.DemiBold
                             color: window.cTextPrimary
                             Layout.fillWidth: true
@@ -333,13 +334,13 @@ PanelWindow {
 
                         // M3 Switch Pill
                         Item {
-                            width: 52
-                            height: 32
+                            width: 52 * Appearance.effectiveScale
+                            height: 32 * Appearance.effectiveScale
 
                             Rectangle {
                                 id: toggleTrack
                                 anchors.fill: parent
-                                radius: 16
+                                radius: 16 * Appearance.effectiveScale
                                 color: network.wifiEnabled ? window.cBlue : Qt.rgba(255, 255, 255, 0.12)
                                 border.width: network.wifiEnabled ? 0 : 1.5
                                 border.color: network.wifiEnabled ? "transparent" : Qt.rgba(255, 255, 255, 0.25)
@@ -348,11 +349,11 @@ PanelWindow {
 
                             Rectangle {
                                 id: toggleThumb
-                                width: 24
-                                height: 24
-                                radius: 12
+                                width: 24 * Appearance.effectiveScale
+                                height: 24 * Appearance.effectiveScale
+                                radius: 12 * Appearance.effectiveScale
                                 anchors.verticalCenter: parent.verticalCenter
-                                x: network.wifiEnabled ? toggleTrack.width - width - 4 : 4
+                                x: network.wifiEnabled ? toggleTrack.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                                 color: "#ffffff"
                                 Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
 
@@ -360,7 +361,7 @@ PanelWindow {
                                 DankIcon {
                                     anchors.centerIn: parent
                                     name: "check"
-                                    size: 14
+                                    size: 14 * Appearance.effectiveScale
                                     color: window.cBlue
                                     opacity: network.wifiEnabled ? 1.0 : 0.0
                                     Behavior on opacity { NumberAnimation { duration: 150 } }
@@ -378,32 +379,32 @@ PanelWindow {
                     // ═══ WIRED CONNECTED CARD ═══
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: wiredConnectedRow.implicitHeight + 24
-                        Layout.bottomMargin: 16
-                        radius: 16
+                        Layout.preferredHeight: wiredConnectedRow.implicitHeight + 24 * Appearance.effectiveScale
+                        Layout.bottomMargin: 16 * Appearance.effectiveScale
+                        radius: 16 * Appearance.effectiveScale
                         color: window.cBlue
                         visible: network.isWired
 
                         RowLayout {
                             id: wiredConnectedRow
                             anchors.fill: parent
-                            anchors.margins: 14
-                            spacing: 12
+                            anchors.margins: 14 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
 
                             DankIcon {
                                 name: "lan"
-                                size: 22
+                                size: 22 * Appearance.effectiveScale
                                 color: "#ffffff"
                             }
 
                             ColumnLayout {
                                 Layout.fillWidth: true
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
 
                                 Text {
                                     text: network.wiredConnectionName
                                     font.family: "Inter"
-                                    font.pixelSize: 14
+                                    font.pixelSize: 14 * Appearance.effectiveScale
                                     font.weight: Font.DemiBold
                                     color: "#ffffff"
                                     elide: Text.ElideRight
@@ -413,7 +414,7 @@ PanelWindow {
                                 Text {
                                     text: "Connected via Ethernet"
                                     font.family: "Inter"
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     color: Qt.rgba(1, 1, 1, 0.7)
                                 }
                             }
@@ -423,35 +424,35 @@ PanelWindow {
                     // ═══ CONNECTED CARD ═══
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: connectedRow.implicitHeight + 24
-                        Layout.bottomMargin: 16
-                        radius: 16
+                        Layout.preferredHeight: connectedRow.implicitHeight + 24 * Appearance.effectiveScale
+                        Layout.bottomMargin: 16 * Appearance.effectiveScale
+                        radius: 16 * Appearance.effectiveScale
                         color: connectedNet ? window.cBlue : window.cCard
                         visible: connectedNet !== null
 
                         RowLayout {
                             id: connectedRow
                             anchors.fill: parent
-                            anchors.margins: 14
-                            spacing: 12
+                            anchors.margins: 14 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
 
                             DankIcon {
                                 name: connectedNet ? window.signalIcon(connectedNet.strength) : ""
-                                size: 22
+                                size: 22 * Appearance.effectiveScale
                                 color: "#ffffff"
                             }
 
                             ColumnLayout {
                                 Layout.fillWidth: true
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
 
                                 RowLayout {
-                                    spacing: 6
+                                    spacing: 6 * Appearance.effectiveScale
 
                                     Text {
                                         text: connectedNet ? connectedNet.ssid : ""
                                         font.family: "Inter"
-                                        font.pixelSize: 14
+                                        font.pixelSize: 14 * Appearance.effectiveScale
                                         font.weight: Font.DemiBold
                                         color: "#ffffff"
                                         elide: Text.ElideRight
@@ -460,9 +461,9 @@ PanelWindow {
 
                                     Rectangle {
                                         visible: connectedNet && connectedNet.frequency >= 5000
-                                        width: badge5g.implicitWidth + 12
-                                        height: 20
-                                        radius: 6
+                                        width: badge5g.implicitWidth + 12 * Appearance.effectiveScale
+                                        height: 20 * Appearance.effectiveScale
+                                        radius: 6 * Appearance.effectiveScale
                                         color: "transparent"
                                         border.width: 1
                                         border.color: Qt.rgba(1, 1, 1, 0.5)
@@ -471,7 +472,7 @@ PanelWindow {
                                             anchors.centerIn: parent
                                             text: "5G"
                                             font.family: "Inter"
-                                            font.pixelSize: 10
+                                            font.pixelSize: 10 * Appearance.effectiveScale
                                             font.weight: Font.Medium
                                             color: "#ffffff"
                                         }
@@ -481,22 +482,22 @@ PanelWindow {
                                 Text {
                                     text: "Tap to share password"
                                     font.family: "Inter"
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     color: Qt.rgba(1, 1, 1, 0.7)
                                 }
                             }
 
                             RowLayout {
-                                spacing: 6
+                                spacing: 6 * Appearance.effectiveScale
                                 DankIcon {
                                     visible: connectedNet && connectedNet.isSecure
                                     name: "lock"
-                                    size: 14
+                                    size: 14 * Appearance.effectiveScale
                                     color: Qt.rgba(1, 1, 1, 0.6)
                                 }
                                 DankIcon {
                                     name: "chevron_right"
-                                    size: 16
+                                    size: 16 * Appearance.effectiveScale
                                     color: Qt.rgba(1, 1, 1, 0.5)
                                 }
                             }
@@ -519,10 +520,10 @@ PanelWindow {
                     // ═══ SAVED NETWORKS ═══
                     Text {
                         Layout.fillWidth: true
-                        Layout.bottomMargin: 8
+                        Layout.bottomMargin: 8 * Appearance.effectiveScale
                         text: "Saved networks"
                         font.family: "Inter"
-                        font.pixelSize: 13
+                        font.pixelSize: 13 * Appearance.effectiveScale
                         font.weight: Font.Medium
                         color: window.cTextSecondary
                         visible: savedNetworks.length > 0
@@ -530,16 +531,16 @@ PanelWindow {
 
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: savedColumn.implicitHeight + 8
-                        Layout.bottomMargin: 16
-                        radius: 16
+                        Layout.preferredHeight: savedColumn.implicitHeight + 8 * Appearance.effectiveScale
+                        Layout.bottomMargin: 16 * Appearance.effectiveScale
+                        radius: 16 * Appearance.effectiveScale
                         color: window.cCard
                         visible: savedNetworks.length > 0
 
                         ColumnLayout {
                             id: savedColumn
                             anchors.fill: parent
-                            anchors.margins: 4
+                            anchors.margins: 4 * Appearance.effectiveScale
                             spacing: 0
 
                             Repeater {
@@ -547,40 +548,40 @@ PanelWindow {
 
                                 delegate: Rectangle {
                                     Layout.fillWidth: true
-                                    Layout.preferredHeight: 52
+                                    Layout.preferredHeight: 52 * Appearance.effectiveScale
                                     color: savedArea.containsMouse ? Qt.rgba(255, 255, 255, 0.05) : "transparent"
-                                    radius: 12
+                                    radius: 12 * Appearance.effectiveScale
 
                                     required property var modelData
 
                                     RowLayout {
                                         anchors.fill: parent
-                                        anchors.leftMargin: 12
-                                        anchors.rightMargin: 12
-                                        spacing: 12
+                                        anchors.leftMargin: 12 * Appearance.effectiveScale
+                                        anchors.rightMargin: 12 * Appearance.effectiveScale
+                                        spacing: 12 * Appearance.effectiveScale
 
                                         DankIcon {
                                             name: window.signalIcon(modelData.strength)
-                                            size: 18
+                                            size: 18 * Appearance.effectiveScale
                                             color: window.cTextPrimary
                                         }
 
                                         RowLayout {
                                             Layout.fillWidth: true
-                                            spacing: 6
+                                            spacing: 6 * Appearance.effectiveScale
                                             Text {
                                                 text: modelData.ssid
                                                 font.family: "Inter"
-                                                font.pixelSize: 14
+                                                font.pixelSize: 14 * Appearance.effectiveScale
                                                 color: window.cTextPrimary
                                                 elide: Text.ElideRight
                                                 Layout.fillWidth: true
                                             }
                                             Rectangle {
                                                 visible: Boolean(modelData) && modelData.frequency >= 5000
-                                                width: savedBadge5g.implicitWidth + 10
-                                                height: 18
-                                                radius: 5
+                                                width: savedBadge5g.implicitWidth + 10 * Appearance.effectiveScale
+                                                height: 18 * Appearance.effectiveScale
+                                                radius: 5 * Appearance.effectiveScale
                                                 color: "transparent"
                                                 border.width: 1
                                                 border.color: window.cBadgeBorder
@@ -589,7 +590,7 @@ PanelWindow {
                                                     anchors.centerIn: parent
                                                     text: "5G"
                                                     font.family: "Inter"
-                                                    font.pixelSize: 9
+                                                    font.pixelSize: 9 * Appearance.effectiveScale
                                                     font.weight: Font.Medium
                                                     color: window.cTextSecondary
                                                 }
@@ -597,16 +598,16 @@ PanelWindow {
                                         }
 
                                         RowLayout {
-                                            spacing: 6
+                                            spacing: 6 * Appearance.effectiveScale
                                             DankIcon {
                                                 visible: modelData.isSecure
                                                 name: "lock"
-                                                size: 13
+                                                size: 13 * Appearance.effectiveScale
                                                 color: window.cTextMuted
                                             }
                                             DankIcon {
                                                 name: "chevron_right"
-                                                size: 16
+                                                size: 16 * Appearance.effectiveScale
                                                 color: window.cTextMuted
                                             }
                                         }
@@ -634,12 +635,12 @@ PanelWindow {
                     // ═══ AVAILABLE NETWORKS ═══
                     RowLayout {
                         Layout.fillWidth: true
-                        Layout.bottomMargin: 8
+                        Layout.bottomMargin: 8 * Appearance.effectiveScale
 
                         Text {
                             text: "Available networks"
                             font.family: "Inter"
-                            font.pixelSize: 13
+                            font.pixelSize: 13 * Appearance.effectiveScale
                             font.weight: Font.Medium
                             color: window.cTextSecondary
                             Layout.fillWidth: true
@@ -647,19 +648,19 @@ PanelWindow {
 
                         // Refresh button with loading spinner
                         RowLayout {
-                            spacing: 4
+                            spacing: 4 * Appearance.effectiveScale
                             visible: !network.scanning
 
                             Text {
                                 text: "Refresh"
                                 font.family: "Inter"
-                                font.pixelSize: 13
+                                font.pixelSize: 13 * Appearance.effectiveScale
                                 font.weight: Font.Medium
                                 color: window.cAccent
 
                                 MouseArea {
                                     anchors.fill: parent
-                                    anchors.margins: -6
+                                    anchors.margins: -6 * Appearance.effectiveScale
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: network.rescanWifi()
                                 }
@@ -667,12 +668,12 @@ PanelWindow {
                         }
 
                         RowLayout {
-                            spacing: 4
+                            spacing: 4 * Appearance.effectiveScale
                             visible: network.scanning
 
                             DankIcon {
                                 name: "refresh"
-                                size: 14
+                                size: 14 * Appearance.effectiveScale
                                 color: window.cAccent
 
                                 RotationAnimation on rotation {
@@ -684,7 +685,7 @@ PanelWindow {
                             Text {
                                 text: "Scanning"
                                 font.family: "Inter"
-                                font.pixelSize: 13
+                                font.pixelSize: 13 * Appearance.effectiveScale
                                 font.weight: Font.Medium
                                 color: window.cAccent
                             }
@@ -695,8 +696,8 @@ PanelWindow {
                     Rectangle {
                         id: wifiProgressBar
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 2
-                        Layout.bottomMargin: 6
+                        Layout.preferredHeight: 2 * Appearance.effectiveScale
+                        Layout.bottomMargin: 6 * Appearance.effectiveScale
                         color: "transparent"
                         visible: network.scanning
                         clip: true
@@ -704,9 +705,9 @@ PanelWindow {
                         Rectangle {
                             id: wifiProgressIndicator
                             width: wifiProgressBar.width * 0.3
-                            height: 2
+                            height: 2 * Appearance.effectiveScale
                             color: window.cAccent
-                            radius: 1
+                            radius: 1 * Appearance.effectiveScale
                             x: 0
 
                             SequentialAnimation on x {
@@ -724,15 +725,15 @@ PanelWindow {
 
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: Math.min(availableColumn.implicitHeight + 8, 420)
-                        radius: 16
+                        Layout.preferredHeight: Math.min(availableColumn.implicitHeight + 8 * Appearance.effectiveScale, 420 * Appearance.effectiveScale)
+                        radius: 16 * Appearance.effectiveScale
                         color: window.cCard
                         clip: true
 
                         Flickable {
                             id: availableFlickable
                             anchors.fill: parent
-                            anchors.margins: 4
+                            anchors.margins: 4 * Appearance.effectiveScale
                             contentHeight: availableColumn.implicitHeight
                             clip: true
                             boundsBehavior: Flickable.StopAtBounds
@@ -747,9 +748,9 @@ PanelWindow {
 
                                     delegate: Rectangle {
                                         Layout.fillWidth: true
-                                        Layout.preferredHeight: 52
+                                        Layout.preferredHeight: 52 * Appearance.effectiveScale
                                         color: availArea.containsMouse ? Qt.rgba(255, 255, 255, 0.05) : "transparent"
-                                        radius: 12
+                                        radius: 12 * Appearance.effectiveScale
 
                                         required property var modelData
                                         property bool is5g: Boolean(modelData) && modelData.frequency >= 5000
@@ -757,24 +758,24 @@ PanelWindow {
 
                                         RowLayout {
                                             anchors.fill: parent
-                                            anchors.leftMargin: 12
-                                            anchors.rightMargin: 12
-                                            spacing: 12
+                                            anchors.leftMargin: 12 * Appearance.effectiveScale
+                                            anchors.rightMargin: 12 * Appearance.effectiveScale
+                                            spacing: 12 * Appearance.effectiveScale
 
                                             DankIcon {
                                                 name: window.signalIcon(modelData.strength)
-                                                size: 18
+                                                size: 18 * Appearance.effectiveScale
                                                 color: window.cTextPrimary
                                             }
 
                                             RowLayout {
                                                 Layout.fillWidth: true
-                                                spacing: 6
+                                                spacing: 6 * Appearance.effectiveScale
 
                                                 Text {
                                                     text: modelData.ssid
                                                     font.family: "Inter"
-                                                    font.pixelSize: 14
+                                                    font.pixelSize: 14 * Appearance.effectiveScale
                                                     color: window.cTextPrimary
                                                     elide: Text.ElideRight
                                                     Layout.fillWidth: true
@@ -782,9 +783,9 @@ PanelWindow {
 
                                                 Rectangle {
                                                     visible: is5g
-                                                    width: availBadge5g.implicitWidth + 10
-                                                    height: 18
-                                                    radius: 5
+                                                    width: availBadge5g.implicitWidth + 10 * Appearance.effectiveScale
+                                                    height: 18 * Appearance.effectiveScale
+                                                    radius: 5 * Appearance.effectiveScale
                                                     color: "transparent"
                                                     border.width: 1
                                                     border.color: window.cBadgeBorder
@@ -793,7 +794,7 @@ PanelWindow {
                                                         anchors.centerIn: parent
                                                         text: "5G"
                                                         font.family: "Inter"
-                                                        font.pixelSize: 9
+                                                        font.pixelSize: 9 * Appearance.effectiveScale
                                                         font.weight: Font.Medium
                                                         color: window.cTextSecondary
                                                     }
@@ -801,16 +802,16 @@ PanelWindow {
                                             }
 
                                             RowLayout {
-                                                spacing: 6
+                                                spacing: 6 * Appearance.effectiveScale
                                                 DankIcon {
                                                     visible: modelData.isSecure
                                                     name: "lock"
-                                                    size: 13
+                                                    size: 13 * Appearance.effectiveScale
                                                     color: window.cTextMuted
                                                 }
                                                 DankIcon {
                                                     name: "chevron_right"
-                                                    size: 16
+                                                    size: 16 * Appearance.effectiveScale
                                                     color: window.cTextMuted
                                                 }
                                             }
@@ -829,17 +830,17 @@ PanelWindow {
                                 // Add network button
                                 Rectangle {
                                     Layout.fillWidth: true
-                                    Layout.preferredHeight: 48
+                                    Layout.preferredHeight: 48 * Appearance.effectiveScale
                                     color: addArea.containsMouse ? Qt.rgba(255, 255, 255, 0.05) : "transparent"
-                                    radius: 12
+                                    radius: 12 * Appearance.effectiveScale
 
                                     Text {
                                         anchors.left: parent.left
-                                        anchors.leftMargin: 12
+                                        anchors.leftMargin: 12 * Appearance.effectiveScale
                                         anchors.verticalCenter: parent.verticalCenter
                                         text: "Add network"
                                         font.family: "Inter"
-                                        font.pixelSize: 14
+                                        font.pixelSize: 14 * Appearance.effectiveScale
                                         color: window.cAccent
                                     }
 
@@ -1087,9 +1088,9 @@ PanelWindow {
         Rectangle {
             id: qrDialogCard
             anchors.centerIn: parent
-            width: 320
-            height: qrCol.implicitHeight + 40
-            radius: 20
+            width: 320 * Appearance.effectiveScale
+            height: qrCol.implicitHeight + 40 * Appearance.effectiveScale
+            radius: 20 * Appearance.effectiveScale
             color: window.cCard
             border.color: window.cCardBorder
             border.width: 1
@@ -1106,19 +1107,19 @@ PanelWindow {
                 shadowEnabled: true
                 shadowColor: Qt.rgba(0, 0, 0, 0.4)
                 shadowBlur: 0.8
-                shadowVerticalOffset: 8
+                shadowVerticalOffset: 8 * Appearance.effectiveScale
             }
 
             ColumnLayout {
                 id: qrCol
                 anchors.fill: parent
-                anchors.margins: 20
-                spacing: 12
+                anchors.margins: 20 * Appearance.effectiveScale
+                spacing: 12 * Appearance.effectiveScale
 
                 Text {
                     text: "Share Wi-Fi network"
                     font.family: "Inter"
-                    font.pixelSize: 16
+                    font.pixelSize: 16 * Appearance.effectiveScale
                     font.weight: Font.Bold
                     color: window.cTextPrimary
                     Layout.alignment: Qt.AlignHCenter
@@ -1127,23 +1128,23 @@ PanelWindow {
                 Text {
                     text: "Password: " + window.dialogPassword
                     font.family: "Inter"
-                    font.pixelSize: 13
+                    font.pixelSize: 13 * Appearance.effectiveScale
                     color: window.cTextSecondary
                     Layout.alignment: Qt.AlignHCenter
                 }
 
                 Rectangle {
                     Layout.alignment: Qt.AlignHCenter
-                    width: 200
-                    height: 200
-                    radius: 12
+                    width: 200 * Appearance.effectiveScale
+                    height: 200 * Appearance.effectiveScale
+                    radius: 12 * Appearance.effectiveScale
                     color: "#ffffff"
                     clip: true
 
                     Image {
                         id: qrImage
                         anchors.fill: parent
-                        anchors.margins: 8
+                        anchors.margins: 8 * Appearance.effectiveScale
                         fillMode: Image.PreserveAspectFit
                         source: ""
                     }
@@ -1152,22 +1153,22 @@ PanelWindow {
                 Text {
                     text: "To share, scan the QR code above."
                     font.family: "Inter"
-                    font.pixelSize: 12
+                    font.pixelSize: 12 * Appearance.effectiveScale
                     color: window.cTextSecondary
                     Layout.alignment: Qt.AlignHCenter
                 }
 
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 40
-                    radius: 20
+                    Layout.preferredHeight: 40 * Appearance.effectiveScale
+                    radius: 20 * Appearance.effectiveScale
                     color: qrDoneArea.containsMouse ? Qt.rgba(window.cAccent.r, window.cAccent.g, window.cAccent.b, 0.8) : window.cAccent
 
                     Text {
                         anchors.centerIn: parent
                         text: "Done"
                         font.family: "Inter"
-                        font.pixelSize: 14
+                        font.pixelSize: 14 * Appearance.effectiveScale
                         font.weight: Font.Medium
                         color: "#ffffff"
                     }

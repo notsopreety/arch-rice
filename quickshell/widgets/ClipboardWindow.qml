@@ -8,6 +8,7 @@ import Quickshell.Wayland
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 
 PanelWindow {
     id: clipboardWindow
@@ -256,15 +257,15 @@ PanelWindow {
         // Card Container
         Item {
             id: cardContainer
-            width: 380
-            height: 580
+            width: 380 * Appearance.effectiveScale
+            height: 580 * Appearance.effectiveScale
 
             // Drop shadow
             DropShadow {
                 anchors.fill: clipboardCard
                 source: clipboardCard
-                verticalOffset: 16
-                radius: 48
+                verticalOffset: 16 * Appearance.effectiveScale
+                radius: 48 * Appearance.effectiveScale
                 samples: 65
                 color: Qt.rgba(0, 0, 0, 0.45)
                 transparentBorder: true
@@ -306,7 +307,7 @@ PanelWindow {
                 // Top drag handle (first 64px of the card)
                 MouseArea {
                     width: parent.width
-                    height: 64
+                    height: 64 * Appearance.effectiveScale
                     anchors.top: parent.top
                     cursorShape: Qt.OpenHandCursor
                     drag.target: cardContainer
@@ -315,8 +316,8 @@ PanelWindow {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: 24
-                    spacing: 16
+                    anchors.margins: 24 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
 
                     // Header
                     RowLayout {
@@ -325,7 +326,7 @@ PanelWindow {
                         Text {
                             text: "Clipboard History"
                             font.family: "Inter"
-                            font.pixelSize: 20
+                            font.pixelSize: 20 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: "#ffffff"
                         }
@@ -339,22 +340,22 @@ PanelWindow {
                             id: clearBtn
                             background: Rectangle {
                                 color: clearBtn.hovered ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.2) : "transparent"
-                                radius: 8
+                                radius: 8 * Appearance.effectiveScale
                                 border.color: clearBtn.hovered ? Theme.error : "transparent"
                                 border.width: 1
                                 Behavior on color { ColorAnimation { duration: 150 } }
                             }
                             contentItem: RowLayout {
-                                spacing: 6
+                                spacing: 6 * Appearance.effectiveScale
                                 DankIcon {
                                     name: "delete_sweep"
-                                    size: 16
+                                    size: 16 * Appearance.effectiveScale
                                     color: Theme.error
                                 }
                                 Text {
                                     text: "Clear All"
                                     font.family: "Inter"
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     color: Theme.error
                                 }
@@ -366,14 +367,14 @@ PanelWindow {
                     // Search input box
                     Item {
                         Layout.fillWidth: true
-                        height: 52
+                        height: 52 * Appearance.effectiveScale
 
                         // Outlined container Rectangle
                         Rectangle {
                             id: searchBg
                             anchors.fill: parent
-                            anchors.topMargin: 6
-                            radius: 8
+                            anchors.topMargin: 6 * Appearance.effectiveScale
+                            radius: 8 * Appearance.effectiveScale
                             color: "transparent"
                             border.color: searchInput.activeFocus ? Theme.primary : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
                             border.width: searchInput.activeFocus ? 2 : 1
@@ -383,17 +384,17 @@ PanelWindow {
 
                         // Floating Label overlapping top border
                         Rectangle {
-                            x: 12
+                            x: 12 * Appearance.effectiveScale
                             y: 0
-                            height: 14
-                            width: labelText.implicitWidth + 8
+                            height: 14 * Appearance.effectiveScale
+                            width: labelText.implicitWidth + 8 * Appearance.effectiveScale
                             color: Theme.surfaceContainer
                             
                             Text {
                                 id: labelText
                                 anchors.centerIn: parent
                                 text: "Clipboard"
-                                font.pixelSize: 10
+                                font.pixelSize: 10 * Appearance.effectiveScale
                                 font.family: "Inter"
                                 font.weight: Font.Medium
                                 color: searchInput.activeFocus ? Theme.primary : Theme.outline
@@ -403,14 +404,14 @@ PanelWindow {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.topMargin: 6
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            spacing: 10
+                            anchors.topMargin: 6 * Appearance.effectiveScale
+                            anchors.leftMargin: 12 * Appearance.effectiveScale
+                            anchors.rightMargin: 12 * Appearance.effectiveScale
+                            spacing: 10 * Appearance.effectiveScale
 
                             DankIcon {
                                 name: "search"
-                                size: 20
+                                size: 20 * Appearance.effectiveScale
                                 color: searchInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
                                 Layout.alignment: Qt.AlignVCenter
                                 Behavior on color { ColorAnimation { duration: 180 } }
@@ -422,7 +423,7 @@ PanelWindow {
                                 Layout.alignment: Qt.AlignVCenter
                                 color: "#ffffff"
                                 font.family: "Inter"
-                                font.pixelSize: 14
+                                font.pixelSize: 14 * Appearance.effectiveScale
                                 clip: true
                                 selectByMouse: true
                                 selectionColor: Theme.primary
@@ -449,14 +450,14 @@ PanelWindow {
                             }
 
                             Rectangle {
-                                width: 24; height: 24; radius: 12
+                                width: 24 * Appearance.effectiveScale; height: 24 * Appearance.effectiveScale; radius: 12 * Appearance.effectiveScale
                                 visible: searchInput.text.length > 0
                                 color: Qt.rgba(255, 255, 255, 0.1)
 
                                 Text {
                                     anchors.centerIn: parent
                                     text: "✕"
-                                    font.pixelSize: 10
+                                    font.pixelSize: 10 * Appearance.effectiveScale
                                     color: Qt.rgba(255, 255, 255, 0.6)
                                 }
 
@@ -474,7 +475,7 @@ PanelWindow {
                          id: listview
                          Layout.fillWidth: true
                          Layout.fillHeight: true
-                         spacing: 8
+                         spacing: 8 * Appearance.effectiveScale
                          clip: true
                          boundsBehavior: Flickable.StopAtBounds
                          focus: true
@@ -508,8 +509,8 @@ PanelWindow {
                          delegate: Rectangle {
                              id: delegateRoot
                              width: listview.width
-                             height: 60
-                             radius: 12
+                             height: 60 * Appearance.effectiveScale
+                             radius: 12 * Appearance.effectiveScale
                              color: ((delegateRoot.ListView.isCurrentItem && listview.activeFocus) ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : (delegateHover.hovered ? Qt.rgba(255, 255, 255, 0.08) : Qt.rgba(255, 255, 255, 0.03)))
                              border.color: (delegateRoot.ListView.isCurrentItem && listview.activeFocus) ? Theme.primary : Qt.rgba(255, 255, 255, 0.05)
                              border.width: 1
@@ -529,15 +530,15 @@ PanelWindow {
 
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.leftMargin: 16
-                                anchors.rightMargin: 12
-                                spacing: 12
+                                anchors.leftMargin: 16 * Appearance.effectiveScale
+                                anchors.rightMargin: 12 * Appearance.effectiveScale
+                                spacing: 12 * Appearance.effectiveScale
 
                                 // Icon (Image or Text)
                                 Rectangle {
-                                    width: 36
-                                    height: 36
-                                    radius: 8
+                                    width: 36 * Appearance.effectiveScale
+                                    height: 36 * Appearance.effectiveScale
+                                    radius: 8 * Appearance.effectiveScale
                                     color: isImage ? Qt.rgba(Theme.secondary.r, Theme.secondary.g, Theme.secondary.b, 0.15) : Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15)
                                     clip: true
 
@@ -555,7 +556,7 @@ PanelWindow {
                                         anchors.centerIn: parent
                                         visible: !isImage || previewImg.status !== Image.Ready
                                         name: isImage ? "image" : "description"
-                                        size: 18
+                                        size: 18 * Appearance.effectiveScale
                                         color: isImage ? Theme.secondary : Theme.primary
                                     }
                                 }
@@ -563,13 +564,13 @@ PanelWindow {
                                 // Truncated preview text
                                 ColumnLayout {
                                     Layout.fillWidth: true
-                                    spacing: 2
+                                    spacing: 2 * Appearance.effectiveScale
 
                                     Text {
                                         Layout.fillWidth: true
                                         text: isImage ? "Image Entry" : displayContent.trim()
                                         font.family: "Inter"
-                                        font.pixelSize: 13
+                                        font.pixelSize: 13 * Appearance.effectiveScale
                                         font.weight: isImage ? Font.Medium : Font.Normal
                                         color: "#ffffff"
                                         elide: Text.ElideRight
@@ -579,14 +580,14 @@ PanelWindow {
                                     Text {
                                         text: isImage ? displayContent.trim() : "Text"
                                         font.family: "Inter"
-                                        font.pixelSize: 10
+                                        font.pixelSize: 10 * Appearance.effectiveScale
                                         color: Qt.rgba(255, 255, 255, 0.4)
                                     }
                                 }
 
                                 // Actions
                                 RowLayout {
-                                    spacing: 4
+                                    spacing: 4 * Appearance.effectiveScale
                                     visible: delegateHover.hovered
 
                                     // Delete Button
@@ -594,11 +595,11 @@ PanelWindow {
                                         id: delBtn
                                         background: Rectangle {
                                             color: delBtn.hovered ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.2) : "transparent"
-                                            radius: 6
+                                            radius: 6 * Appearance.effectiveScale
                                         }
                                         contentItem: DankIcon {
                                             name: "delete"
-                                            size: 16
+                                            size: 16 * Appearance.effectiveScale
                                             color: Theme.error
                                         }
                                         onClicked: deleteItem(itemId, displayContent)
@@ -612,7 +613,7 @@ PanelWindow {
                             id: emptyPlaceholder
                             anchors.centerIn: parent
                             visible: historyModel.count === 0
-                            spacing: 12
+                            spacing: 12 * Appearance.effectiveScale
 
                             onVisibleChanged: {
                                 if (visible && shapeBg && typeof shapeBg.randomizeShape === "function") {
@@ -622,8 +623,8 @@ PanelWindow {
 
                             Item {
                                 Layout.alignment: Qt.AlignCenter
-                                implicitWidth: 80
-                                implicitHeight: 80
+                                implicitWidth: 80 * Appearance.effectiveScale
+                                implicitHeight: 80 * Appearance.effectiveScale
 
                                 MaterialShape {
                                     id: shapeBg
@@ -657,7 +658,7 @@ PanelWindow {
                                     id: clipboardEmptyIcon
                                     anchors.centerIn: parent
                                     name: "content_paste"
-                                    size: 40
+                                    size: 40 * Appearance.effectiveScale
                                     color: "#ffffff"
                                 }
                             }
@@ -667,7 +668,7 @@ PanelWindow {
                                 text: "Clipboard is empty"
                                 color: Qt.rgba(255, 255, 255, 0.4)
                                 font.family: "Inter"
-                                font.pixelSize: 14
+                                font.pixelSize: 14 * Appearance.effectiveScale
                                 font.weight: Font.Medium
                             }
                         }

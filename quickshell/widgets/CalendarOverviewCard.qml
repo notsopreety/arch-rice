@@ -6,6 +6,7 @@ import Quickshell.Io
 import "../theme"
 import "../components"
 import "../services"
+import "../core"
 
 Card {
     id: root
@@ -99,29 +100,29 @@ Card {
     // ----------------------------------------------------
     RowLayout {
         anchors.fill: parent
-        spacing: 0
+        spacing: 0 * Appearance.effectiveScale
 
         // Vertical Tab Bar (Material Side Navigation)
         Item {
             id: sideTabBarContainer
-            Layout.preferredWidth: 64
+            Layout.preferredWidth: 64 * Appearance.effectiveScale
             Layout.fillHeight: true
 
             Column {
                 id: sideTabBar
                 anchors.centerIn: parent
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
 
                 // Calendar Tab Button
                 Item {
-                    width: 64
-                    height: 46
+                    width: 64 * Appearance.effectiveScale
+                    height: 46 * Appearance.effectiveScale
 
                     Rectangle {
                         id: calPill
-                        width: 48
-                        height: 26
-                        radius: 13
+                        width: 48 * Appearance.effectiveScale
+                        height: 26 * Appearance.effectiveScale
+                        radius: 13 * Appearance.effectiveScale
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: root.activeTab === "calendar"
@@ -130,7 +131,7 @@ Card {
 
                         DankIcon {
                             name: "calendar_month"
-                            size: 16
+                            size: 16 * Appearance.effectiveScale
                             anchors.centerIn: parent
                             color: root.activeTab === "calendar" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
                         }
@@ -139,7 +140,7 @@ Card {
                     Text {
                         text: "Calendar"
                         font.family: "Inter"
-                        font.pixelSize: 9
+                        font.pixelSize: 9 * Appearance.effectiveScale
                         font.weight: root.activeTab === "calendar" ? Font.Medium : Font.Normal
                         color: root.activeTab === "calendar" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
                         anchors.bottom: parent.bottom
@@ -157,14 +158,14 @@ Card {
 
                 // To Do Tab Button
                 Item {
-                    width: 64
-                    height: 46
+                    width: 64 * Appearance.effectiveScale
+                    height: 46 * Appearance.effectiveScale
 
                     Rectangle {
                         id: todoPill
-                        width: 48
-                        height: 26
-                        radius: 13
+                        width: 48 * Appearance.effectiveScale
+                        height: 26 * Appearance.effectiveScale
+                        radius: 13 * Appearance.effectiveScale
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: root.activeTab === "todo"
@@ -173,7 +174,7 @@ Card {
 
                         DankIcon {
                             name: "task_alt"
-                            size: 16
+                            size: 16 * Appearance.effectiveScale
                             anchors.centerIn: parent
                             color: root.activeTab === "todo" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
                         }
@@ -182,7 +183,7 @@ Card {
                     Text {
                         text: "To Do"
                         font.family: "Inter"
-                        font.pixelSize: 9
+                        font.pixelSize: 9 * Appearance.effectiveScale
                         font.weight: root.activeTab === "todo" ? Font.Medium : Font.Normal
                         color: root.activeTab === "todo" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
                         anchors.bottom: parent.bottom
@@ -200,14 +201,14 @@ Card {
 
                 // Timer Tab Button
                 Item {
-                    width: 64
-                    height: 46
+                    width: 64 * Appearance.effectiveScale
+                    height: 46 * Appearance.effectiveScale
 
                     Rectangle {
                         id: timerPill
-                        width: 48
-                        height: 26
-                        radius: 13
+                        width: 48 * Appearance.effectiveScale
+                        height: 26 * Appearance.effectiveScale
+                        radius: 13 * Appearance.effectiveScale
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: root.activeTab === "timer"
@@ -216,7 +217,7 @@ Card {
 
                         DankIcon {
                             name: "hourglass"
-                            size: 16
+                            size: 16 * Appearance.effectiveScale
                             anchors.centerIn: parent
                             color: root.activeTab === "timer" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
                         }
@@ -225,7 +226,7 @@ Card {
                     Text {
                         text: "Timer"
                         font.family: "Inter"
-                        font.pixelSize: 9
+                        font.pixelSize: 9 * Appearance.effectiveScale
                         font.weight: root.activeTab === "timer" ? Font.Medium : Font.Normal
                         color: root.activeTab === "timer" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
                         anchors.bottom: parent.bottom
@@ -243,14 +244,14 @@ Card {
 
                 // Stopwatch Tab Button
                 Item {
-                    width: 64
-                    height: 46
+                    width: 64 * Appearance.effectiveScale
+                    height: 46 * Appearance.effectiveScale
 
                     Rectangle {
                         id: swPill
-                        width: 48
-                        height: 26
-                        radius: 13
+                        width: 48 * Appearance.effectiveScale
+                        height: 26 * Appearance.effectiveScale
+                        radius: 13 * Appearance.effectiveScale
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: root.activeTab === "stopwatch"
@@ -259,7 +260,7 @@ Card {
 
                         DankIcon {
                             name: "timer"
-                            size: 16
+                            size: 16 * Appearance.effectiveScale
                             anchors.centerIn: parent
                             color: root.activeTab === "stopwatch" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
                         }
@@ -268,7 +269,7 @@ Card {
                     Text {
                         text: "Stopwatch"
                         font.family: "Inter"
-                        font.pixelSize: 9
+                        font.pixelSize: 9 * Appearance.effectiveScale
                         font.weight: root.activeTab === "stopwatch" ? Font.Medium : Font.Normal
                         color: root.activeTab === "stopwatch" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
                         anchors.bottom: parent.bottom
@@ -286,14 +287,14 @@ Card {
 
                 // Alarm Tab Button
                 Item {
-                    width: 64
-                    height: 46
+                    width: 64 * Appearance.effectiveScale
+                    height: 46 * Appearance.effectiveScale
 
                     Rectangle {
                         id: alarmPill
-                        width: 48
-                        height: 26
-                        radius: 13
+                        width: 48 * Appearance.effectiveScale
+                        height: 26 * Appearance.effectiveScale
+                        radius: 13 * Appearance.effectiveScale
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: root.activeTab === "alarm"
@@ -302,7 +303,7 @@ Card {
 
                         DankIcon {
                             name: "alarm"
-                            size: 16
+                            size: 16 * Appearance.effectiveScale
                             anchors.centerIn: parent
                             color: root.activeTab === "alarm" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
                         }
@@ -311,7 +312,7 @@ Card {
                     Text {
                         text: "Alarm"
                         font.family: "Inter"
-                        font.pixelSize: 9
+                        font.pixelSize: 9 * Appearance.effectiveScale
                         font.weight: root.activeTab === "alarm" ? Font.Medium : Font.Normal
                         color: root.activeTab === "alarm" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
                         anchors.bottom: parent.bottom
@@ -331,7 +332,7 @@ Card {
 
         // Vertical Divider
         Rectangle {
-            Layout.preferredWidth: 1
+            Layout.preferredWidth: 1 * Appearance.effectiveScale
             Layout.fillHeight: true
             Layout.leftMargin: 4
             Layout.rightMargin: 12
@@ -349,16 +350,16 @@ Card {
             Column {
                 anchors.fill: parent
                 visible: root.activeTab === "calendar"
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
 
                 Item {
                     width: parent.width
-                    height: root.selectedDaysCount > 0 ? 42 : 32
+                    height: root.selectedDaysCount > 0 ? 42 * Appearance.effectiveScale : 32 * Appearance.effectiveScale
 
                     Rectangle {
-                        width: 32
-                        height: 32
-                        radius: 16
+                        width: 32 * Appearance.effectiveScale
+                        height: 32 * Appearance.effectiveScale
+                        radius: 16 * Appearance.effectiveScale
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
                         color: prevMonthArea.containsMouse ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : "transparent"
@@ -386,13 +387,13 @@ Card {
 
                     Column {
                         anchors.centerIn: parent
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
 
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: root.displayDate.toLocaleDateString(Qt.locale(), "MMMM yyyy")
                             font.family: Theme.font.family
-                            font.pixelSize: 15
+                            font.pixelSize: 15 * Appearance.effectiveScale
                             color: "white"
                             font.weight: Font.DemiBold
                         }
@@ -402,16 +403,16 @@ Card {
                             visible: root.selectedDaysCount > 0
                             text: root.selectedDaysCount + (root.selectedDaysCount === 1 ? " day selected" : " days selected")
                             font.family: Theme.font.family
-                            font.pixelSize: 10
+                            font.pixelSize: 10 * Appearance.effectiveScale
                             color: Theme.primary
                             font.weight: Font.Medium
                         }
                     }
 
                     Rectangle {
-                        width: 32
-                        height: 32
-                        radius: 16
+                        width: 32 * Appearance.effectiveScale
+                        height: 32 * Appearance.effectiveScale
+                        radius: 16 * Appearance.effectiveScale
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         color: nextMonthArea.containsMouse ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : "transparent"
@@ -440,21 +441,21 @@ Card {
 
                 Row {
                     width: parent.width
-                    height: 24
+                    height: 24 * Appearance.effectiveScale
 
                     Repeater {
                         model: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
                         Rectangle {
                             width: parent.width / 7
-                            height: 24
+                            height: 24 * Appearance.effectiveScale
                             color: "transparent"
 
                             Text {
                                 anchors.centerIn: parent
                                 text: modelData
                                 font.family: Theme.font.family
-                                font.pixelSize: 12
+                                font.pixelSize: 12 * Appearance.effectiveScale
                                 font.weight: Font.DemiBold
                                 color: Theme.primary
                                 opacity: 0.8
@@ -496,9 +497,9 @@ Card {
                             Rectangle {
                                 id: dayHighlight
                                 anchors.centerIn: parent
-                                width: 34
-                                height: 34
-                                radius: 17
+                                width: 34 * Appearance.effectiveScale
+                                height: 34 * Appearance.effectiveScale
+                                radius: 17 * Appearance.effectiveScale
                                 
                                 color: isSelected 
                                     ? Theme.primary 
@@ -520,7 +521,7 @@ Card {
                                     anchors.centerIn: parent
                                     text: dayCell.dayDate.getDate()
                                     font.family: Theme.font.family
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     color: isSelected 
                                         ? Theme.onPrimary 
                                         : (isToday ? Theme.primary : (isCurrentMonth ? "white" : Qt.rgba(1, 1, 1, 0.25)))
@@ -550,7 +551,7 @@ Card {
             ColumnLayout {
                 anchors.fill: parent
                 visible: root.activeTab === "todo"
-                spacing: 14
+                spacing: 14 * Appearance.effectiveScale
 
                 // Header with Statistics
                 RowLayout {
@@ -560,7 +561,7 @@ Card {
                     Text {
                         text: qsTr("My Tasks")
                         font.family: Theme.font.family
-                        font.pixelSize: 15
+                        font.pixelSize: 15 * Appearance.effectiveScale
                         font.weight: Font.DemiBold
                         color: "white"
                     }
@@ -578,7 +579,7 @@ Card {
                         }
                         text: activeCount === 0 ? qsTr("All done!") : activeCount + qsTr(" remaining")
                         font.family: Theme.font.family
-                        font.pixelSize: 11
+                        font.pixelSize: 11 * Appearance.effectiveScale
                         font.weight: Font.Medium
                         color: Theme.primary
                         opacity: 0.85
@@ -588,8 +589,8 @@ Card {
                 // Input Bar (MD3 Pill Style)
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 46
-                    radius: 23
+                    Layout.preferredHeight: 46 * Appearance.effectiveScale
+                    radius: 23 * Appearance.effectiveScale
                     color: taskInput.activeFocus ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.08) : Qt.rgba(255, 255, 255, 0.04)
                     border.color: taskInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.08)
                     border.width: taskInput.activeFocus ? 1.5 : 1
@@ -598,9 +599,9 @@ Card {
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 8
-                        spacing: 12
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 8 * Appearance.effectiveScale
+                        spacing: 12 * Appearance.effectiveScale
 
                         MaterialSymbol {
                             text: "add_task"
@@ -615,7 +616,7 @@ Card {
                             verticalAlignment: TextInput.AlignVCenter
                             color: "white"
                             font.family: Theme.font.family
-                            font.pixelSize: 13
+                            font.pixelSize: 13 * Appearance.effectiveScale
                             clip: true
                             selectByMouse: true
 
@@ -642,9 +643,9 @@ Card {
 
                         Rectangle {
                             id: addTaskBtn
-                            width: 32
-                            height: 32
-                            radius: 16
+                            width: 32 * Appearance.effectiveScale
+                            height: 32 * Appearance.effectiveScale
+                            radius: 16 * Appearance.effectiveScale
                             color: taskInput.text.trim().length > 0 ? Theme.primary : "transparent"
                             Behavior on color { ColorAnimation { duration: 150 } }
 
@@ -679,7 +680,7 @@ Card {
                     id: todoList
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing: 6
+                    spacing: 6 * Appearance.effectiveScale
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
                     model: todoModel
@@ -703,8 +704,8 @@ Card {
                     delegate: Rectangle {
                         id: taskRow
                         width: todoList.width
-                        height: 46
-                        radius: 12
+                        height: 46 * Appearance.effectiveScale
+                        radius: 12 * Appearance.effectiveScale
                         
                         // Soft primary tinted color for active tasks, fully transparent for done tasks
                         color: model.done 
@@ -725,16 +726,16 @@ Card {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 8
-                            spacing: 12
+                            anchors.leftMargin: 12 * Appearance.effectiveScale
+                            anchors.rightMargin: 8 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
 
                             // Checkbox (Material Design 3 style)
                             Rectangle {
                                 id: checkbox
-                                width: 20
-                                height: 20
-                                radius: 10
+                                width: 20 * Appearance.effectiveScale
+                                height: 20 * Appearance.effectiveScale
+                                radius: 10 * Appearance.effectiveScale
                                 color: model.done ? Theme.primary : "transparent"
                                 border.color: model.done ? "transparent" : (checkboxArea.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.4))
                                 border.width: model.done ? 0 : 1.5
@@ -772,7 +773,7 @@ Card {
                                 Layout.fillWidth: true
                                 text: model.text
                                 font.family: Theme.font.family
-                                font.pixelSize: 12
+                                font.pixelSize: 12 * Appearance.effectiveScale
                                 color: model.done ? Qt.rgba(255, 255, 255, 0.35) : "white"
                                 font.strikeout: model.done
                                 font.weight: model.done ? Font.Normal : Font.Medium
@@ -784,9 +785,9 @@ Card {
                             // Delete Button (Custom centered icon button)
                             Rectangle {
                                 id: taskDelBtn
-                                width: 28
-                                height: 28
-                                radius: 14
+                                width: 28 * Appearance.effectiveScale
+                                height: 28 * Appearance.effectiveScale
+                                radius: 14 * Appearance.effectiveScale
                                 color: delArea.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.12) : "transparent"
                                 opacity: taskHover.hovered ? 0.9 : 0.0
                                 Behavior on color { ColorAnimation { duration: 150 } }
@@ -829,7 +830,7 @@ Card {
                 ColumnLayout {
                     anchors.fill: parent
                     visible: !TimerStopwatchService.timerSetupMode
-                    spacing: 14
+                    spacing: 14 * Appearance.effectiveScale
 
                     Item {
                         Layout.fillWidth: true
@@ -837,9 +838,9 @@ Card {
 
                         // Minimalist Circular Progress Track (MD3 Accent Track)
                         Rectangle {
-                            width: 140
-                            height: 140
-                            radius: 70
+                            width: 140 * Appearance.effectiveScale
+                            height: 140 * Appearance.effectiveScale
+                            radius: 70 * Appearance.effectiveScale
                             color: Qt.rgba(255, 255, 255, 0.02)
                             border.color: Qt.rgba(255, 255, 255, 0.05)
                             border.width: 5
@@ -878,12 +879,12 @@ Card {
                             // Digital countdown text inside the circle
                             Column {
                                 anchors.centerIn: parent
-                                spacing: 4
+                                spacing: 4 * Appearance.effectiveScale
 
                                  Text {
                                     text: TimerStopwatchService.formatTimer(TimerStopwatchService.timerSeconds)
                                     font.family: Theme.font.monospace
-                                    font.pixelSize: 26
+                                    font.pixelSize: 26 * Appearance.effectiveScale
                                     font.weight: Font.DemiBold
                                     color: "white"
                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -892,7 +893,7 @@ Card {
                                 Text {
                                     text: TimerStopwatchService.timerRunning ? "RUNNING" : "PAUSED"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 8
+                                    font.pixelSize: 8 * Appearance.effectiveScale
                                     font.weight: Font.Bold
                                     color: TimerStopwatchService.timerRunning ? Theme.primary : Qt.rgba(255, 255, 255, 0.35)
                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -905,15 +906,15 @@ Card {
                     // Timer Action Buttons
                     RowLayout {
                         Layout.alignment: Qt.AlignHCenter
-                        spacing: 16
+                        spacing: 16 * Appearance.effectiveScale
                         Layout.bottomMargin: 14
 
                         // Start/Pause Button (Custom centered icon button)
                         Rectangle {
                             id: timerPlayBtn
-                            width: 44
-                            height: 44
-                            radius: 22
+                            width: 44 * Appearance.effectiveScale
+                            height: 44 * Appearance.effectiveScale
+                            radius: 22 * Appearance.effectiveScale
                             color: TimerStopwatchService.timerRunning ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Theme.primary
                             border.color: TimerStopwatchService.timerRunning ? Theme.primary : "transparent"
                             border.width: 1
@@ -939,9 +940,9 @@ Card {
                         // Stop/Reset Button (Custom centered icon button)
                         Rectangle {
                             id: timerStopBtn
-                            width: 44
-                            height: 44
-                            radius: 22
+                            width: 44 * Appearance.effectiveScale
+                            height: 44 * Appearance.effectiveScale
+                            radius: 22 * Appearance.effectiveScale
                             color: stopArea.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
                             border.color: stopArea.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.1)
                             border.width: 1
@@ -975,13 +976,13 @@ Card {
                 ColumnLayout {
                     anchors.fill: parent
                     visible: TimerStopwatchService.timerSetupMode
-                    spacing: 14
+                    spacing: 14 * Appearance.effectiveScale
 
                     // Header
                     Text {
                         text: "Set Timer Duration"
                         font.family: Theme.font.family
-                        font.pixelSize: 13
+                        font.pixelSize: 13 * Appearance.effectiveScale
                         font.weight: Font.DemiBold
                         color: Qt.rgba(255, 255, 255, 0.7)
                         Layout.alignment: Qt.AlignHCenter
@@ -991,29 +992,29 @@ Card {
                     // Time inputs row (MD3 styled cards)
                     RowLayout {
                         Layout.alignment: Qt.AlignHCenter
-                        spacing: 16
+                        spacing: 16 * Appearance.effectiveScale
                         Layout.fillHeight: true
 
                         // Minutes Card
                         Rectangle {
-                            implicitWidth: 80
-                            implicitHeight: 96
-                            radius: 16
+                            implicitWidth: 80 * Appearance.effectiveScale
+                            implicitHeight: 96 * Appearance.effectiveScale
+                            radius: 16 * Appearance.effectiveScale
                             color: Qt.rgba(255, 255, 255, 0.03)
                             border.color: minInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.08)
                             border.width: 1
 
                             ColumnLayout {
                                 anchors.fill: parent
-                                anchors.topMargin: 4
-                                anchors.bottomMargin: 6
-                                spacing: 0
+                                anchors.topMargin: 4 * Appearance.effectiveScale
+                                anchors.bottomMargin: 6 * Appearance.effectiveScale
+                                spacing: 0 * Appearance.effectiveScale
 
                                 Rectangle {
                                     id: minUp
                                     Layout.alignment: Qt.AlignHCenter
                                     width: 32; height: 20
-                                    radius: 10
+                                    radius: 10 * Appearance.effectiveScale
                                     color: minUpArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
                                     Behavior on color { ColorAnimation { duration: 150 } }
                                     
@@ -1038,7 +1039,7 @@ Card {
                                     id: minInput
                                     text: String(TimerStopwatchService.setupMins).padStart(2, '0')
                                     font.family: Theme.font.monospace
-                                    font.pixelSize: 24
+                                    font.pixelSize: 24 * Appearance.effectiveScale
                                     font.weight: Font.DemiBold
                                     color: "white"
                                     selectByMouse: true
@@ -1046,7 +1047,7 @@ Card {
                                     Layout.alignment: Qt.AlignHCenter
                                     validator: IntValidator { bottom: 0; top: 99 }
                                     inputMethodHints: Qt.ImhDigitsOnly
-                                    width: 36
+                                    width: 36 * Appearance.effectiveScale
 
                                     onEditingFinished: {
                                         let val = parseInt(text);
@@ -1071,7 +1072,7 @@ Card {
                                     id: minDown
                                     Layout.alignment: Qt.AlignHCenter
                                     width: 32; height: 20
-                                    radius: 10
+                                    radius: 10 * Appearance.effectiveScale
                                     color: minDownArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
                                     Behavior on color { ColorAnimation { duration: 150 } }
                                     
@@ -1099,7 +1100,7 @@ Card {
                         Text {
                             text: ":"
                             font.family: Theme.font.family
-                            font.pixelSize: 26
+                            font.pixelSize: 26 * Appearance.effectiveScale
                             font.weight: Font.DemiBold
                             color: Theme.primary
                             Layout.alignment: Qt.AlignVCenter
@@ -1107,24 +1108,24 @@ Card {
 
                         // Seconds Card
                         Rectangle {
-                            implicitWidth: 80
-                            implicitHeight: 96
-                            radius: 16
+                            implicitWidth: 80 * Appearance.effectiveScale
+                            implicitHeight: 96 * Appearance.effectiveScale
+                            radius: 16 * Appearance.effectiveScale
                             color: Qt.rgba(255, 255, 255, 0.03)
                             border.color: secInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.08)
                             border.width: 1
 
                             ColumnLayout {
                                 anchors.fill: parent
-                                anchors.topMargin: 4
-                                anchors.bottomMargin: 6
-                                spacing: 0
+                                anchors.topMargin: 4 * Appearance.effectiveScale
+                                anchors.bottomMargin: 6 * Appearance.effectiveScale
+                                spacing: 0 * Appearance.effectiveScale
 
                                 Rectangle {
                                     id: secUp
                                     Layout.alignment: Qt.AlignHCenter
                                     width: 32; height: 20
-                                    radius: 10
+                                    radius: 10 * Appearance.effectiveScale
                                     color: secUpArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
                                     Behavior on color { ColorAnimation { duration: 150 } }
                                     
@@ -1149,7 +1150,7 @@ Card {
                                     id: secInput
                                     text: String(TimerStopwatchService.setupSecs).padStart(2, '0')
                                     font.family: Theme.font.monospace
-                                    font.pixelSize: 24
+                                    font.pixelSize: 24 * Appearance.effectiveScale
                                     font.weight: Font.DemiBold
                                     color: "white"
                                     selectByMouse: true
@@ -1157,7 +1158,7 @@ Card {
                                     Layout.alignment: Qt.AlignHCenter
                                     validator: IntValidator { bottom: 0; top: 59 }
                                     inputMethodHints: Qt.ImhDigitsOnly
-                                    width: 36
+                                    width: 36 * Appearance.effectiveScale
 
                                     onEditingFinished: {
                                         let val = parseInt(text);
@@ -1182,7 +1183,7 @@ Card {
                                     id: secDown
                                     Layout.alignment: Qt.AlignHCenter
                                     width: 32; height: 20
-                                    radius: 10
+                                    radius: 10 * Appearance.effectiveScale
                                     color: secDownArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
                                     Behavior on color { ColorAnimation { duration: 150 } }
                                     
@@ -1211,16 +1212,16 @@ Card {
                     // Preset Quick Action Buttons (MD3 Chips)
                     RowLayout {
                         Layout.alignment: Qt.AlignHCenter
-                        spacing: 8
+                        spacing: 8 * Appearance.effectiveScale
 
                         Repeater {
                             model: [1, 3, 5, 10]
                             
                             Rectangle {
                                 id: presetBtn
-                                width: 56
-                                height: 24
-                                radius: 12
+                                width: 56 * Appearance.effectiveScale
+                                height: 24 * Appearance.effectiveScale
+                                radius: 12 * Appearance.effectiveScale
                                 color: presetArea.containsMouse ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Qt.rgba(255, 255, 255, 0.04)
                                 border.color: presetArea.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.1)
                                 border.width: 1
@@ -1231,7 +1232,7 @@ Card {
                                     text: modelData + "m"
                                     color: "white"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 10
+                                    font.pixelSize: 10 * Appearance.effectiveScale
                                     font.weight: Font.DemiBold
                                     anchors.centerIn: parent
                                 }
@@ -1254,9 +1255,9 @@ Card {
                         id: startTimerBtn
                         Layout.alignment: Qt.AlignHCenter
                         Layout.bottomMargin: 14
-                        width: 120
-                        height: 38
-                        radius: 19
+                        width: 120 * Appearance.effectiveScale
+                        height: 38 * Appearance.effectiveScale
+                        radius: 19 * Appearance.effectiveScale
                         
                         readonly property bool canStart: (TimerStopwatchService.setupMins > 0 || TimerStopwatchService.setupSecs > 0)
                         color: canStart ? Theme.primary : Qt.rgba(255, 255, 255, 0.03)
@@ -1264,7 +1265,7 @@ Card {
 
                         RowLayout {
                             anchors.centerIn: parent
-                            spacing: 6
+                            spacing: 6 * Appearance.effectiveScale
                             MaterialSymbol {
                                 text: "play_arrow"
                                 iconSize: 18
@@ -1276,7 +1277,7 @@ Card {
                             Text {
                                 text: "Start"
                                 font.family: Theme.font.family
-                                font.pixelSize: 13
+                                font.pixelSize: 13 * Appearance.effectiveScale
                                 font.weight: Font.DemiBold
                                 color: startTimerBtn.canStart ? Theme.onPrimary : Qt.rgba(255, 255, 255, 0.2)
                                 Behavior on color { ColorAnimation { duration: 150 } }
@@ -1304,7 +1305,7 @@ Card {
             ColumnLayout {
                 anchors.fill: parent
                 visible: root.activeTab === "stopwatch"
-                spacing: 16
+                spacing: 16 * Appearance.effectiveScale
 
                 // Stopwatch time display (huge & clean monospace)
                 Text {
@@ -1313,7 +1314,7 @@ Card {
                     Layout.topMargin: 16
                     text: TimerStopwatchService.formatStopwatch(TimerStopwatchService.stopwatchTime)
                     font.family: Theme.font.monospace
-                    font.pixelSize: 34
+                    font.pixelSize: 34 * Appearance.effectiveScale
                     font.weight: Font.DemiBold
                     color: "white"
                     horizontalAlignment: Text.AlignHCenter
@@ -1322,15 +1323,15 @@ Card {
                 // Control Action Row (Play/Pause, Lap, Reset)
                 RowLayout {
                     Layout.alignment: Qt.AlignHCenter
-                    spacing: 16
+                    spacing: 16 * Appearance.effectiveScale
                     Layout.bottomMargin: 4
 
                     // Lap Button (Custom secondary outlined style)
                     Rectangle {
                         id: swLapBtn
-                        width: 40
-                        height: 40
-                        radius: 20
+                        width: 40 * Appearance.effectiveScale
+                        height: 40 * Appearance.effectiveScale
+                        radius: 20 * Appearance.effectiveScale
                         readonly property bool canLap: TimerStopwatchService.swRunning
                         color: canLap ? (lapArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : Qt.rgba(255, 255, 255, 0.03)) : "transparent"
                         border.color: canLap ? (lapArea.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)) : Qt.rgba(255, 255, 255, 0.05)
@@ -1363,9 +1364,9 @@ Card {
                     // Play / Pause Toggle (Large primary Fab style)
                     Rectangle {
                         id: swPlayBtn
-                        width: 52
-                        height: 52
-                        radius: 26
+                        width: 52 * Appearance.effectiveScale
+                        height: 52 * Appearance.effectiveScale
+                        radius: 26 * Appearance.effectiveScale
                         color: TimerStopwatchService.swRunning ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Theme.primary
                         border.color: TimerStopwatchService.swRunning ? Theme.primary : "transparent"
                         border.width: 1
@@ -1399,9 +1400,9 @@ Card {
                     // Reset Button (Custom secondary outlined style)
                     Rectangle {
                         id: swResetBtn
-                        width: 40
-                        height: 40
-                        radius: 20
+                        width: 40 * Appearance.effectiveScale
+                        height: 40 * Appearance.effectiveScale
+                        radius: 20 * Appearance.effectiveScale
                         color: resetArea.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.12) : Qt.rgba(255, 255, 255, 0.03)
                         border.color: resetArea.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.15)
                         border.width: 1
@@ -1439,7 +1440,7 @@ Card {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Layout.bottomMargin: 4
-                    spacing: 6
+                    spacing: 6 * Appearance.effectiveScale
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
                     model: TimerStopwatchService.swLaps
@@ -1461,21 +1462,21 @@ Card {
 
                     delegate: Rectangle {
                         width: lapsList.width
-                        height: 28
-                        radius: 8
+                        height: 28 * Appearance.effectiveScale
+                        radius: 8 * Appearance.effectiveScale
                         color: Qt.rgba(255, 255, 255, 0.02)
                         border.color: Qt.rgba(255, 255, 255, 0.04)
                         border.width: 1
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
+                            anchors.leftMargin: 12 * Appearance.effectiveScale
+                            anchors.rightMargin: 12 * Appearance.effectiveScale
 
                             Text {
                                 text: "Lap " + model.lapNum
                                 font.family: Theme.font.family
-                                font.pixelSize: 11
+                                font.pixelSize: 11 * Appearance.effectiveScale
                                 font.weight: Font.Medium
                                 color: Qt.rgba(255, 255, 255, 0.5)
                             }
@@ -1485,7 +1486,7 @@ Card {
                             Text {
                                 text: model.lapTime
                                 font.family: Theme.font.monospace
-                                font.pixelSize: 11
+                                font.pixelSize: 11 * Appearance.effectiveScale
                                 font.weight: Font.DemiBold
                                 color: "white"
                             }
@@ -1498,7 +1499,7 @@ Card {
                         visible: TimerStopwatchService.swLaps.count === 0
                         text: "No laps recorded"
                         font.family: Theme.font.family
-                        font.pixelSize: 12
+                        font.pixelSize: 12 * Appearance.effectiveScale
                         color: Qt.rgba(255, 255, 255, 0.3)
                     }
                 }
@@ -1510,42 +1511,42 @@ Card {
             ColumnLayout {
                 anchors.fill: parent
                 visible: root.activeTab === "alarm"
-                spacing: 14
+                spacing: 14 * Appearance.effectiveScale
 
                 // Alarm Creator Section (MD3 Card style)
                 Rectangle {
                     Layout.fillWidth: true
-                    implicitHeight: 80
-                    radius: 16
+                    implicitHeight: 80 * Appearance.effectiveScale
+                    radius: 16 * Appearance.effectiveScale
                     color: Qt.rgba(255, 255, 255, 0.03)
                     border.color: Qt.rgba(255, 255, 255, 0.06)
                     border.width: 1
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 12
-                        spacing: 8
+                        anchors.leftMargin: 12 * Appearance.effectiveScale
+                        anchors.rightMargin: 12 * Appearance.effectiveScale
+                        spacing: 8 * Appearance.effectiveScale
 
                         // Time Input Container (Pill Shaped card)
                         Rectangle {
-                            implicitWidth: 112
-                            implicitHeight: 48
-                            radius: 24
+                            implicitWidth: 112 * Appearance.effectiveScale
+                            implicitHeight: 48 * Appearance.effectiveScale
+                            radius: 24 * Appearance.effectiveScale
                             color: Qt.rgba(255, 255, 255, 0.05)
                             border.color: (alarmHourInput.activeFocus || alarmMinInput.activeFocus) ? Theme.primary : Qt.rgba(255, 255, 255, 0.1)
                             border.width: 1
 
                             Row {
                                 anchors.centerIn: parent
-                                spacing: 4
+                                spacing: 4 * Appearance.effectiveScale
 
                                 // Hour Input
                                 TextInput {
                                     id: alarmHourInput
                                     text: String(root.alarmAddHour).padStart(2, '0')
                                     font.family: Theme.font.monospace
-                                    font.pixelSize: 18
+                                    font.pixelSize: 18 * Appearance.effectiveScale
                                     font.weight: Font.DemiBold
                                     color: "white"
                                     selectByMouse: true
@@ -1553,7 +1554,7 @@ Card {
                                     anchors.verticalCenter: parent.verticalCenter
                                     validator: IntValidator { bottom: 1; top: 12 }
                                     inputMethodHints: Qt.ImhDigitsOnly
-                                    width: 32
+                                    width: 32 * Appearance.effectiveScale
 
                                     onEditingFinished: {
                                         let val = parseInt(text);
@@ -1577,7 +1578,7 @@ Card {
                                     text: ":"
                                     color: Theme.primary
                                     font.family: Theme.font.monospace
-                                    font.pixelSize: 18
+                                    font.pixelSize: 18 * Appearance.effectiveScale
                                     font.weight: Font.Bold 
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
@@ -1587,7 +1588,7 @@ Card {
                                     id: alarmMinInput
                                     text: String(root.alarmAddMin).padStart(2, '0')
                                     font.family: Theme.font.monospace
-                                    font.pixelSize: 18
+                                    font.pixelSize: 18 * Appearance.effectiveScale
                                     font.weight: Font.DemiBold
                                     color: "white"
                                     selectByMouse: true
@@ -1595,7 +1596,7 @@ Card {
                                     anchors.verticalCenter: parent.verticalCenter
                                     validator: IntValidator { bottom: 0; top: 59 }
                                     inputMethodHints: Qt.ImhDigitsOnly
-                                    width: 32
+                                    width: 32 * Appearance.effectiveScale
 
                                     onEditingFinished: {
                                         let val = parseInt(text);
@@ -1619,15 +1620,15 @@ Card {
 
                         // AM/PM & Repeat Toggles stacked column
                         ColumnLayout {
-                            spacing: 4
+                            spacing: 4 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
 
                             // AM/PM Toggle Button (Custom filter chip)
                             Rectangle {
                                 id: amPmBtn
-                                width: 42
-                                height: 22
-                                radius: 11
+                                width: 42 * Appearance.effectiveScale
+                                height: 22 * Appearance.effectiveScale
+                                radius: 11 * Appearance.effectiveScale
                                 color: root.alarmAddIsPM ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
                                 border.color: root.alarmAddIsPM ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)
                                 border.width: 1
@@ -1638,7 +1639,7 @@ Card {
                                     text: root.alarmAddIsPM ? "PM" : "AM"
                                     color: root.alarmAddIsPM ? Theme.primary : "white"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 9
+                                    font.pixelSize: 9 * Appearance.effectiveScale
                                     font.weight: Font.Bold
                                     anchors.centerIn: parent
                                 }
@@ -1652,9 +1653,9 @@ Card {
                             // Repeat Toggle Button (Custom filter chip)
                             Rectangle {
                                 id: repeatBtn
-                                width: 42
-                                height: 22
-                                radius: 11
+                                width: 42 * Appearance.effectiveScale
+                                height: 22 * Appearance.effectiveScale
+                                radius: 11 * Appearance.effectiveScale
                                 color: root.alarmAddRepeatMode === "daily" ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : Qt.rgba(255, 255, 255, 0.05)
                                 border.color: root.alarmAddRepeatMode === "daily" ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)
                                 border.width: 1
@@ -1665,7 +1666,7 @@ Card {
                                     text: root.alarmAddRepeatMode === "daily" ? "Daily" : "Once"
                                     color: root.alarmAddRepeatMode === "daily" ? Theme.primary : "white"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 9
+                                    font.pixelSize: 9 * Appearance.effectiveScale
                                     font.weight: Font.Bold
                                     anchors.centerIn: parent
                                 }
@@ -1680,14 +1681,14 @@ Card {
                         // Label Input & Actions column
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 4
+                            spacing: 4 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
 
                             // Label Input Textfield
                             Rectangle {
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 22
-                                radius: 6
+                                Layout.preferredHeight: 22 * Appearance.effectiveScale
+                                radius: 6 * Appearance.effectiveScale
                                 color: Qt.rgba(255, 255, 255, 0.05)
                                 border.color: labelInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.1)
                                 border.width: 1
@@ -1695,12 +1696,12 @@ Card {
                                 TextInput {
                                     id: labelInput
                                     anchors.fill: parent
-                                    anchors.leftMargin: 8
-                                    anchors.rightMargin: 8
+                                    anchors.leftMargin: 8 * Appearance.effectiveScale
+                                    anchors.rightMargin: 8 * Appearance.effectiveScale
                                     verticalAlignment: TextInput.AlignVCenter
                                     color: "white"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 10
+                                    font.pixelSize: 10 * Appearance.effectiveScale
                                     clip: true
 
                                     Text {
@@ -1717,7 +1718,7 @@ Card {
                             // Actions row (Cancel & Add/Save buttons)
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 6
+                                spacing: 6 * Appearance.effectiveScale
 
                                 Item { Layout.fillWidth: true }
 
@@ -1725,9 +1726,9 @@ Card {
                                 Rectangle {
                                     id: cancelEditBtn
                                     visible: root.editingAlarmIndex !== -1
-                                    width: 22
-                                    height: 22
-                                    radius: 11
+                                    width: 22 * Appearance.effectiveScale
+                                    height: 22 * Appearance.effectiveScale
+                                    radius: 11 * Appearance.effectiveScale
                                     color: cancelArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : Qt.rgba(255, 255, 255, 0.03)
                                     border.color: cancelArea.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)
                                     border.width: 1
@@ -1761,9 +1762,9 @@ Card {
                                 // Add / Save Button (MD3 Filled Icon Button)
                                 Rectangle {
                                     id: addAlarmBtn
-                                    width: 44
-                                    height: 22
-                                    radius: 11
+                                    width: 44 * Appearance.effectiveScale
+                                    height: 22 * Appearance.effectiveScale
+                                    radius: 11 * Appearance.effectiveScale
                                     color: Theme.primary
 
                                     MaterialSymbol {
@@ -1817,7 +1818,7 @@ Card {
                     id: alarmsList
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing: 6
+                    spacing: 6 * Appearance.effectiveScale
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
                     model: TimerStopwatchService.alarms
@@ -1840,8 +1841,8 @@ Card {
                     delegate: Rectangle {
                         id: alarmRow
                         width: alarmsList.width
-                        height: 52
-                        radius: 12
+                        height: 52 * Appearance.effectiveScale
+                        radius: 12 * Appearance.effectiveScale
                         color: alarmHover.hovered ? Qt.rgba(255, 255, 255, 0.04) : Qt.rgba(255, 255, 255, 0.01)
                         border.color: Qt.rgba(255, 255, 255, 0.04)
                         border.width: 1
@@ -1853,21 +1854,21 @@ Card {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            spacing: 12
+                            anchors.leftMargin: 12 * Appearance.effectiveScale
+                            anchors.rightMargin: 12 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
 
                             // Alarm Time & Tag Column (MD3-like spacing)
                             ColumnLayout {
-                                spacing: 1
+                                spacing: 1 * Appearance.effectiveScale
                                 Layout.alignment: Qt.AlignVCenter
 
                                 RowLayout {
-                                    spacing: 4
+                                    spacing: 4 * Appearance.effectiveScale
                                     Text {
                                         text: String(model.hour).padStart(2, '0') + ":" + String(model.minute).padStart(2, '0')
                                         font.family: Theme.font.monospace
-                                        font.pixelSize: 18
+                                        font.pixelSize: 18 * Appearance.effectiveScale
                                         font.weight: Font.DemiBold
                                         color: model.enabled ? "white" : Qt.rgba(255, 255, 255, 0.35)
                                         Behavior on color { ColorAnimation { duration: 150 } }
@@ -1875,7 +1876,7 @@ Card {
                                     Text {
                                         text: model.isPM ? "PM" : "AM"
                                         font.family: Theme.font.family
-                                        font.pixelSize: 10
+                                        font.pixelSize: 10 * Appearance.effectiveScale
                                         font.weight: Font.DemiBold
                                         color: model.enabled ? Theme.primary : Qt.rgba(255, 255, 255, 0.25)
                                         Layout.alignment: Qt.AlignBottom
@@ -1885,11 +1886,11 @@ Card {
                                 }
 
                                 RowLayout {
-                                    spacing: 6
+                                    spacing: 6 * Appearance.effectiveScale
                                     Text {
                                         text: model.label
                                         font.family: Theme.font.family
-                                        font.pixelSize: 10
+                                        font.pixelSize: 10 * Appearance.effectiveScale
                                         color: model.enabled ? Qt.rgba(255, 255, 255, 0.6) : Qt.rgba(255, 255, 255, 0.3)
                                         elide: Text.ElideRight
                                         Layout.maximumWidth: 120
@@ -1897,9 +1898,9 @@ Card {
                                     }
                                     // Repeat Pill Indicator
                                     Rectangle {
-                                        implicitWidth: 36
-                                        implicitHeight: 14
-                                        radius: 7
+                                        implicitWidth: 36 * Appearance.effectiveScale
+                                        implicitHeight: 14 * Appearance.effectiveScale
+                                        radius: 7 * Appearance.effectiveScale
                                         color: model.enabled ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : Qt.rgba(255, 255, 255, 0.04)
                                         border.color: model.enabled ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.25) : "transparent"
                                         border.width: 1
@@ -1909,7 +1910,7 @@ Card {
                                             anchors.centerIn: parent
                                             text: (model.repeatMode === "daily" ? "Daily" : "Once")
                                             font.family: Theme.font.family
-                                            font.pixelSize: 8
+                                            font.pixelSize: 8 * Appearance.effectiveScale
                                             font.weight: Font.Bold
                                             color: model.enabled ? Theme.primary : Qt.rgba(255, 255, 255, 0.25)
                                             Behavior on color { ColorAnimation { duration: 150 } }
@@ -1922,16 +1923,16 @@ Card {
 
                             // Action buttons & Switch layout
                             RowLayout {
-                                spacing: 8
+                                spacing: 8 * Appearance.effectiveScale
                                 Layout.alignment: Qt.AlignVCenter
 
                                 // Edit Alarm Button (Custom centered icon button)
                                 Rectangle {
                                     id: alarmEditBtn
                                     visible: alarmHover.hovered
-                                    width: 28
-                                    height: 28
-                                    radius: 14
+                                    width: 28 * Appearance.effectiveScale
+                                    height: 28 * Appearance.effectiveScale
+                                    radius: 14 * Appearance.effectiveScale
                                     color: editArea.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
                                     Behavior on color { ColorAnimation { duration: 150 } }
 
@@ -1964,9 +1965,9 @@ Card {
                                 Rectangle {
                                     id: alarmDelBtn
                                     visible: alarmHover.hovered
-                                    width: 28
-                                    height: 28
-                                    radius: 14
+                                    width: 28 * Appearance.effectiveScale
+                                    height: 28 * Appearance.effectiveScale
+                                    radius: 14 * Appearance.effectiveScale
                                     color: delAlarmArea.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.12) : "transparent"
                                     Behavior on color { ColorAnimation { duration: 150 } }
 
@@ -1994,21 +1995,21 @@ Card {
                                 // MD3 Style Switch (Enable/Disable toggle)
                                 Rectangle {
                                     id: switchTrack
-                                    width: 34
-                                    height: 20
-                                    radius: 10
+                                    width: 34 * Appearance.effectiveScale
+                                    height: 20 * Appearance.effectiveScale
+                                    radius: 10 * Appearance.effectiveScale
                                     color: model.enabled ? Theme.primary : Qt.rgba(255, 255, 255, 0.15)
                                     border.color: model.enabled ? "transparent" : Qt.rgba(255, 255, 255, 0.25)
                                     border.width: model.enabled ? 0 : 1.5
                                     Behavior on color { ColorAnimation { duration: 150 } }
 
                                     Rectangle {
-                                        width: model.enabled ? 14 : 10
-                                        height: model.enabled ? 14 : 10
-                                        radius: model.enabled ? 7 : 5
+                                        width: model.enabled ? 14 * Appearance.effectiveScale : 10 * Appearance.effectiveScale
+                                        height: model.enabled ? 14 * Appearance.effectiveScale : 10 * Appearance.effectiveScale
+                                        radius: model.enabled ? 7 * Appearance.effectiveScale : 5 * Appearance.effectiveScale
                                         color: model.enabled ? Theme.onPrimary : Qt.rgba(255, 255, 255, 0.45)
                                         anchors.verticalCenter: parent.verticalCenter
-                                        x: model.enabled ? 17 : 4
+                                        x: model.enabled ? 17 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
 
                                         Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
                                         Behavior on width { NumberAnimation { duration: 120 } }

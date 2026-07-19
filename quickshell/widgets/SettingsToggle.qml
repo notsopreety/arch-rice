@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import "../theme"
 import "../components"
+import "../core"
 
 Rectangle {
     id: root
@@ -22,11 +23,11 @@ Rectangle {
     Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
 
     // Dynamic morphing radius (Pill to Curvy Border Rectangle)
-    radius: isActive ? 16 : height / 2
+    radius: isActive ? 16 * Appearance.effectiveScale : height / 2
     Behavior on radius { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
 
     Layout.fillWidth: true
-    Layout.preferredHeight: 64
+    Layout.preferredHeight: 64 * Appearance.effectiveScale
 
     // Theme responsive background & borders
     color: {
@@ -37,7 +38,7 @@ Rectangle {
         }
     }
     border.color: isActive ? "transparent" : (hoverHandler.hovered ? Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.15))
-    border.width: 1
+    border.width: 1 * Appearance.effectiveScale
 
     Behavior on color { ColorAnimation { duration: 150 } }
     Behavior on border.color { ColorAnimation { duration: 150 } }
@@ -45,27 +46,27 @@ Rectangle {
     QQC.ToolTip {
         visible: hoverHandler.hovered && tooltipText !== ""
         delay: 200
-        y: -height - 4
+        y: -height - 4 * Appearance.effectiveScale
         contentItem: Text {
             text: root.tooltipText
             font.family: Theme.font.family
-            font.pixelSize: 11
+            font.pixelSize: 11 * Appearance.effectiveScale
             font.weight: Font.Medium
             color: Theme.primary
         }
         background: Rectangle {
             color: Theme.surfaceContainer
             border.color: Theme.outline
-            border.width: 1
-            radius: 8
+            border.width: 1 * Appearance.effectiveScale
+            radius: 8 * Appearance.effectiveScale
         }
     }
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 16
-        anchors.rightMargin: 12
-        spacing: 16
+        anchors.leftMargin: 16 * Appearance.effectiveScale
+        anchors.rightMargin: 12 * Appearance.effectiveScale
+        spacing: 16 * Appearance.effectiveScale
 
         MouseArea {
             Layout.fillWidth: true
@@ -75,24 +76,24 @@ Rectangle {
 
             RowLayout {
                 anchors.fill: parent
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
 
                 DankIcon {
                     name: root.isActive ? root.iconName : (root.iconOffName || root.iconName)
-                    size: 24
+                    size: 24 * Appearance.effectiveScale
                     filled: root.isActive
                     color: root.isActive ? "#000000" : "white"
                 }
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 2
+                    spacing: 2 * Appearance.effectiveScale
                     Layout.alignment: Qt.AlignVCenter
 
                     Text {
                         text: root.title
                         font.family: Theme.font.family
-                        font.pixelSize: 14
+                        font.pixelSize: 14 * Appearance.effectiveScale
                         font.weight: Font.Bold
                         color: root.isActive ? "#000000" : "white"
                     }
@@ -100,7 +101,7 @@ Rectangle {
                     Text {
                         text: root.statusText
                         font.family: Theme.font.family
-                        font.pixelSize: 12
+                        font.pixelSize: 12 * Appearance.effectiveScale
                         color: root.isActive ? Qt.rgba(0,0,0,0.6) : Qt.rgba(1,1,1,0.6)
                     }
                 }

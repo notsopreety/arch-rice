@@ -7,6 +7,7 @@ import "../theme"
 import "../components"
 import "../services"
 import QtCore
+import "../core"
 
 Item {
     id: root
@@ -81,10 +82,10 @@ Item {
         QQC.ScrollBar.vertical.policy: QQC.ScrollBar.AlwaysOff
 
         ColumnLayout {
-            width: root.width - 32
-            x: 16
-            y: 16
-            spacing: 16
+            width: root.width - 32 * Appearance.effectiveScale
+            x: 16 * Appearance.effectiveScale
+            y: 16 * Appearance.effectiveScale
+            spacing: 16 * Appearance.effectiveScale
 
             // =============================================
             // SECTION: System & UI Settings
@@ -92,7 +93,7 @@ Item {
             Text {
                 text: "System & UI Settings"
                 font.family: Theme.font.family
-                font.pixelSize: 18
+                font.pixelSize: 18 * Appearance.effectiveScale
                 font.weight: Font.Bold
                 color: "white"
             }
@@ -100,8 +101,8 @@ Item {
             GridLayout {
                 Layout.fillWidth: true
                 columns: 3
-                columnSpacing: 16
-                rowSpacing: 16
+                columnSpacing: 16 * Appearance.effectiveScale
+                rowSpacing: 16 * Appearance.effectiveScale
 
                 // --- Niri Layout Toggle ---
                 SettingsToggle {
@@ -246,15 +247,15 @@ Item {
                         contentItem: Text {
                             text: "Change Window Rounding"
                             font.family: Theme.font.family
-                            font.pixelSize: 11
+                            font.pixelSize: 11 * Appearance.effectiveScale
                             font.weight: Font.Medium
                             color: Theme.primary
                         }
                         background: Rectangle {
                             color: Theme.surfaceContainer
                             border.color: Theme.outline
-                            border.width: 1
-                            radius: 8
+                            border.width: 1 * Appearance.effectiveScale
+                            radius: 8 * Appearance.effectiveScale
                         }
                     }
 
@@ -279,7 +280,7 @@ Item {
                     }
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 64
+                    Layout.preferredHeight: 64 * Appearance.effectiveScale
                     radius: isActive ? 16 : height / 2
                     Behavior on radius { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
                     color: {
@@ -290,7 +291,7 @@ Item {
                         }
                     }
                     border.color: isActive ? "transparent" : (roundingHover.hovered ? Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.15))
-                    border.width: 1
+                    border.width: 1 * Appearance.effectiveScale
 
                     scale: roundingHover.hovered ? 1.02 : 1.0
                     Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
@@ -299,20 +300,20 @@ Item {
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 12
-                        spacing: 16
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 12 * Appearance.effectiveScale
+                        spacing: 16 * Appearance.effectiveScale
 
                         DankIcon {
                             name: "rounded_corner"
-                            size: 24
+                            size: 24 * Appearance.effectiveScale
                             color: roundingPill.isActive ? "#000000" : "white"
                         }
 
                         Text {
                             text: "Rounding"
                             font.family: Theme.font.family
-                            font.pixelSize: 14
+                            font.pixelSize: 14 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: roundingPill.isActive ? "#000000" : "white"
                             Layout.fillWidth: true
@@ -321,23 +322,23 @@ Item {
                         Text {
                             text: roundingPill.value.toString() + "px"
                             font.family: Theme.font.family
-                            font.pixelSize: 14
+                            font.pixelSize: 14 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: roundingPill.isActive ? Qt.rgba(0, 0, 0, 0.6) : Qt.rgba(1, 1, 1, 0.6)
                             visible: !roundingHover.hovered
                         }
 
                         RowLayout {
-                            spacing: 4
+                            spacing: 4 * Appearance.effectiveScale
                             visible: roundingHover.hovered
 
                             Rectangle {
-                                width: 36
-                                height: 32
-                                radius: 6
+                                width: 36 * Appearance.effectiveScale
+                                height: 32 * Appearance.effectiveScale
+                                radius: 6 * Appearance.effectiveScale
                                 color: Qt.rgba(0,0,0,0.3)
                                 border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3)
-                                border.width: 1
+                                border.width: 1 * Appearance.effectiveScale
 
                                 TextInput {
                                     id: roundingInput
@@ -347,7 +348,7 @@ Item {
                                     text: roundingPill.value.toString()
                                     color: "white"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 14
+                                    font.pixelSize: 14 * Appearance.effectiveScale
                                     font.weight: Font.Bold
                                     validator: IntValidator { bottom: 0; top: 100 }
                                     onEditingFinished: {
@@ -362,14 +363,14 @@ Item {
                             }
 
                             ColumnLayout {
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Rectangle {
-                                    width: 24
-                                    height: 15
-                                    radius: 4
+                                    width: 24 * Appearance.effectiveScale
+                                    height: 15 * Appearance.effectiveScale
+                                    radius: 4 * Appearance.effectiveScale
                                     color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.1)
                                     border.color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.3)
-                                    border.width: 1
+                                    border.width: 1 * Appearance.effectiveScale
 
                                     MouseArea {
                                         anchors.fill: parent
@@ -380,15 +381,15 @@ Item {
                                             roundingInput.editingFinished();
                                         }
                                     }
-                                    DankIcon { name: "arrow_drop_up"; size: 16; anchors.centerIn: parent; color: Theme.primary }
+                                    DankIcon { name: "arrow_drop_up"; size: 16 * Appearance.effectiveScale; anchors.centerIn: parent; color: Theme.primary }
                                 }
                                 Rectangle {
-                                    width: 24
-                                    height: 15
-                                    radius: 4
+                                    width: 24 * Appearance.effectiveScale
+                                    height: 15 * Appearance.effectiveScale
+                                    radius: 4 * Appearance.effectiveScale
                                     color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.1)
                                     border.color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.3)
-                                    border.width: 1
+                                    border.width: 1 * Appearance.effectiveScale
 
                                     MouseArea {
                                         anchors.fill: parent
@@ -399,7 +400,7 @@ Item {
                                             roundingInput.editingFinished();
                                         }
                                     }
-                                    DankIcon { name: "arrow_drop_down"; size: 16; anchors.centerIn: parent; color: Theme.primary }
+                                    DankIcon { name: "arrow_drop_down"; size: 16 * Appearance.effectiveScale; anchors.centerIn: parent; color: Theme.primary }
                                 }
                             }
                         }
@@ -436,15 +437,15 @@ Item {
                         contentItem: Text {
                             text: "Change Border Size"
                             font.family: Theme.font.family
-                            font.pixelSize: 11
+                            font.pixelSize: 11 * Appearance.effectiveScale
                             font.weight: Font.Medium
                             color: Theme.primary
                         }
                         background: Rectangle {
                             color: Theme.surfaceContainer
                             border.color: Theme.outline
-                            border.width: 1
-                            radius: 8
+                            border.width: 1 * Appearance.effectiveScale
+                            radius: 8 * Appearance.effectiveScale
                         }
                     }
 
@@ -469,7 +470,7 @@ Item {
                     }
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 64
+                    Layout.preferredHeight: 64 * Appearance.effectiveScale
                     radius: isActive ? 16 : height / 2
                     Behavior on radius { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
                     color: {
@@ -480,7 +481,7 @@ Item {
                         }
                     }
                     border.color: isActive ? "transparent" : (borderSizeHover.hovered ? Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.15))
-                    border.width: 1
+                    border.width: 1 * Appearance.effectiveScale
 
                     scale: borderSizeHover.hovered ? 1.02 : 1.0
                     Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
@@ -489,20 +490,20 @@ Item {
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 12
-                        spacing: 16
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 12 * Appearance.effectiveScale
+                        spacing: 16 * Appearance.effectiveScale
 
                         DankIcon {
                             name: "border_outer"
-                            size: 24
+                            size: 24 * Appearance.effectiveScale
                             color: borderSizePill.isActive ? "#000000" : "white"
                         }
 
                         Text {
                             text: "Border Size"
                             font.family: Theme.font.family
-                            font.pixelSize: 14
+                            font.pixelSize: 14 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: borderSizePill.isActive ? "#000000" : "white"
                             Layout.fillWidth: true
@@ -511,23 +512,23 @@ Item {
                         Text {
                             text: borderSizePill.value.toString() + "px"
                             font.family: Theme.font.family
-                            font.pixelSize: 14
+                            font.pixelSize: 14 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: Qt.rgba(1, 1, 1, 0.6)
                             visible: !borderSizeHover.hovered
                         }
 
                         RowLayout {
-                            spacing: 4
+                            spacing: 4 * Appearance.effectiveScale
                             visible: borderSizeHover.hovered
 
                             Rectangle {
-                                width: 36
-                                height: 32
-                                radius: 6
+                                width: 36 * Appearance.effectiveScale
+                                height: 32 * Appearance.effectiveScale
+                                radius: 6 * Appearance.effectiveScale
                                 color: Qt.rgba(0,0,0,0.3)
                                 border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3)
-                                border.width: 1
+                                border.width: 1 * Appearance.effectiveScale
 
                                 TextInput {
                                     id: borderSizeInput
@@ -537,7 +538,7 @@ Item {
                                     text: borderSizePill.value.toString()
                                     color: "white"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 14
+                                    font.pixelSize: 14 * Appearance.effectiveScale
                                     font.weight: Font.Bold
                                     validator: IntValidator { bottom: 0; top: 100 }
                                     onEditingFinished: {
@@ -552,14 +553,14 @@ Item {
                             }
 
                             ColumnLayout {
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Rectangle {
-                                    width: 24
-                                    height: 15
-                                    radius: 4
+                                    width: 24 * Appearance.effectiveScale
+                                    height: 15 * Appearance.effectiveScale
+                                    radius: 4 * Appearance.effectiveScale
                                     color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.1)
                                     border.color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.3)
-                                    border.width: 1
+                                    border.width: 1 * Appearance.effectiveScale
 
                                     MouseArea {
                                         anchors.fill: parent
@@ -570,15 +571,15 @@ Item {
                                             borderSizeInput.editingFinished();
                                         }
                                     }
-                                    DankIcon { name: "arrow_drop_up"; size: 16; anchors.centerIn: parent; color: Theme.primary }
+                                    DankIcon { name: "arrow_drop_up"; size: 16 * Appearance.effectiveScale; anchors.centerIn: parent; color: Theme.primary }
                                 }
                                 Rectangle {
-                                    width: 24
-                                    height: 15
-                                    radius: 4
+                                    width: 24 * Appearance.effectiveScale
+                                    height: 15 * Appearance.effectiveScale
+                                    radius: 4 * Appearance.effectiveScale
                                     color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.1)
                                     border.color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.3)
-                                    border.width: 1
+                                    border.width: 1 * Appearance.effectiveScale
 
                                     MouseArea {
                                         anchors.fill: parent
@@ -589,7 +590,7 @@ Item {
                                             borderSizeInput.editingFinished();
                                         }
                                     }
-                                    DankIcon { name: "arrow_drop_down"; size: 16; anchors.centerIn: parent; color: Theme.primary }
+                                    DankIcon { name: "arrow_drop_down"; size: 16 * Appearance.effectiveScale; anchors.centerIn: parent; color: Theme.primary }
                                 }
                             }
                         }
@@ -689,11 +690,11 @@ Item {
                     }
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 64
+                    Layout.preferredHeight: 64 * Appearance.effectiveScale
                     radius: height / 2
                     color: timezoneHover.hovered ? Qt.rgba(255, 255, 255, 0.1) : Qt.rgba(255, 255, 255, 0.05)
                     border.color: timezoneHover.hovered ? Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.15)
-                    border.width: 1
+                    border.width: 1 * Appearance.effectiveScale
 
                     scale: timezoneHover.hovered ? 1.02 : 1.0
                     Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
@@ -702,20 +703,20 @@ Item {
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 16
-                        spacing: 12
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 16 * Appearance.effectiveScale
+                        spacing: 12 * Appearance.effectiveScale
 
                         DankIcon {
                             name: "public"
-                            size: 24
+                            size: 24 * Appearance.effectiveScale
                             color: "white"
                         }
 
                         Text {
                             text: "Timezone"
                             font.family: Theme.font.family
-                            font.pixelSize: 14
+                            font.pixelSize: 14 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: "white"
                             Layout.fillWidth: true
@@ -726,7 +727,7 @@ Item {
                         Text {
                             text: timezonePill.timezoneVal
                             font.family: Theme.font.family
-                            font.pixelSize: 13
+                            font.pixelSize: 13 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: Qt.rgba(1, 1, 1, 0.6)
                             visible: !timezoneHover.hovered
@@ -736,23 +737,23 @@ Item {
                         // Input field when hovered
                         Item {
                             id: inputWrapper
-                            Layout.preferredWidth: 130
-                            Layout.preferredHeight: 32
+                            Layout.preferredWidth: 130 * Appearance.effectiveScale
+                            Layout.preferredHeight: 32 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignRight
                             visible: timezoneHover.hovered
 
                             Rectangle {
                                 anchors.fill: parent
-                                radius: 6
+                                radius: 6 * Appearance.effectiveScale
                                 color: Qt.rgba(0, 0, 0, 0.3)
                                 border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3)
-                                border.width: 1
+                                border.width: 1 * Appearance.effectiveScale
 
                                 // Ghost text suggestion behind the input text
                                 Text {
                                     anchors.fill: parent
-                                    anchors.leftMargin: 8
-                                    anchors.rightMargin: 8
+                                    anchors.leftMargin: 8 * Appearance.effectiveScale
+                                    anchors.rightMargin: 8 * Appearance.effectiveScale
                                     verticalAlignment: Text.AlignVCenter
                                     text: {
                                         var typed = timezoneInput.text;
@@ -762,7 +763,7 @@ Item {
                                         return "";
                                     }
                                     font.family: Theme.font.family
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     color: Qt.rgba(255, 255, 255, 0.25)
                                     clip: true
@@ -771,14 +772,14 @@ Item {
                                 TextInput {
                                     id: timezoneInput
                                     anchors.fill: parent
-                                    anchors.leftMargin: 8
-                                    anchors.rightMargin: 8
+                                    anchors.leftMargin: 8 * Appearance.effectiveScale
+                                    anchors.rightMargin: 8 * Appearance.effectiveScale
                                     horizontalAlignment: TextInput.AlignLeft
                                     verticalAlignment: TextInput.AlignVCenter
                                     text: timezonePill.timezoneVal
                                     color: "white"
                                     font.family: Theme.font.family
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     clip: true
 
@@ -816,7 +817,7 @@ Item {
             Text {
                 text: "Bar"
                 font.family: Theme.font.family
-                font.pixelSize: 16
+                font.pixelSize: 16 * Appearance.effectiveScale
                 font.weight: Font.Bold
                 color: "white"
             }
@@ -824,8 +825,8 @@ Item {
             GridLayout {
                 Layout.fillWidth: true
                 columns: 2
-                columnSpacing: 16
-                rowSpacing: 16
+                columnSpacing: 16 * Appearance.effectiveScale
+                rowSpacing: 16 * Appearance.effectiveScale
 
                 // --- Floating Bar Toggle ---
                 SettingsToggle {
@@ -860,7 +861,7 @@ Item {
             Text {
                 text: "Window Gaps"
                 font.family: Theme.font.family
-                font.pixelSize: 16
+                font.pixelSize: 16 * Appearance.effectiveScale
                 font.weight: Font.Bold
                 color: "white"
             }
@@ -868,17 +869,17 @@ Item {
             GridLayout {
                 Layout.fillWidth: true
                 columns: 3
-                columnSpacing: 16
-                rowSpacing: 16
+                columnSpacing: 16 * Appearance.effectiveScale
+                rowSpacing: 16 * Appearance.effectiveScale
 
                 // --- Gaps In Slider ---
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 48
-                    radius: 24
+                    Layout.preferredHeight: 48 * Appearance.effectiveScale
+                    radius: 24 * Appearance.effectiveScale
                     color: gapsInHover.hovered ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95) : Theme.surfaceContainer
                     border.color: gapsInHover.hovered ? Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.35) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-                    border.width: 1
+                    border.width: 1 * Appearance.effectiveScale
 
                     scale: gapsInHover.hovered ? 1.02 : 1.0
                     Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
@@ -902,28 +903,28 @@ Item {
                         contentItem: Text {
                             text: "Gaps In (Right Click to Reset)"
                             font.family: Theme.font.family
-                            font.pixelSize: 11
+                            font.pixelSize: 11 * Appearance.effectiveScale
                             font.weight: Font.Medium
                             color: Theme.primary
                         }
                         background: Rectangle {
                             color: Theme.surfaceContainer
                             border.color: Theme.outline
-                            border.width: 1
-                            radius: 8
+                            border.width: 1 * Appearance.effectiveScale
+                            radius: 8 * Appearance.effectiveScale
                         }
                     }
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 12
-                        spacing: 12
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 12 * Appearance.effectiveScale
+                        spacing: 12 * Appearance.effectiveScale
 
                         // Center Slider
                         Item {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 32
+                            Layout.preferredHeight: 32 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
 
                             StyledSlider {
@@ -935,7 +936,7 @@ Item {
                                 enabled: true
                                 configuration: StyledSlider.Configuration.M
                                 animateValue: !pressed
-                                handleMargins: 4
+                                handleMargins: 4 * Appearance.effectiveScale
                                 highlightColor: Theme.primary
                                 trackColor: Theme.surfaceVariant
                                 handleColor: Theme.primary
@@ -969,7 +970,7 @@ Item {
                             Text {
                                 anchors.centerIn: parent
                                 text: "GAPS IN"
-                                font.pixelSize: 9
+                                font.pixelSize: 9 * Appearance.effectiveScale
                                 font.weight: Font.Bold
                                 color: "#ffffff"
                                 opacity: 0.35
@@ -979,17 +980,17 @@ Item {
 
                         // Right value box
                         Rectangle {
-                            width: 36
-                            height: 28
-                            radius: 10
+                            width: 36 * Appearance.effectiveScale
+                            height: 28 * Appearance.effectiveScale
+                            radius: 10 * Appearance.effectiveScale
                             color: Theme.secondaryContainer
                             border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
-                            border.width: 1
+                            border.width: 1 * Appearance.effectiveScale
 
                             Text {
                                 anchors.centerIn: parent
                                 text: Math.round(gapsInSlider.value)
-                                font.pixelSize: 11
+                                font.pixelSize: 11 * Appearance.effectiveScale
                                 font.weight: Font.DemiBold
                                 color: "#ffffff"
                             }
@@ -1000,11 +1001,11 @@ Item {
                 // --- Gaps Out Slider ---
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 48
-                    radius: 24
+                    Layout.preferredHeight: 48 * Appearance.effectiveScale
+                    radius: 24 * Appearance.effectiveScale
                     color: gapsOutHover.hovered ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95) : Theme.surfaceContainer
                     border.color: gapsOutHover.hovered ? Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.35) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
-                    border.width: 1
+                    border.width: 1 * Appearance.effectiveScale
 
                     scale: gapsOutHover.hovered ? 1.02 : 1.0
                     Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
@@ -1028,28 +1029,28 @@ Item {
                         contentItem: Text {
                             text: "Gaps Out (Right Click to Reset)"
                             font.family: Theme.font.family
-                            font.pixelSize: 11
+                            font.pixelSize: 11 * Appearance.effectiveScale
                             font.weight: Font.Medium
                             color: Theme.primary
                         }
                         background: Rectangle {
                             color: Theme.surfaceContainer
                             border.color: Theme.outline
-                            border.width: 1
-                            radius: 8
+                            border.width: 1 * Appearance.effectiveScale
+                            radius: 8 * Appearance.effectiveScale
                         }
                     }
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 12
-                        spacing: 12
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 12 * Appearance.effectiveScale
+                        spacing: 12 * Appearance.effectiveScale
 
                         // Center Slider
                         Item {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 32
+                            Layout.preferredHeight: 32 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
 
                             StyledSlider {
@@ -1061,7 +1062,7 @@ Item {
                                 enabled: true
                                 configuration: StyledSlider.Configuration.M
                                 animateValue: !pressed
-                                handleMargins: 4
+                                handleMargins: 4 * Appearance.effectiveScale
                                 highlightColor: Theme.primary
                                 trackColor: Theme.surfaceVariant
                                 handleColor: Theme.primary
@@ -1095,7 +1096,7 @@ Item {
                             Text {
                                 anchors.centerIn: parent
                                 text: "GAPS OUT"
-                                font.pixelSize: 9
+                                font.pixelSize: 9 * Appearance.effectiveScale
                                 font.weight: Font.Bold
                                 color: "#ffffff"
                                 opacity: 0.35
@@ -1105,17 +1106,17 @@ Item {
 
                         // Right value box
                         Rectangle {
-                            width: 36
-                            height: 28
-                            radius: 10
+                            width: 36 * Appearance.effectiveScale
+                            height: 28 * Appearance.effectiveScale
+                            radius: 10 * Appearance.effectiveScale
                             color: Theme.secondaryContainer
                             border.color: Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
-                            border.width: 1
+                            border.width: 1 * Appearance.effectiveScale
 
                             Text {
                                 anchors.centerIn: parent
                                 text: Math.round(gapsOutSlider.value)
-                                font.pixelSize: 11
+                                font.pixelSize: 11 * Appearance.effectiveScale
                                 font.weight: Font.DemiBold
                                 color: "#ffffff"
                             }
@@ -1129,7 +1130,7 @@ Item {
                     property bool isActive: Math.round(gapsInSlider.value) === Math.round(gapsOutSlider.value)
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 64
+                    Layout.preferredHeight: 64 * Appearance.effectiveScale
                     radius: isActive ? 16 : height / 2
                     Behavior on radius { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
                     color: {
@@ -1140,7 +1141,7 @@ Item {
                         }
                     }
                     border.color: isActive ? "transparent" : (syncGapsHover.hovered ? Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.3) : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.15))
-                    border.width: 1
+                    border.width: 1 * Appearance.effectiveScale
 
                     scale: syncGapsHover.hovered ? 1.02 : 1.0
                     Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
@@ -1163,39 +1164,39 @@ Item {
                         contentItem: Text {
                             text: "Sync Gaps (Right Click to Reset)"
                             font.family: Theme.font.family
-                            font.pixelSize: 11
+                            font.pixelSize: 11 * Appearance.effectiveScale
                             font.weight: Font.Medium
                             color: Theme.primary
                         }
                         background: Rectangle {
                             color: Theme.surfaceContainer
                             border.color: Theme.outline
-                            border.width: 1
-                            radius: 8
+                            border.width: 1 * Appearance.effectiveScale
+                            radius: 8 * Appearance.effectiveScale
                         }
                     }
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 16
-                        spacing: 16
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 16 * Appearance.effectiveScale
+                        spacing: 16 * Appearance.effectiveScale
 
                         DankIcon {
                             name: "sync"
-                            size: 24
+                            size: 24 * Appearance.effectiveScale
                             color: syncGapsPill.isActive ? "#000000" : "white"
                         }
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
 
                             Text {
                                 text: "Sync Gaps"
                                 font.family: Theme.font.family
-                                font.pixelSize: 14
+                                font.pixelSize: 14 * Appearance.effectiveScale
                                 font.weight: Font.Bold
                                 color: syncGapsPill.isActive ? "#000000" : "white"
                             }
@@ -1203,7 +1204,7 @@ Item {
                             Text {
                                 text: "Match Out to In"
                                 font.family: Theme.font.family
-                                font.pixelSize: 12
+                                font.pixelSize: 12 * Appearance.effectiveScale
                                 color: syncGapsPill.isActive ? Qt.rgba(0, 0, 0, 0.6) : Qt.rgba(1, 1, 1, 0.6)
                             }
                         }
@@ -1227,7 +1228,7 @@ Item {
             Text {
                 text: "Desktop Widgets"
                 font.family: Theme.font.family
-                font.pixelSize: 16
+                font.pixelSize: 16 * Appearance.effectiveScale
                 font.weight: Font.Bold
                 color: "white"
             }
@@ -1236,8 +1237,8 @@ Item {
             GridLayout {
                 Layout.fillWidth: true
                 columns: 2
-                columnSpacing: 16
-                rowSpacing: 16
+                columnSpacing: 16 * Appearance.effectiveScale
+                rowSpacing: 16 * Appearance.effectiveScale
 
                 // --- Clock Widget Toggle ---
                 SettingsToggle {
@@ -1302,7 +1303,7 @@ Item {
 
             Item {
                 Layout.fillHeight: true
-                Layout.minimumHeight: 20
+                Layout.minimumHeight: 20 * Appearance.effectiveScale
             }
         } // end ColumnLayout
     } // end ScrollView

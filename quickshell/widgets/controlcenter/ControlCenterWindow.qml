@@ -183,7 +183,7 @@ PanelWindow {
         // Floating Card Container (aligned right, below status bar)
         Rectangle {
             id: canvas
-            width: 400
+            width: 400 * Appearance.effectiveScale
             height: {
                 if (window.editMode) {
                     const baseHeight = 150 * Appearance.effectiveScale;
@@ -201,10 +201,10 @@ PanelWindow {
                 }
             }
             anchors.right: parent.right
-            anchors.rightMargin: 16
-            y: 50 // Placed nicely below the top status bar
+            anchors.rightMargin: 16 * Appearance.effectiveScale
+            y: 50 * Appearance.effectiveScale // Placed nicely below the top status bar
 
-            radius: 24
+            radius: 24 * Appearance.effectiveScale
             color: window.glassmorphism ? window.glassCanvasBg : window.solidCanvasBg
             border.color: window.glassmorphism ? window.glassBorder : window.solidBorder
             border.width: 1
@@ -242,7 +242,7 @@ PanelWindow {
                     name: "closed"
                     when: !ControlCenterService.visible
                     PropertyChanges { target: canvas; opacity: 0 }
-                    PropertyChanges { target: canvasTransform; x: canvas.width + 40 }
+                    PropertyChanges { target: canvasTransform; x: canvas.width + 40 * Appearance.effectiveScale }
                 }
             ]
 
@@ -663,14 +663,15 @@ PanelWindow {
                 RowLayout {
                         Layout.fillWidth: false
                         Layout.preferredWidth: (widgetGrid.baseCellWidth * 2) + widgetGrid.toggleSpacing
-                        Layout.fillHeight: true
+                        Layout.preferredHeight: 165 * Appearance.effectiveScale
+                        Layout.fillHeight: false
                         spacing: 0
 
                         // Brightness Slider
                         Rectangle {
                             id: ccBrightnessPanel
-                            width: 54 * Appearance.effectiveScale
-                            height: 165 * Appearance.effectiveScale
+                            implicitWidth: 54 * Appearance.effectiveScale
+                            implicitHeight: 165 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
                             radius: Appearance.rounding.normal
                             color: window.glassmorphism ? window.glassActionBg : window.solidActionBg
@@ -775,8 +776,8 @@ PanelWindow {
                         // Volume Slider
                         Rectangle {
                             id: ccVolumePanel
-                            width: 54 * Appearance.effectiveScale
-                            height: 165 * Appearance.effectiveScale
+                            implicitWidth: 54 * Appearance.effectiveScale
+                            implicitHeight: 165 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
                             radius: Appearance.rounding.normal
                             color: window.glassmorphism ? window.glassActionBg : window.solidActionBg
@@ -881,8 +882,8 @@ PanelWindow {
                         // Microphone Slider
                         Rectangle {
                             id: ccMicPanel
-                            width: 54 * Appearance.effectiveScale
-                            height: 165 * Appearance.effectiveScale
+                            implicitWidth: 54 * Appearance.effectiveScale
+                            implicitHeight: 165 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
                             radius: Appearance.rounding.normal
                             color: window.glassmorphism ? window.glassActionBg : window.solidActionBg

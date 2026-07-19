@@ -8,6 +8,7 @@ import Quickshell.Io
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 
 PanelWindow {
     id: launcherWindow
@@ -25,8 +26,8 @@ PanelWindow {
     WlrLayershell.namespace: "quickshell-powermenu"
     WlrLayershell.keyboardFocus: LauncherService.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
-    property real cardWidth: 640
-    property real cardHeight: 580
+    property real cardWidth: 640 * Appearance.effectiveScale
+    property real cardHeight: 580 * Appearance.effectiveScale
 
     // Dynamic Colors mapped directly to Theme singleton
     property color col_primary: Theme.primary
@@ -248,8 +249,8 @@ PanelWindow {
         DropShadow {
             anchors.fill: cardBg
             source: cardBg
-            verticalOffset: 16
-            radius: 48
+            verticalOffset: 16 * Appearance.effectiveScale
+            radius: 48 * Appearance.effectiveScale
             samples: 65
             spread: 0.04
             color: Qt.rgba(0, 0, 0, 0.5)
@@ -260,7 +261,7 @@ PanelWindow {
         Rectangle {
             id: cardBg
             anchors.fill: parent
-            radius: 28
+            radius: 28 * Appearance.effectiveScale
             color: launcherWindow.glassmorphism
                 ? Qt.rgba(launcherWindow.col_surface.r, launcherWindow.col_surface.g, launcherWindow.col_surface.b, 0.22)
                 : launcherWindow.col_surface
@@ -290,20 +291,20 @@ PanelWindow {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 24
-                spacing: 16
+                anchors.margins: 24 * Appearance.effectiveScale
+                spacing: 16 * Appearance.effectiveScale
 
                 // Search Bar
                 Item {
                     Layout.fillWidth: true
-                    height: 52
+                    height: 52 * Appearance.effectiveScale
 
                     // Outlined container Rectangle
                     Rectangle {
                         id: searchBg
                         anchors.fill: parent
-                        anchors.topMargin: 6
-                        radius: 8
+                        anchors.topMargin: 6 * Appearance.effectiveScale
+                        radius: 8 * Appearance.effectiveScale
                         color: "transparent"
                         border.color: searchInput.activeFocus ? launcherWindow.col_primary : launcherWindow.col_outline
                         border.width: searchInput.activeFocus ? 2 : 1
@@ -313,17 +314,17 @@ PanelWindow {
 
                     // Floating Label overlapping top border
                     Rectangle {
-                        x: 12
+                        x: 12 * Appearance.effectiveScale
                         y: 0
-                        height: 14
-                        width: labelText.implicitWidth + 8
+                        height: 14 * Appearance.effectiveScale
+                        width: labelText.implicitWidth + 8 * Appearance.effectiveScale
                         color: launcherWindow.glassmorphism ? "transparent" : launcherWindow.col_surface
                         
                         Text {
                             id: labelText
                             anchors.centerIn: parent
                             text: "Applications"
-                            font.pixelSize: 10
+                            font.pixelSize: 10 * Appearance.effectiveScale
                             font.family: "Inter"
                             font.weight: Font.Medium
                             color: searchInput.activeFocus ? launcherWindow.col_primary : launcherWindow.col_outline
@@ -333,14 +334,14 @@ PanelWindow {
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.topMargin: 6
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 12
-                        spacing: 10
+                        anchors.topMargin: 6 * Appearance.effectiveScale
+                        anchors.leftMargin: 12 * Appearance.effectiveScale
+                        anchors.rightMargin: 12 * Appearance.effectiveScale
+                        spacing: 10 * Appearance.effectiveScale
 
                         DankIcon {
                             name: "search"
-                            size: 20
+                            size: 20 * Appearance.effectiveScale
                             color: searchInput.activeFocus ? launcherWindow.col_primary : launcherWindow.col_outline
                             Layout.alignment: Qt.AlignVCenter
                             Behavior on color { ColorAnimation { duration: 180 } }
@@ -350,7 +351,7 @@ PanelWindow {
                             id: searchInput
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignVCenter
-                            font.pixelSize: 15
+                            font.pixelSize: 15 * Appearance.effectiveScale
                             font.family: "Inter"
                             color: launcherWindow.col_on_surface
                             selectionColor: Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.3)
@@ -386,16 +387,16 @@ PanelWindow {
                         }
 
                         Row {
-                            spacing: 4
+                            spacing: 4 * Appearance.effectiveScale
                             Rectangle {
-                                width: 24; height: 24; radius: 12
+                                width: 24 * Appearance.effectiveScale; height: 24 * Appearance.effectiveScale; radius: 12 * Appearance.effectiveScale
                                 visible: searchInput.text.length > 0
                                 color: Qt.rgba(launcherWindow.col_on_surface.r, launcherWindow.col_on_surface.g, launcherWindow.col_on_surface.b, 0.1)
 
                                 Text {
                                     anchors.centerIn: parent
                                     text: "✕"
-                                    font.pixelSize: 10
+                                    font.pixelSize: 10 * Appearance.effectiveScale
                                     color: Qt.rgba(launcherWindow.col_on_surface.r, launcherWindow.col_on_surface.g, launcherWindow.col_on_surface.b, 0.6)
                                 }
 
@@ -408,13 +409,13 @@ PanelWindow {
 
                             // Clipboard Button
                             Rectangle {
-                                width: 28; height: 28; radius: 8
+                                width: 28 * Appearance.effectiveScale; height: 28 * Appearance.effectiveScale; radius: 8 * Appearance.effectiveScale
                                 color: clipboardMa.containsMouse ? Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.15) : "transparent"
                                 
                                 DankIcon {
                                     anchors.centerIn: parent
                                     name: "content_paste"
-                                    size: 18
+                                    size: 18 * Appearance.effectiveScale
                                     color: clipboardMa.containsMouse ? launcherWindow.col_primary : launcherWindow.col_outline
                                     Behavior on color { ColorAnimation { duration: 180 } }
                                 }
@@ -433,13 +434,13 @@ PanelWindow {
 
                             // Emoji Picker Button
                             Rectangle {
-                                width: 28; height: 28; radius: 8
+                                width: 28 * Appearance.effectiveScale; height: 28 * Appearance.effectiveScale; radius: 8 * Appearance.effectiveScale
                                 color: emojiMa.containsMouse ? Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.15) : "transparent"
                                 
                                 DankIcon {
                                     anchors.centerIn: parent
                                     name: "sentiment_satisfied"
-                                    size: 18
+                                    size: 18 * Appearance.effectiveScale
                                     color: emojiMa.containsMouse ? launcherWindow.col_primary : launcherWindow.col_outline
                                     Behavior on color { ColorAnimation { duration: 180 } }
                                 }
@@ -462,7 +463,7 @@ PanelWindow {
                 // Category Chips
                 Flow {
                     Layout.fillWidth: true
-                    spacing: 6
+                    spacing: 6 * Appearance.effectiveScale
                     visible: categories.length > 1
                     clip: true
 
@@ -471,8 +472,8 @@ PanelWindow {
 
                         delegate: Item {
                             id: chip
-                            height: 30
-                            width: chipLabel.implicitWidth + 24
+                            height: 30 * Appearance.effectiveScale
+                            width: chipLabel.implicitWidth + 24 * Appearance.effectiveScale
 
                             property bool isActive: launcherWindow.selectedCategory === modelData
 
@@ -486,7 +487,7 @@ PanelWindow {
                             Rectangle {
                                 id: chipBg
                                 anchors.fill: parent
-                                radius: 15
+                                radius: 15 * Appearance.effectiveScale
                                 color: chip.isActive
                                     ? (chipMa.containsMouse ? Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.85) : launcherWindow.col_primary)
                                     : (chipMa.containsMouse ? Qt.rgba(1,1,1,0.08) : "transparent")
@@ -501,7 +502,7 @@ PanelWindow {
                                     id: chipLabel
                                     anchors.centerIn: parent
                                     text: modelData
-                                    font.pixelSize: 12
+                                    font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: chip.isActive ? Font.Medium : Font.Normal
                                     color: chip.isActive ? launcherWindow.col_on_primary : (chipMa.containsMouse ? launcherWindow.col_primary : chipTextColor)
                                     Behavior on color { ColorAnimation { duration: 180 } }
@@ -528,9 +529,9 @@ PanelWindow {
                     GridView {
                         id: grid
                         anchors.fill: parent
-                        anchors.topMargin: 4
-                        cellWidth: 96
-                        cellHeight: 100
+                        anchors.topMargin: 4 * Appearance.effectiveScale
+                        cellWidth: 96 * Appearance.effectiveScale
+                        cellHeight: 100 * Appearance.effectiveScale
                         cacheBuffer: 200
 
                         focus: true
@@ -570,8 +571,8 @@ PanelWindow {
                             Rectangle {
                                 id: tileBg
                                 anchors.centerIn: parent
-                                width: 88; height: 88
-                                radius: ma.containsMouse ? 24 : 16
+                                width: 88 * Appearance.effectiveScale; height: 88 * Appearance.effectiveScale
+                                radius: ma.containsMouse ? 24 * Appearance.effectiveScale : 16 * Appearance.effectiveScale
 
                                 color: (ma.containsMouse || (gridDelegate.GridView.isCurrentItem && grid.activeFocus))
                                     ? Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.15)
@@ -590,17 +591,17 @@ PanelWindow {
 
                             ColumnLayout {
                                 anchors.centerIn: parent
-                                spacing: 6
+                                spacing: 6 * Appearance.effectiveScale
 
                                 // Icon container
                                 Item {
                                     Layout.alignment: Qt.AlignHCenter
-                                    width: 42; height: 42
+                                    width: 42 * Appearance.effectiveScale; height: 42 * Appearance.effectiveScale
 
                                     MaterialShape {
                                         id: avatarBg
                                         anchors.centerIn: parent
-                                        width: 42; height: 42
+                                        width: 42 * Appearance.effectiveScale; height: 42 * Appearance.effectiveScale
                                         
                                         // Allowed shapes for random hover transform
                                         readonly property var allowedShapes: [
@@ -613,11 +614,11 @@ PanelWindow {
                                         shape: ma.containsMouse ? hoverShape : "circle"
                                         color: Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.18)
                                         z: 1
-
+ 
                                         // Custom scale transition on hover
                                         scale: ma.containsMouse ? 1.12 : 1.0
                                         Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-
+ 
                                         // Dynamic rotation animation on hover
                                         RotationAnimation on rotation {
                                             loops: Animation.Infinite
@@ -626,26 +627,26 @@ PanelWindow {
                                             running: ma.containsMouse
                                         }
                                     }
-
+ 
                                     Item {
                                         anchors.centerIn: parent
-                                        width: 32; height: 32
+                                        width: 32 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
                                         z: 2
-
+ 
                                         transform: [
                                             Rotation {
                                                 id: iconWobble
-                                                origin.x: 16; origin.y: 16
+                                                origin.x: 16 * Appearance.effectiveScale; origin.y: 16 * Appearance.effectiveScale
                                                 angle: 0
                                             },
                                             Scale {
-                                                origin.x: 16; origin.y: 16
+                                                origin.x: 16 * Appearance.effectiveScale; origin.y: 16 * Appearance.effectiveScale
                                                 xScale: ma.containsMouse ? 1.15 : 1.0
                                                 yScale: xScale
                                                 Behavior on xScale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
                                             }
                                         ]
-
+ 
                                         Image {
                                             anchors.fill: parent
                                             source: modelData.icon
@@ -653,7 +654,7 @@ PanelWindow {
                                             fillMode: Image.PreserveAspectFit
                                             smooth: false
                                         }
-
+ 
                                         // Icon wiggle animation on hover
                                         SequentialAnimation {
                                             running: ma.containsMouse
@@ -668,12 +669,12 @@ PanelWindow {
                                         }
                                     }
                                 }
-
+ 
                                 Text {
                                     Layout.alignment: Qt.AlignHCenter
-                                    Layout.maximumWidth: 70
+                                    Layout.maximumWidth: 70 * Appearance.effectiveScale
                                     text: modelData.name
-                                    font.pixelSize: 10
+                                    font.pixelSize: 10 * Appearance.effectiveScale
                                     font.family: "sans-serif"
                                     font.weight: ma.containsMouse ? Font.Medium : Font.Normal
                                     horizontalAlignment: Text.AlignHCenter
@@ -700,10 +701,10 @@ PanelWindow {
 
                         ScrollBar.vertical: ScrollBar {
                             policy: ScrollBar.AsNeeded
-                            width: 4
+                            width: 4 * Appearance.effectiveScale
                             background: Rectangle { color: "transparent" }
                             contentItem: Rectangle {
-                                radius: 2
+                                radius: 2 * Appearance.effectiveScale
                                 color: Qt.rgba(launcherWindow.col_on_surface.r, launcherWindow.col_on_surface.g, launcherWindow.col_on_surface.b, 0.2)
                             }
                         }

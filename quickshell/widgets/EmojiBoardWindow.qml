@@ -8,6 +8,7 @@ import Quickshell.Wayland
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 
 PanelWindow {
     id: emojiBoardWindow
@@ -158,15 +159,15 @@ PanelWindow {
         // Card Container
         Item {
             id: cardContainer
-            width: 380
-            height: 520
+            width: 380 * Appearance.effectiveScale
+            height: 520 * Appearance.effectiveScale
 
             // Drop shadow
             DropShadow {
                 anchors.fill: boardCard
                 source: boardCard
-                verticalOffset: 16
-                radius: 48
+                verticalOffset: 16 * Appearance.effectiveScale
+                radius: 48 * Appearance.effectiveScale
                 samples: 65
                 color: Qt.rgba(0, 0, 0, 0.45)
                 transparentBorder: true
@@ -208,7 +209,7 @@ PanelWindow {
                 // Top drag handle (first 64px of the card)
                 MouseArea {
                     width: parent.width
-                    height: 64
+                    height: 64 * Appearance.effectiveScale
                     anchors.top: parent.top
                     cursorShape: Qt.OpenHandCursor
                     drag.target: cardContainer
@@ -217,8 +218,8 @@ PanelWindow {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: 24
-                    spacing: 16
+                    anchors.margins: 24 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
 
                     // Header
                     RowLayout {
@@ -227,7 +228,7 @@ PanelWindow {
                         Text {
                             text: "Emoji Board"
                             font.family: "Inter"
-                            font.pixelSize: 20
+                            font.pixelSize: 20 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: "#ffffff"
                         }
@@ -236,14 +237,14 @@ PanelWindow {
                     // Search input box
                     Item {
                         Layout.fillWidth: true
-                        height: 52
+                        height: 52 * Appearance.effectiveScale
 
                         // Outlined container Rectangle
                         Rectangle {
                             id: searchBg
                             anchors.fill: parent
-                            anchors.topMargin: 6
-                            radius: 8
+                            anchors.topMargin: 6 * Appearance.effectiveScale
+                            radius: 8 * Appearance.effectiveScale
                             color: "transparent"
                             border.color: searchInput.activeFocus ? Theme.primary : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
                             border.width: searchInput.activeFocus ? 2 : 1
@@ -253,10 +254,10 @@ PanelWindow {
 
                         // Floating Label overlapping top border
                         Rectangle {
-                            x: 12
+                            x: 12 * Appearance.effectiveScale
                             y: 0
-                            height: 14
-                            width: labelText.implicitWidth + 8
+                            height: 14 * Appearance.effectiveScale
+                            width: labelText.implicitWidth + 8 * Appearance.effectiveScale
                             color: Theme.surfaceContainer
                             
                             Text {
@@ -273,14 +274,14 @@ PanelWindow {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.topMargin: 6
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            spacing: 10
+                            anchors.topMargin: 6 * Appearance.effectiveScale
+                            anchors.leftMargin: 12 * Appearance.effectiveScale
+                            anchors.rightMargin: 12 * Appearance.effectiveScale
+                            spacing: 10 * Appearance.effectiveScale
 
                             DankIcon {
                                 name: "search"
-                                size: 20
+                                size: 20 * Appearance.effectiveScale
                                 color: searchInput.activeFocus ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
                                 Layout.alignment: Qt.AlignVCenter
                                 Behavior on color { ColorAnimation { duration: 180 } }
@@ -292,7 +293,7 @@ PanelWindow {
                                 Layout.alignment: Qt.AlignVCenter
                                 color: "#ffffff"
                                 font.family: "Inter"
-                                font.pixelSize: 14
+                                font.pixelSize: 14 * Appearance.effectiveScale
                                 clip: true
                                 selectByMouse: true
                                 selectionColor: Theme.primary
@@ -317,14 +318,14 @@ PanelWindow {
                             }
 
                             Rectangle {
-                                width: 24; height: 24; radius: 12
+                                width: 24 * Appearance.effectiveScale; height: 24 * Appearance.effectiveScale; radius: 12 * Appearance.effectiveScale
                                 visible: searchInput.text.length > 0
                                 color: Qt.rgba(255, 255, 255, 0.1)
 
                                 Text {
                                     anchors.centerIn: parent
                                     text: "✕"
-                                    font.pixelSize: 10
+                                    font.pixelSize: 10 * Appearance.effectiveScale
                                     color: Qt.rgba(255, 255, 255, 0.6)
                                 }
 
@@ -347,8 +348,8 @@ PanelWindow {
                             id: gridview
                             anchors.fill: parent
                             clip: true
-                            cellWidth: 41.5
-                            cellHeight: 44
+                            cellWidth: 41.5 * Appearance.effectiveScale
+                            cellHeight: 44 * Appearance.effectiveScale
                             boundsBehavior: Flickable.StopAtBounds
                             focus: true
                             keyNavigationEnabled: true
@@ -398,7 +399,7 @@ PanelWindow {
                                 color: (delegateRoot.GridView.isCurrentItem && gridview.activeFocus) ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15) : (itemMouse.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent")
                                 border.color: (delegateRoot.GridView.isCurrentItem && gridview.activeFocus) ? Theme.primary : "transparent"
                                 border.width: 1
-                                radius: 8
+                                radius: 8 * Appearance.effectiveScale
 
                                 // Press scaling animation
                                 scale: itemMouse.pressed ? 0.88 : ((itemMouse.containsMouse || (delegateRoot.GridView.isCurrentItem && gridview.activeFocus)) ? 1.12 : 1.0)
@@ -407,7 +408,7 @@ PanelWindow {
                                 Text {
                                     anchors.centerIn: parent
                                     text: modelData.emoji
-                                    font.pixelSize: 22
+                                    font.pixelSize: 22 * Appearance.effectiveScale
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
                                 }
@@ -429,21 +430,21 @@ PanelWindow {
                                          text: tooltip.text
                                          color: Theme.primary
                                          font.family: "Inter"
-                                         font.pixelSize: 11
+                                         font.pixelSize: 11 * Appearance.effectiveScale
                                          font.weight: Font.Medium
                                      }
 
                                      background: Rectangle {
                                          color: Theme.surfaceContainer
-                                         radius: 8
+                                         radius: 8 * Appearance.effectiveScale
                                          border.color: Theme.outline
                                          border.width: 1
                                          
                                          layer.enabled: true
                                          layer.effect: DropShadow {
                                              horizontalOffset: 0
-                                             verticalOffset: 4
-                                             radius: 8
+                                             verticalOffset: 4 * Appearance.effectiveScale
+                                             radius: 8 * Appearance.effectiveScale
                                              samples: 17
                                              color: Qt.rgba(0, 0, 0, 0.3)
                                          }
@@ -467,7 +468,7 @@ PanelWindow {
                             text: "No emojis found"
                             color: Qt.rgba(255, 255, 255, 0.4)
                             font.family: "Inter"
-                            font.pixelSize: 14
+                            font.pixelSize: 14 * Appearance.effectiveScale
                         }
                     }
                 }

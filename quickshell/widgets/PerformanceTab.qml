@@ -3,24 +3,25 @@ import QtQuick.Layouts
 import "../theme"
 import "../services"
 import "performance"
+import "../core"
 
 Item {
     id: root
 
-    implicitWidth: 772
-    implicitHeight: 410
+    implicitWidth: 772 * Appearance.effectiveScale
+    implicitHeight: 410 * Appearance.effectiveScale
 
 
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 16
+        spacing: 16 * Appearance.effectiveScale
 
         // Top: CPU Hero Card
         HeroCard {
             id: cpuCard
             Layout.fillWidth: true
-            Layout.preferredHeight: 180
+            Layout.preferredHeight: 180 * Appearance.effectiveScale
             icon: "developer_board"
             label: "CPU"
             subLabel: "Central Processing Unit"
@@ -33,7 +34,7 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: 16
+            spacing: 16 * Appearance.effectiveScale
 
             MemoryCard {
                 Layout.fillWidth: true

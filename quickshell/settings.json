@@ -1,7 +1,17 @@
 {
   "ai": {
     "apiKey": "YOUR_API_KEY",
-    "systemInstruction": "I do use arch linux in hyprland WM."
+    "systemInstruction": "I do use arch linux in hyprland WM.",
+    "currentModel": "gemini-3.1-flash-lite",
+    "temperature": 0.7
+  },
+  "booru": {
+    "currentProvider": "yande.re",
+    "nsfwEnabled": false
+  },
+  "global": {
+    "autoHideBar": false,
+    "floatingBar": false
   },
   "clock": {
     "winX": 15,

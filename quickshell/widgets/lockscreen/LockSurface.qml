@@ -13,6 +13,7 @@ import "../../components"
 import "../../services"
 import "../desktopWidget" as DesktopClock
 import Quickshell
+import "../../core"
 
 Rectangle {
     id: root
@@ -83,30 +84,30 @@ Rectangle {
         anchors {
             horizontalCenter: parent.horizontalCenter
             top: parent.top
-            topMargin: Math.max(20, parent.height * 0.1)
+            topMargin: Math.max(20 * Appearance.effectiveScale, parent.height * 0.1)
         }
 
         // Clock Configuration - M3 Themed
         property string clockFontFamily: anuratiFont.name
-        property int containerSpacing: 12
+        property int containerSpacing: 12 * Appearance.effectiveScale
 
         // Day settings
-        property int dayFontSize: 56
+        property int dayFontSize: 56 * Appearance.effectiveScale
         property double dayOpacity: 1.0
-        property int dayLetterSpacing: 20
+        property int dayLetterSpacing: 20 * Appearance.effectiveScale
         property int dayTopMargin: 0
 
         // Date settings
-        property int dateFontSize: 20
+        property int dateFontSize: 20 * Appearance.effectiveScale
         property double dateOpacity: 0.9
-        property int dateLetterSpacing: 5
-        property int dateTopMargin: 8
+        property int dateLetterSpacing: 5 * Appearance.effectiveScale
+        property int dateTopMargin: 8 * Appearance.effectiveScale
 
         // Time settings
-        property int timeFontSize: 16
+        property int timeFontSize: 16 * Appearance.effectiveScale
         property double timeOpacity: 0.8
-        property int timeLetterSpacing: 5
-        property int timeTopMargin: 12
+        property int timeLetterSpacing: 5 * Appearance.effectiveScale
+        property int timeTopMargin: 12 * Appearance.effectiveScale
 
         spacing: containerSpacing
 
@@ -190,21 +191,21 @@ Rectangle {
             bottom: mediaPlayer.top
             left: parent.left
             right: parent.right
-            topMargin: 20
-            bottomMargin: 20
+            topMargin: 20 * Appearance.effectiveScale
+            bottomMargin: 20 * Appearance.effectiveScale
         }
 
         // Auto-scale to fit instead of hiding
-        property real requiredHeight: 320
+        property real requiredHeight: 320 * Appearance.effectiveScale
         property real scaleFactor: Math.min(1.0, Math.max(0.4, height / requiredHeight))
         
         // Offset the centering upwards if we're squeezed, so it doesn't just shrink in the middle
-        property real squeezeOffset: (1.0 - scaleFactor) * 50
+        property real squeezeOffset: (1.0 - scaleFactor) * 50 * Appearance.effectiveScale
 
         // Home screen clock widget centered on the lockscreen with weather
         DesktopClock.Clock {
             id: lockscreenHomeClock
-            winSize: 220
+            baseWinSize: 220 * Appearance.effectiveScale
             interactive: false
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
@@ -221,10 +222,10 @@ Rectangle {
         id: statusBar
         anchors {
             top: parent.top
-            topMargin: 20
+            topMargin: 20 * Appearance.effectiveScale
             horizontalCenter: parent.horizontalCenter
         }
-        spacing: 12
+        spacing: 12 * Appearance.effectiveScale
 
         // Battery
         Rectangle {
@@ -255,8 +256,8 @@ Rectangle {
                 return Theme.primary;
             }
 
-            width: battMouseArea.containsMouse ? (batteryRow.implicitWidth + 24) : 44
-            height: 36
+            width: battMouseArea.containsMouse ? (batteryRow.implicitWidth + 24 * Appearance.effectiveScale) : 44 * Appearance.effectiveScale
+            height: 36 * Appearance.effectiveScale
             radius: Theme.rounding.full
             color: root.pillBg
             border.color: root.pillBorder
@@ -376,8 +377,8 @@ Rectangle {
         // WiFi
         Rectangle {
             id: wifiPill
-            width: wifiMouseArea.containsMouse ? (wifiRow.implicitWidth + 24) : 44
-            height: 36
+            width: wifiMouseArea.containsMouse ? (wifiRow.implicitWidth + 24 * Appearance.effectiveScale) : 44 * Appearance.effectiveScale
+            height: 36 * Appearance.effectiveScale
             radius: Theme.rounding.full
             color: root.pillBg
             border.color: root.pillBorder
@@ -394,17 +395,17 @@ Rectangle {
             Row {
                 id: wifiRow
                 anchors.centerIn: parent
-                spacing: 6
+                spacing: 6 * Appearance.effectiveScale
                 DankIcon {
                     name: !wifiPill.wifiEnabled ? "wifi_off" : (!wifiPill.wifiConnected ? "signal_wifi_off" : "wifi")
-                    size: 16
+                    size: 16 * Appearance.effectiveScale
                     color: Theme.primary
                     anchors.verticalCenter: parent.verticalCenter
                 }
                 Text {
                     visible: wifiMouseArea.containsMouse
                     font.family: Theme.font.family
-                    font.pixelSize: 12
+                    font.pixelSize: 12 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: Theme.primary
                     text: !wifiPill.wifiEnabled ? "WiFi Off" : (!wifiPill.wifiConnected ? "Disconnected" : (wifiPill.wifiSSID || "Connected"))
@@ -488,8 +489,8 @@ Rectangle {
             property var adapter: Bluetooth.defaultAdapter
             property var connectedDevices: Bluetooth.devices
 
-            width: btMouseArea.containsMouse ? (bluetoothRow.implicitWidth + 24) : 44
-            height: 36
+            width: btMouseArea.containsMouse ? (bluetoothRow.implicitWidth + 24 * Appearance.effectiveScale) : 44 * Appearance.effectiveScale
+            height: 36 * Appearance.effectiveScale
             radius: Theme.rounding.full
             color: root.pillBg
             border.color: root.pillBorder
@@ -500,17 +501,17 @@ Rectangle {
             Row {
                 id: bluetoothRow
                 anchors.centerIn: parent
-                spacing: 6
+                spacing: 6 * Appearance.effectiveScale
                 DankIcon {
                     name: (!bluetoothPill.adapter || !bluetoothPill.adapter.enabled) ? "bluetooth_disabled" : (bluetoothPill.connectedDevices.values.filter(d => d.state === BluetoothDeviceState.Connected).length > 0 ? "bluetooth_connected" : "bluetooth")
-                    size: 16
+                    size: 16 * Appearance.effectiveScale
                     color: Theme.primary
                     anchors.verticalCenter: parent.verticalCenter
                 }
                 Text {
                     visible: btMouseArea.containsMouse
                     font.family: Theme.font.family
-                    font.pixelSize: 12
+                    font.pixelSize: 12 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: Theme.primary
                     text: {
@@ -630,11 +631,11 @@ Rectangle {
         anchors {
             horizontalCenter: parent.horizontalCenter
             bottom: passwordSection.top
-            bottomMargin: isActive ? 20 : 0
+            bottomMargin: isActive ? 20 * Appearance.effectiveScale : 0
         }
 
-        width: isActive ? 440 : 0
-        height: isActive ? 160 : 0
+        width: isActive ? 440 * Appearance.effectiveScale : 0
+        height: isActive ? 160 * Appearance.effectiveScale : 0
         radius: Theme.rounding.large
         color: "transparent"
         border.color: Theme.outlineVariant
@@ -730,13 +731,13 @@ Rectangle {
 
         RowLayout {
             anchors.fill: parent
-            anchors.margins: 16
-            spacing: 16
+            anchors.margins: 16 * Appearance.effectiveScale
+            spacing: 16 * Appearance.effectiveScale
 
             // Left side: rotating album art container with Cava visualizer
             Item {
-                Layout.preferredWidth: parent.height - 32
-                Layout.preferredHeight: parent.height - 32
+                Layout.preferredWidth: parent.height - 32 * Appearance.effectiveScale
+                Layout.preferredHeight: parent.height - 32 * Appearance.effectiveScale
                 Layout.alignment: Qt.AlignVCenter
 
                 DankAlbumArt {
@@ -752,18 +753,18 @@ Rectangle {
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
 
                 // Title and Artist
                 ColumnLayout {
+                    spacing: 0
                     Layout.fillWidth: true
-                    spacing: 2
                     Label {
                         Layout.fillWidth: true
                         text: activePlayer ? (activePlayer.trackTitle || activePlayer.title || "No Title") : "No Title"
                         color: Theme.primary
                         font.family: Theme.font.family
-                        font.pixelSize: 20
+                        font.pixelSize: 20 * Appearance.effectiveScale
                         font.weight: Font.Bold
                         elide: Text.ElideRight
                     }
@@ -772,7 +773,7 @@ Rectangle {
                         text: activePlayer ? (activePlayer.trackArtist || activePlayer.artist || "Unknown Artist") : "Unknown Artist"
                         color: Theme.outline
                         font.family: Theme.font.family
-                        font.pixelSize: 14
+                        font.pixelSize: 14 * Appearance.effectiveScale
                         elide: Text.ElideRight
                     }
                 }
@@ -792,22 +793,22 @@ Rectangle {
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
-                    spacing: 24
+                    spacing: 24 * Appearance.effectiveScale
                     DankIcon {
                         name: "skip_previous"
-                        size: 24
+                        size: 24 * Appearance.effectiveScale
                         color: Theme.primary
                         MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: if (activePlayer) activePlayer.previous() }
                     }
                     DankIcon {
                         name: activePlayer && activePlayer.playbackState === MprisPlaybackState.Playing ? "pause" : "play_arrow"
-                        size: 30
+                        size: 30 * Appearance.effectiveScale
                         color: Theme.primary
                         MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: if (activePlayer) activePlayer.togglePlaying() }
                     }
                     DankIcon {
                         name: "skip_next"
-                        size: 24
+                        size: 24 * Appearance.effectiveScale
                         color: Theme.primary
                         MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: if (activePlayer) activePlayer.next() }
                     }
@@ -821,14 +822,14 @@ Rectangle {
         anchors {
             horizontalCenter: parent.horizontalCenter
             bottom: powerButtonsRow.top
-            bottomMargin: 24
+            bottomMargin: 24 * Appearance.effectiveScale
         }
 
         // ── Bottom Island (Password Only) ──
         Rectangle {
             id: bottomIsland
-            Layout.preferredWidth: 380
-            Layout.preferredHeight: 48
+            Layout.preferredWidth: 380 * Appearance.effectiveScale
+            Layout.preferredHeight: 48 * Appearance.effectiveScale
             radius: height / 2
             color: root.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
             border.color: passwordInput.activeFocus ? Theme.primary : (root.glassmorphism ? Qt.rgba(1,1,1,0.22) : Theme.outlineVariant)
@@ -839,16 +840,16 @@ Rectangle {
 
             RowLayout {
                 anchors.fill: parent
-                anchors.margins: 4
-                spacing: 4
+                anchors.margins: 4 * Appearance.effectiveScale
+                spacing: 4 * Appearance.effectiveScale
 
                 // Fingerprint (Clickable to toggle show password)
                 DankIcon {
                     name: "fingerprint"
-                    size: 22
+                    size: 22 * Appearance.effectiveScale
                     color: bottomIsland.showPasswordText ? Theme.primary : Theme.outline
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.leftMargin: 8
+                    Layout.leftMargin: 8 * Appearance.effectiveScale
 
                     MouseArea {
                         anchors.fill: parent
@@ -874,14 +875,14 @@ Rectangle {
                         anchors.fill: parent
                         verticalAlignment: TextInput.AlignVCenter
                         
-                        font.pixelSize: 13
+                        font.pixelSize: 13 * Appearance.effectiveScale
                         color: bottomIsland.showPasswordText ? Theme.onSurfaceColor : "transparent"
                         cursorVisible: bottomIsland.showPasswordText && activeFocus
                         inputMethodHints: Qt.ImhSensitiveData
                         echoMode: TextInput.Normal
                         cursorDelegate: Item {}
                         clip: true
-                        padding: 12
+                        padding: 12 * Appearance.effectiveScale
                         focus: true
 
                         onTextChanged: root.context.currentText = text
@@ -904,7 +905,7 @@ Rectangle {
                             selectionEnd: passwordInput.selectionEnd
                             cursorPosition: passwordInput.cursorPosition
                             
-                            charSize: 14
+                            charSize: 14 * Appearance.effectiveScale
                             shapeColor: Theme.primary
                             selectionColor: Theme.primaryContainer
                         }
@@ -913,7 +914,7 @@ Rectangle {
                             anchors.centerIn: parent
                             visible: passwordInput.text.length === 0
                             text: root.context.showFailure ? "Incorrect password" : "Enter password"
-                            font.pixelSize: 12
+                            font.pixelSize: 12 * Appearance.effectiveScale
                             font.family: Theme.font.family
                             color: root.context.showFailure ? Theme.error : Theme.outline
                         }
@@ -939,11 +940,11 @@ Rectangle {
                 // Main Action Button (Unlock)
                 Button {
                     id: unlockButton
-                    implicitWidth: 40
-                    implicitHeight: 40
+                    implicitWidth: 40 * Appearance.effectiveScale
+                    implicitHeight: 40 * Appearance.effectiveScale
                     focusPolicy: Qt.NoFocus
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.rightMargin: 4
+                    Layout.rightMargin: 4 * Appearance.effectiveScale
 
                     enabled: !root.context.unlockInProgress && root.context.currentText !== "";
                     onClicked: {
@@ -961,10 +962,10 @@ Rectangle {
                     // Shake animation on hover / click
                     SequentialAnimation {
                         id: btnShake
-                        NumberAnimation { target: unlockBg; property: "anchors.horizontalCenterOffset"; to: -4; duration: 40 }
-                        NumberAnimation { target: unlockBg; property: "anchors.horizontalCenterOffset"; to: 4; duration: 40 }
-                        NumberAnimation { target: unlockBg; property: "anchors.horizontalCenterOffset"; to: -2; duration: 40 }
-                        NumberAnimation { target: unlockBg; property: "anchors.horizontalCenterOffset"; to: 2; duration: 40 }
+                        NumberAnimation { target: unlockBg; property: "anchors.horizontalCenterOffset"; to: -4 * Appearance.effectiveScale; duration: 40 }
+                        NumberAnimation { target: unlockBg; property: "anchors.horizontalCenterOffset"; to: 4 * Appearance.effectiveScale; duration: 40 }
+                        NumberAnimation { target: unlockBg; property: "anchors.horizontalCenterOffset"; to: -2 * Appearance.effectiveScale; duration: 40 }
+                        NumberAnimation { target: unlockBg; property: "anchors.horizontalCenterOffset"; to: 2 * Appearance.effectiveScale; duration: 40 }
                         NumberAnimation { target: unlockBg; property: "anchors.horizontalCenterOffset"; to: 0; duration: 40 }
                     }
 
@@ -1000,7 +1001,7 @@ Rectangle {
                         DankIcon {
                             anchors.centerIn: parent
                             name: root.context.unlockInProgress ? "progress_activity" : "arrow_forward"
-                            size: 18
+                            size: 18 * Appearance.effectiveScale
                             color: unlockButton.enabled ? Theme.onPrimaryColor : Theme.outline
                         }
                     }
@@ -1014,10 +1015,10 @@ Rectangle {
         id: powerButtonsRow
         anchors {
             bottom: parent.bottom
-            bottomMargin: 40
+            bottomMargin: 40 * Appearance.effectiveScale
             horizontalCenter: parent.horizontalCenter
         }
-        spacing: 24
+        spacing: 24 * Appearance.effectiveScale
 
         Repeater {
             model: [
@@ -1029,8 +1030,8 @@ Rectangle {
 
             delegate: Item {
                 id: powerBtn
-                width: 48
-                height: 48
+                width: 48 * Appearance.effectiveScale
+                height: 48 * Appearance.effectiveScale
                 scale: powerMouse.containsMouse ? 1.15 : 1.0
                 opacity: powerMouse.containsMouse ? 1.0 : 0.85
 
@@ -1070,16 +1071,16 @@ Rectangle {
                 Item {
                     id: iconContainer
                     anchors.centerIn: parent
-                    width: 24; height: 24
+                    width: 24 * Appearance.effectiveScale; height: 24 * Appearance.effectiveScale
 
                     transform: [
                         Rotation {
                             id: iconWobble
-                            origin.x: 12; origin.y: 12
+                            origin.x: 12 * Appearance.effectiveScale; origin.y: 12 * Appearance.effectiveScale
                             angle: 0
                         },
                         Scale {
-                            origin.x: 12; origin.y: 12
+                            origin.x: 12 * Appearance.effectiveScale; origin.y: 12 * Appearance.effectiveScale
                             xScale: powerMouse.containsMouse ? 1.08 : 1.0
                             yScale: xScale
                             Behavior on xScale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
@@ -1089,7 +1090,7 @@ Rectangle {
                     DankIcon {
                         anchors.centerIn: parent
                         name: modelData.icon
-                        size: 20
+                        size: 20 * Appearance.effectiveScale
                         color: powerMouse.containsMouse ? Theme.onPrimaryColor : Theme.onSurfaceColor
                         Behavior on color { ColorAnimation { duration: 200 } }
                     }
@@ -1124,21 +1125,21 @@ Rectangle {
                         text: tooltip.text
                         color: Theme.primary
                         font.family: "Inter"
-                        font.pixelSize: 11
+                        font.pixelSize: 11 * Appearance.effectiveScale
                         font.weight: Font.Medium
                     }
 
                     background: Rectangle {
                         color: Theme.surfaceContainer
-                        radius: 8
+                        radius: 8 * Appearance.effectiveScale
                         border.color: Theme.outline
                         border.width: 1
 
                         layer.enabled: true
                         layer.effect: DropShadow {
                             horizontalOffset: 0
-                            verticalOffset: 4
-                            radius: 8
+                            verticalOffset: 4 * Appearance.effectiveScale
+                            radius: 8 * Appearance.effectiveScale
                             samples: 17
                             color: Qt.rgba(0, 0, 0, 0.3)
                         }

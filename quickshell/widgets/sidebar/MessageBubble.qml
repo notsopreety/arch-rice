@@ -5,6 +5,7 @@ import Quickshell
 import "../../theme"
 import "../../services"
 import "../../components"
+import "../../core"
 import ".."
 import "MarkdownRenderer.js" as MarkdownRenderer
 
@@ -16,8 +17,8 @@ Item {
     property int messageIndex: 0
     property bool isEditing: false
 
-    implicitHeight: bubbleCol.implicitHeight + 16
-    width: parent ? parent.width : 300
+    implicitHeight: bubbleCol.implicitHeight + 16 * Appearance.effectiveScale
+    width: parent ? parent.width : 300 * Appearance.effectiveScale
 
     ColumnLayout {
         id: bubbleCol
@@ -28,22 +29,22 @@ Item {
         // Header bar matching the user's design image
         Rectangle {
             Layout.fillWidth: true
-            height: 38
-            radius: 8
+            height: 38 * Appearance.effectiveScale
+            radius: 8 * Appearance.effectiveScale
             color: Qt.rgba(255, 255, 255, 0.04)
             border.color: Qt.rgba(255, 255, 255, 0.08)
             border.width: 1
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
+                anchors.leftMargin: 12 * Appearance.effectiveScale
+                anchors.rightMargin: 12 * Appearance.effectiveScale
+                spacing: 8 * Appearance.effectiveScale
 
                 // Left side: User or model name & icon
                 MaterialSymbol {
                     text: root.role === "user" ? "person" : "smart_toy"
-                    iconSize: 14
+                    iconSize: 14 * Appearance.effectiveScale
                     color: root.role === "user" ? Theme.primary : "#c084fc"
                     Layout.alignment: Qt.AlignVCenter
                 }
@@ -51,7 +52,7 @@ Item {
                 Text {
                     text: root.role === "user" ? (Quickshell.env("USER") || "sawmer") : "Gemini 2.5 Flash"
                     font.family: Theme.font.family
-                    font.pixelSize: 12
+                    font.pixelSize: 12 * Appearance.effectiveScale
                     font.weight: Font.Bold
                     color: "white"
                     Layout.alignment: Qt.AlignVCenter
@@ -195,7 +196,7 @@ Item {
         // Content Area (User = dark rounded card, AI = transparent)
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: contentLayout.implicitHeight + 24
+            implicitHeight: contentLayout.implicitHeight + 24 * Appearance.effectiveScale
             radius: Theme.rounding.normal
             color: root.role === "user"
                    ? Qt.rgba(255, 255, 255, 0.03)
@@ -214,8 +215,8 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                anchors.margins: 12
-                spacing: 8
+                anchors.margins: 12 * Appearance.effectiveScale
+                spacing: 8 * Appearance.effectiveScale
 
                 // View Mode (rendered as blocks to support native code block styling)
                 Repeater {
@@ -230,7 +231,7 @@ Item {
                             Layout.fillWidth: true
                             text: visible ? modelData.content : ""
                             font.family: Theme.font.family
-                            font.pixelSize: 13
+                            font.pixelSize: 13 * Appearance.effectiveScale
                             color: "white"
                             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                             textFormat: Text.RichText
@@ -249,17 +250,17 @@ Item {
                         Rectangle {
                             visible: modelData.type === "code"
                             Layout.fillWidth: true
-                            implicitHeight: visible ? (codeCol.implicitHeight + 20) : 0
+                            implicitHeight: visible ? (codeCol.implicitHeight + 20 * Appearance.effectiveScale) : 0
                             color: "#16131c"
                             border.color: Qt.rgba(255, 255, 255, 0.08)
                             border.width: 1
-                            radius: 8 // Smooth corner radius
+                            radius: 8 * Appearance.effectiveScale
 
                             ColumnLayout {
                                 id: codeCol
                                 anchors.fill: parent
-                                anchors.margins: 10
-                                spacing: 6
+                                anchors.margins: 10 * Appearance.effectiveScale
+                                spacing: 6 * Appearance.effectiveScale
 
                                 RowLayout {
                                     Layout.fillWidth: true
@@ -267,7 +268,7 @@ Item {
                                     Text {
                                         text: visible ? (modelData.lang || "code").toUpperCase() : ""
                                         font.family: Theme.font.family
-                                        font.pixelSize: 10
+                                        font.pixelSize: 10 * Appearance.effectiveScale
                                         font.weight: Font.Bold
                                         color: Qt.rgba(255, 255, 255, 0.4)
                                     }
@@ -276,7 +277,7 @@ Item {
 
                                     DankIcon {
                                         name: "content_copy"
-                                        size: 14
+                                        size: 14 * Appearance.effectiveScale
                                         color: copyMouse.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.4)
                                         Behavior on color { ColorAnimation { duration: 150 } }
 
@@ -296,7 +297,7 @@ Item {
                                 QQC.ScrollView {
                                     id: codeScroll
                                     Layout.fillWidth: true
-                                    implicitHeight: codeTextContainer.implicitHeight + 12
+                                    implicitHeight: codeTextContainer.implicitHeight + 12 * Appearance.effectiveScale
                                     contentWidth: codeTextContainer.implicitWidth
                                     contentHeight: codeTextContainer.implicitHeight
                                     clip: true
@@ -323,10 +324,10 @@ Item {
 
                                     Text {
                                         id: codeTextContainer
-                                        text: visible ? ("<pre style='margin: 0; padding: 0; border: none; background: transparent; font-family: monospace; font-size: 11px; color: #cbd5e1;'>" + MarkdownRenderer.highlightCode(modelData.code, modelData.lang) + "</pre>") : ""
+                                        text: visible ? ("<pre style='margin: 0; padding: 0; border: none; background: transparent; font-family: monospace; font-size: " + Math.round(11 * Appearance.effectiveScale) + "px; color: #cbd5e1;'>" + MarkdownRenderer.highlightCode(modelData.code, modelData.lang) + "</pre>") : ""
                                         textFormat: Text.RichText
                                         font.family: Theme.font.monospace
-                                        font.pixelSize: 11
+                                        font.pixelSize: 11 * Appearance.effectiveScale
                                         color: "#cbd5e1"
                                         wrapMode: Text.NoWrap
                                         lineHeight: 1.2

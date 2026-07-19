@@ -26,13 +26,6 @@ Singleton {
         return true
     }
 
-    Settings {
-        id: settings
-        category: "AiChatService"
-        property alias currentModel: root.currentModel
-        property alias temperature: root.temperature
-    }
-
     FileView {
         id: keyFile
         path: Quickshell.shellPath("settings.json")
@@ -51,6 +44,12 @@ Singleton {
                         }
                         if (ai.systemInstruction !== undefined) {
                             root.systemInstruction = ai.systemInstruction;
+                        }
+                        if (ai.currentModel !== undefined) {
+                            root.currentModel = ai.currentModel;
+                        }
+                        if (ai.temperature !== undefined) {
+                            root.temperature = ai.temperature;
                         }
                     }
                 }
@@ -71,9 +70,11 @@ Singleton {
             } catch (e) {}
             
             let ai = obj.ai || {};
-            if (ai.apiKey !== apiKey || ai.systemInstruction !== systemInstruction) {
+            if (ai.apiKey !== apiKey || ai.systemInstruction !== systemInstruction || ai.currentModel !== currentModel || ai.temperature !== temperature) {
                 ai.apiKey = apiKey;
                 ai.systemInstruction = systemInstruction;
+                ai.currentModel = currentModel;
+                ai.temperature = temperature;
                 obj.ai = ai;
                 keyFile.setText(JSON.stringify(obj, null, 2));
             }
@@ -84,6 +85,8 @@ Singleton {
 
     onApiKeyChanged: saveSettings()
     onSystemInstructionChanged: saveSettings()
+    onCurrentModelChanged: saveSettings()
+    onTemperatureChanged: saveSettings()
 
     function stopGeneration() {
         if (apiProcess.running) {

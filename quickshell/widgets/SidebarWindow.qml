@@ -8,6 +8,7 @@ import Quickshell.Wayland
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 import "sidebar"
 
 PanelWindow {
@@ -19,6 +20,20 @@ PanelWindow {
         { name: "Intelligence", icon: "neurology" },
         { name: "Anime", icon: "bookmark_heart" }
     ]
+
+    property bool glassmorphism: false
+
+    FileView {
+        id: glassFlag
+        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
+        watchChanges: true
+        onFileChanged: glassFlag.reload()
+        onLoaded: window.glassmorphism = true
+        onLoadFailed: window.glassmorphism = false
+        Component.onCompleted: {
+            try { glassFlag.reload(); } catch(e) {}
+        }
+    }
 
     anchors {
         top: true
@@ -66,10 +81,10 @@ PanelWindow {
         // Sidebar card container
         Item {
             id: container
-            width: 420
-            height: parent.height - 32
-            x: 16
-            y: 16
+            width: 420 * Appearance.effectiveScale
+            height: parent.height - 80 * Appearance.effectiveScale
+            x: 16 * Appearance.effectiveScale
+            y: 50 * Appearance.effectiveScale
 
             transform: Translate {
                 id: containerTranslate
@@ -86,7 +101,7 @@ PanelWindow {
                     name: "closed"
                     when: !SidebarService.visible
                     PropertyChanges { target: container; opacity: 0 }
-                    PropertyChanges { target: containerTranslate; x: -container.width - 40 }
+                    PropertyChanges { target: containerTranslate; x: -container.width - 40 * Appearance.effectiveScale }
                 }
             ]
 
@@ -126,24 +141,42 @@ PanelWindow {
                 // Block clicks from reaching backdrop
                 MouseArea { anchors.fill: parent }
 
-                color: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
-                border.color: Qt.rgba(255, 255, 255, 0.08)
+                color: window.glassmorphism 
+                    ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.22) 
+                    : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
+                border.color: window.glassmorphism 
+                    ? Qt.rgba(1, 1, 1, 0.18) 
+                    : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.2)
                 border.width: 1
                 clip: true
 
+                // Glassmorphic vertical gloss overlay
+                Rectangle {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    visible: window.glassmorphism
+                    gradient: Gradient {
+                        orientation: Gradient.Vertical
+                        GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.14) }
+                        GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.03) }
+                        GradientStop { position: 0.46; color: Qt.rgba(1, 1, 1, 0.0) }
+                        GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.0) }
+                    }
+                }
+
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 14
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 14 * Appearance.effectiveScale
                     z: 1
 
                     // ── Tab Selector (Pill Style) ──
                     Rectangle {
                         id: tabSelectorContainer
                         Layout.alignment: Qt.AlignHCenter
-                        width: 320
-                        height: 38
-                        radius: 19
+                        width: 320 * Appearance.effectiveScale
+                        height: 38 * Appearance.effectiveScale
+                        radius: 19 * Appearance.effectiveScale
                         color: Qt.rgba(0, 0, 0, 0.25)
                         border.color: Qt.rgba(255, 255, 255, 0.05)
                         border.width: 1
@@ -151,15 +184,15 @@ PanelWindow {
 
                         Row {
                             anchors.fill: parent
-                            anchors.margins: 4
-                            spacing: 4
+                            anchors.margins: 4 * Appearance.effectiveScale
+                            spacing: 4 * Appearance.effectiveScale
 
                             Repeater {
                                 model: window.tabs
                                 delegate: Rectangle {
-                                    width: window.tabs.length > 0 ? (tabSelectorContainer.width - 12) / window.tabs.length : 0
-                                    height: 30
-                                    radius: 15
+                                    width: window.tabs.length > 0 ? (tabSelectorContainer.width - 12 * Appearance.effectiveScale) / window.tabs.length : 0
+                                    height: 30 * Appearance.effectiveScale
+                                    radius: 15 * Appearance.effectiveScale
                                     color: isActive ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.16) : "transparent"
                                     border.color: isActive ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.08) : "transparent"
                                     border.width: 1
@@ -168,12 +201,12 @@ PanelWindow {
 
                                     RowLayout {
                                         anchors.centerIn: parent
-                                        spacing: 8
+                                        spacing: 8 * Appearance.effectiveScale
 
                                         Text {
                                             text: modelData.icon
                                             font.family: "Material Symbols Rounded"
-                                            font.pixelSize: 16
+                                            font.pixelSize: 16 * Appearance.effectiveScale
                                             color: isActive ? Theme.primary : Qt.rgba(255, 255, 255, 0.6)
                                             Behavior on color { ColorAnimation { duration: 150 } }
                                         }
@@ -181,7 +214,7 @@ PanelWindow {
                                         Text {
                                             text: modelData.name
                                             font.family: Theme.font.family
-                                            font.pixelSize: 12
+                                            font.pixelSize: 12 * Appearance.effectiveScale
                                             font.weight: isActive ? Font.Bold : Font.Normal
                                             color: isActive ? Theme.primary : Qt.rgba(255, 255, 255, 0.6)
                                             Behavior on color { ColorAnimation { duration: 150 } }
@@ -202,7 +235,7 @@ PanelWindow {
                     // ── Smooth Blur/Fade Gradient (Replacing the line separator) ──
                     Rectangle {
                         Layout.fillWidth: true
-                        height: 12
+                        height: 12 * Appearance.effectiveScale
                         color: "transparent"
                         
                         gradient: Gradient {

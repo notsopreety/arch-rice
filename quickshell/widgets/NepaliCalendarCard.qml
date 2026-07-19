@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import "../theme"
 import "../services"
+import "../core"
 
 Card {
     id: root
@@ -167,32 +168,32 @@ Card {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 8
-        spacing: 2
+        anchors.margins: 8 * Appearance.effectiveScale
+        spacing: 2 * Appearance.effectiveScale
         visible: !root.loading
 
         RowLayout {
-            spacing: 10
+            spacing: 10 * Appearance.effectiveScale
             Layout.fillWidth: true
 
             Text {
                 text: root.gatey
                 font.family: Theme.font.family
-                font.pixelSize: 32
+                font.pixelSize: 32 * Appearance.effectiveScale
                 font.weight: Font.Bold
                 color: root.isHoliday ? Theme.error : Theme.primary
                 Layout.alignment: Qt.AlignVCenter
             }
 
             ColumnLayout {
-                spacing: 1
+                spacing: 1 * Appearance.effectiveScale
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
 
                 Text {
                     text: root.mahina + " " + root.barsa
                     font.family: Theme.font.family
-                    font.pixelSize: 13
+                    font.pixelSize: 13 * Appearance.effectiveScale
                     font.weight: Font.Bold
                     color: "white"
                     Layout.fillWidth: true
@@ -202,7 +203,7 @@ Card {
                 Text {
                     text: root.baar
                     font.family: Theme.font.family
-                    font.pixelSize: 10
+                    font.pixelSize: 10 * Appearance.effectiveScale
                     color: "#e7bdb3"
                     Layout.fillWidth: true
                     elide: Text.ElideRight
@@ -213,7 +214,7 @@ Card {
         Text {
             text: root.tithi + (root.eventText ? " • " + root.eventText : "")
             font.family: Theme.font.family
-            font.pixelSize: 9
+            font.pixelSize: 9 * Appearance.effectiveScale
             color: root.isHoliday ? Theme.error : "#e2e8f0"
             Layout.fillWidth: true
             elide: Text.ElideRight
@@ -224,7 +225,7 @@ Card {
         anchors.centerIn: parent
         text: "Loading..."
         font.family: Theme.font.family
-        font.pixelSize: 11
+        font.pixelSize: 11 * Appearance.effectiveScale
         color: "#a0aec0"
         visible: root.loading
     }
