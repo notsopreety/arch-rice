@@ -217,6 +217,8 @@ PanelWindow {
             searchText = "";
             searchInput.text = "";
             searchInput.forceActiveFocus();
+            appFetcher.running = false;
+            appFetcher.running = true;
         } else {
             animValue = 0.0;
         }
