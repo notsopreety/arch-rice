@@ -19,6 +19,7 @@ Item {
     property bool photoFrameWidgetActive: true
     property bool activateLinuxWidgetActive: true
     property bool flowersWidgetActive: false
+    property bool screenTimeWidgetActive: true
 
     function loadWidgetSettings(jsonText) {
         if (!jsonText || jsonText.trim() === "") return;
@@ -32,6 +33,10 @@ Item {
                 root.activateLinuxWidgetActive = data.activateLinux.isActive;
             if (data.flowersWidget && data.flowersWidget.isActive !== undefined)
                 root.flowersWidgetActive = data.flowersWidget.isActive;
+            if (data.screentime && data.screentime.isActive !== undefined)
+                root.screenTimeWidgetActive = data.screentime.isActive;
+            else if (data.screentimeWidget && data.screentimeWidget.isActive !== undefined)
+                root.screenTimeWidgetActive = data.screentimeWidget.isActive;
         } catch(e) {
             console.error("[SettingsTab] Failed to parse settings.json:", e);
         }
@@ -1337,6 +1342,21 @@ Item {
                     onClicked: {
                         root.flowersWidgetActive = !root.flowersWidgetActive;
                         root.saveWidgetSetting("flowersWidget", root.flowersWidgetActive);
+                    }
+                }
+
+                // --- Screen Time Desktop Widget Toggle ---
+                SettingsToggle {
+                    id: screenTimeWidgetPill
+                    isActive: root.screenTimeWidgetActive
+                    title: "Screen Time Widget"
+                    statusText: root.screenTimeWidgetActive ? "Visible" : "Hidden"
+                    iconName: "hourglass_top"
+                    iconOffName: "hourglass_disabled"
+                    tooltipText: "Toggle Screen Time Desktop Widget"
+                    onClicked: {
+                        root.screenTimeWidgetActive = !root.screenTimeWidgetActive;
+                        root.saveWidgetSetting("screentime", root.screenTimeWidgetActive);
                     }
                 }
             } // end Desktop Widgets GridLayout

@@ -37,6 +37,12 @@
     "photoFrameShape": "cookie_4",
     "isActive": false
   },
+  "screentime": {
+    "screentimeX": 81,
+    "screentimeY": 524,
+    "screentimeStyle": 2,
+    "isActive": true
+  },
   "activateLinux": {
     "isActive": true
   },
@@ -102,5 +108,10 @@
         "size": 2
       }
     ]
+  },
+  "screentimeWidget": {
+    "winX": 76,
+    "winY": 768,
+    "isActive": true
   }
 }

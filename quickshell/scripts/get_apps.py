@@ -40,6 +40,15 @@ Icon=utilities-system-monitor
 Terminal=false
 Type=Application
 Categories=System;Utility;Monitor;
+""",
+        "quickshell-screentime.desktop": """[Desktop Entry]
+Name=Screen Time (Quickshell)
+Comment=Quickshell Digital Wellbeing & Screen Time Analytics
+Exec=quickshell ipc call quickshell run "screentime"
+Icon=preferences-system-time
+Terminal=false
+Type=Application
+Categories=Utility;System;Clock;
 """
     }
 

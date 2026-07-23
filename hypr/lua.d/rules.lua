@@ -106,4 +106,10 @@ hl.window_rule({
     float = true,
 })
 
+-- Make Screen Time always open on float
+hl.window_rule({
+    name  = "float-screentime",
+    match = { title = "Digital Wellbeing - Screen Time" },
 
+    float = true,
+})

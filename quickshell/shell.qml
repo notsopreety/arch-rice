@@ -210,6 +210,30 @@ ShellRoot {
         function toggle() { systemMonitorLoader.active = !systemMonitorLoader.active; }
     }
 
+    // Screen Time Window Loader
+    Loader {
+        id: screenTimeLoader
+        active: false
+
+        sourceComponent: Component {
+            ScreenTimeWindow {
+                visible: true
+                onClosed: {
+                    screenTimeLoader.active = false;
+                }
+            }
+        }
+    }
+
+    // Ipc Handler for screentime target
+    IpcHandler {
+        target: "screentime"
+        function open() { screenTimeLoader.active = true; }
+        function open_direct() { screenTimeLoader.active = true; }
+        function close() { screenTimeLoader.active = false; }
+        function toggle() { screenTimeLoader.active = !screenTimeLoader.active; }
+    }
+
     // Native Quickshell IPC Handler
     IpcHandler {
         target: "quickshell"
@@ -249,6 +273,11 @@ ShellRoot {
 
             if (command === "systemmonitor" || command === "sysmon" || command === "system monitor") {
                 systemMonitorLoader.active = true;
+                return;
+            }
+
+            if (command === "screentime" || command === "digital wellbeing") {
+                screenTimeLoader.active = true;
                 return;
             }
 

@@ -1,8 +1,8 @@
 return {
-    primary = "0xff81d3df",
-    secondary = "0xffb1cbcf",
-    tertiary = "0xffb9c6ea",
-    primary_container = "0xff004f56",
-    background = "0xff0e1415",
-    outline = "0xff899294",
+    primary = "0xffb0c6ff",
+    secondary = "0xffc0c6dc",
+    tertiary = "0xffe0bbdd",
+    primary_container = "0xff2e4578",
+    background = "0xff121318",
+    outline = "0xff8f9099",
 }

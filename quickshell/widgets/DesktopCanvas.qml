@@ -39,5 +39,9 @@ PanelWindow {
         FlowersWidget {
             id: flowersWidget
         }
+
+        ScreenTimeWidget {
+            id: screenTimeWidget
+        }
     }
 }
