@@ -130,6 +130,32 @@ Item {
                     }
                 }
 
+                // --- Workspace Layout Toggle ---
+                SettingsToggle {
+                    id: wsLayoutPill
+                    property bool isHorizontal: false
+                    isActive: isHorizontal
+                    title: "Workspace Layout"
+                    statusText: isHorizontal ? "Horizontal" : "Vertical"
+                    iconName: isHorizontal ? "view_column" : "view_stream"
+                    iconOffName: "view_stream"
+                    tooltipText: "Toggle Workspace Scroll Direction"
+                    onClicked: {
+                        wsLayoutPill.isHorizontal = !wsLayoutPill.isHorizontal
+                        Quickshell.execDetached(["sh", "-c", "if [ -f ~/.config/hypr/.workspace_horizontal_enabled ]; then rm ~/.config/hypr/.workspace_horizontal_enabled; else touch ~/.config/hypr/.workspace_horizontal_enabled; fi; hyprctl reload"])
+                    }
+                    Process {
+                        id: checkWsLayoutState
+                        command: ["sh", "-c", "[ -f ~/.config/hypr/.workspace_horizontal_enabled ] && echo horizontal || echo vertical"]
+                        running: true
+                        stdout: SplitParser {
+                            onRead: data => {
+                                wsLayoutPill.isHorizontal = (data.trim() === "horizontal");
+                            }
+                        }
+                    }
+                }
+
                 // --- HL Scale Toggle ---
                 SettingsToggle {
                     id: hlScalePill

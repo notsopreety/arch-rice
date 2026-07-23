@@ -465,11 +465,9 @@ PanelWindow {
             }
 
             uploadProc.exec(["bash", "-c",
-                `RESP=$(curl -sS -f -F "files[]=@${root._cropPath}" "https://uguu.se/upload" 2>/dev/null); ` +
+                `URL=$(curl -sS -f -F "reqtype=fileupload" -F "fileToUpload=@${root._cropPath}" "https://catbox.moe/user/api.php" 2>/dev/null); ` +
                 `rm -f "${root._cropPath}"; ` +
-                `[ -z "$RESP" ] && exit 3; ` +
-                `URL=$(echo "$RESP" | jq -r ".files[0].url" 2>/dev/null); ` +
-                `[ -z "$URL" ] || [ "$URL" = "null" ] && exit 4; ` +
+                `[ -z "$URL" ] && exit 3; ` +
                 `notify-send -r 1009 -a "Google Lens" -i "web-browser" "Google Lens" "Opening visual search..." || true; ` +
                 `xdg-open "https://lens.google.com/uploadbyurl?url=$URL"`
             ])

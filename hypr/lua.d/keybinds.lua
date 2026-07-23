@@ -30,21 +30,76 @@ hl.bind(mainMod .. " + F", function()
 end)
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ action = "toggle" }))
 
--- Niri-style Navigation: Left/Right to choose windows (columns)
-hl.bind(mainMod .. " + left",  hl.dsp.layout("focus l"))
-hl.bind(mainMod .. " + right", hl.dsp.layout("focus r"))
+local function file_exists(name)
+   local f = io.open(name, "r")
+   if f ~= nil then io.close(f) return true else return false end
+end
+local is_horizontal_ws = file_exists(os.getenv("HOME") .. "/.config/hypr/.workspace_horizontal_enabled")
+local is_niri_enabled = file_exists(os.getenv("HOME") .. "/.config/hypr/.niri_tiling_enabled")
 
--- Niri-style Stacking: Shift + Left/Right to swap window positions (columns)
-hl.bind(mainMod .. " + SHIFT + left",  hl.dsp.layout("swapcol l"))
-hl.bind(mainMod .. " + SHIFT + right", hl.dsp.layout("swapcol r"))
+local function bind_focus(dir)
+    return is_niri_enabled and hl.dsp.layout("focus " .. dir) or hl.dsp.exec_cmd("hyprctl dispatch movefocus " .. dir)
+end
 
--- Niri-style Workspace Transitions: Up/Down to move vertically
-hl.bind(mainMod .. " + up",    hl.dsp.focus({ workspace = "-1" }))
-hl.bind(mainMod .. " + down",  hl.dsp.focus({ workspace = "+1" }))
+local function bind_swap(dir)
+    if is_niri_enabled then
+        if dir == "l" or dir == "r" then
+            return hl.dsp.layout("swapcol " .. dir)
+        else
+            return hl.dsp.layout("swapwindow " .. dir)
+        end
+    else
+        return hl.dsp.exec_cmd("hyprctl dispatch movewindow " .. dir)
+    end
+end
 
--- Niri-style Window-to-Workspace Movement: Shift + Up/Down
-hl.bind(mainMod .. " + SHIFT + up",    hl.dsp.window.move({ workspace = "-1" }))
-hl.bind(mainMod .. " + SHIFT + down",  hl.dsp.window.move({ workspace = "+1" }))
+if is_horizontal_ws then
+    -- Horizontal Workspaces, Vertical Windows
+    hl.bind(mainMod .. " + up",   bind_focus("u"))
+    hl.bind(mainMod .. " + down", bind_focus("d"))
+    hl.bind(mainMod .. " + SHIFT + up",   bind_swap("u"))
+    hl.bind(mainMod .. " + SHIFT + down", bind_swap("d"))
+
+    hl.bind(mainMod .. " + left",    hl.dsp.focus({ workspace = "-1" }))
+    hl.bind(mainMod .. " + right",   hl.dsp.focus({ workspace = "+1" }))
+    hl.bind(mainMod .. " + SHIFT + left",    hl.dsp.window.move({ workspace = "-1" }))
+    hl.bind(mainMod .. " + SHIFT + right",   hl.dsp.window.move({ workspace = "+1" }))
+    
+    if not is_niri_enabled then
+        hl.bind(mainMod .. " + Page_Up",    bind_focus("u"))
+        hl.bind(mainMod .. " + Page_Down",  bind_focus("d"))
+        hl.bind(mainMod .. " + SHIFT + Page_Up",    bind_swap("u"))
+        hl.bind(mainMod .. " + SHIFT + Page_Down",  bind_swap("d"))
+        
+        hl.bind(mainMod .. " + Home",    hl.dsp.focus({ workspace = "-1" }))
+        hl.bind(mainMod .. " + End",     hl.dsp.focus({ workspace = "+1" }))
+        hl.bind(mainMod .. " + SHIFT + Home",    hl.dsp.window.move({ workspace = "-1" }))
+        hl.bind(mainMod .. " + SHIFT + End",     hl.dsp.window.move({ workspace = "+1" }))
+    end
+else
+    -- Vertical Workspaces, Horizontal Windows
+    hl.bind(mainMod .. " + left",  bind_focus("l"))
+    hl.bind(mainMod .. " + right", bind_focus("r"))
+    hl.bind(mainMod .. " + SHIFT + left",  bind_swap("l"))
+    hl.bind(mainMod .. " + SHIFT + right", bind_swap("r"))
+
+    hl.bind(mainMod .. " + up",    hl.dsp.focus({ workspace = "-1" }))
+    hl.bind(mainMod .. " + down",  hl.dsp.focus({ workspace = "+1" }))
+    hl.bind(mainMod .. " + SHIFT + up",    hl.dsp.window.move({ workspace = "-1" }))
+    hl.bind(mainMod .. " + SHIFT + down",  hl.dsp.window.move({ workspace = "+1" }))
+    
+    if not is_niri_enabled then
+        hl.bind(mainMod .. " + Home",  bind_focus("l"))
+        hl.bind(mainMod .. " + End",   bind_focus("r"))
+        hl.bind(mainMod .. " + SHIFT + Home",  bind_swap("l"))
+        hl.bind(mainMod .. " + SHIFT + End",   bind_swap("r"))
+        
+        hl.bind(mainMod .. " + Page_Up",    hl.dsp.focus({ workspace = "-1" }))
+        hl.bind(mainMod .. " + Page_Down",  hl.dsp.focus({ workspace = "+1" }))
+        hl.bind(mainMod .. " + SHIFT + Page_Up",    hl.dsp.window.move({ workspace = "-1" }))
+        hl.bind(mainMod .. " + SHIFT + Page_Down",  hl.dsp.window.move({ workspace = "+1" }))
+    end
+end
 
 -- Niri-style Column Resizing
 hl.bind(mainMod .. " + equal", hl.dsp.layout("colresize +conf"))
