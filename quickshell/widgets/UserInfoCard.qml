@@ -10,7 +10,7 @@ Card {
     pad: 8 * Appearance.effectiveScale
 
     RowLayout {
-        anchors.fill: parent
+        anchors.centerIn: parent
         spacing: 10 * Appearance.effectiveScale
         
         // Avatar container

@@ -34,9 +34,7 @@ Card {
 
     Row {
         id: weatherRow
-        anchors.left: parent.left
-        anchors.leftMargin: 8 * Appearance.effectiveScale
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.centerIn: parent
         spacing: 8 * Appearance.effectiveScale
         visible: WeatherService.available
 
@@ -66,7 +64,6 @@ Card {
                 font.pixelSize: 11 * Appearance.effectiveScale
                 color: "#e7bdb3"
                 elide: Text.ElideRight
-                width: root.width - weatherRow.anchors.leftMargin - textCol.x - 8
             }
         }
     }

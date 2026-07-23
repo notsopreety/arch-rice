@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../core"
+import "../services"
 
 Item {
     id: root
@@ -25,30 +26,45 @@ Item {
 
         // Top Row for Calendar, Weather, and User Info (responsive layout)
         RowLayout {
-            x: parent.width * 0.2 - 16 * Appearance.effectiveScale
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width * 0.2 - 16 * Appearance.effectiveScale
+            anchors.right: parent.right
             y: 0 * Appearance.effectiveScale
-            width: parent.width * 0.8 + 16
             height: 100 * Appearance.effectiveScale
             spacing: 16 * Appearance.effectiveScale
 
             NepaliCalendarCard {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.preferredWidth: 180 * Appearance.effectiveScale
+                Layout.preferredWidth: 160 * Appearance.effectiveScale
+                visible: GlobalSettings.showBS
             }
 
-            WeatherOverviewCard {
+            Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.preferredWidth: 130 * Appearance.effectiveScale
-                visible: true
-                onClicked: root.switchToWeatherTab()
+                Layout.preferredWidth: (GlobalSettings.showBS ? 180 : 280) * Appearance.effectiveScale
+
+                WeatherOverviewCard {
+                    anchors.centerIn: parent
+                    scale: GlobalSettings.showBS ? 1.0 : 1.15
+                    width: parent.width / scale
+                    height: parent.height / scale
+                    onClicked: root.switchToWeatherTab()
+                }
             }
 
-            UserInfoCard {
+            Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.preferredWidth: 250 * Appearance.effectiveScale
+                Layout.preferredWidth: (GlobalSettings.showBS ? 170 : 220) * Appearance.effectiveScale
+
+                UserInfoCard {
+                    anchors.centerIn: parent
+                    scale: GlobalSettings.showBS ? 1.0 : 1.15
+                    width: parent.width / scale
+                    height: parent.height / scale
+                }
             }
         }
 

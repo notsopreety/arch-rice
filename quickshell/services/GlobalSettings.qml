@@ -8,6 +8,7 @@ Singleton {
 
     property bool floatingBar: false
     property bool autoHideBar: false
+    property bool showBS: true
 
     FileView {
         id: configFile
@@ -28,6 +29,9 @@ Singleton {
                         if (global.autoHideBar !== undefined) {
                             root.autoHideBar = global.autoHideBar;
                         }
+                        if (global.showBS !== undefined) {
+                            root.showBS = global.showBS;
+                        }
                     }
                 }
             } catch (e) {
@@ -47,9 +51,10 @@ Singleton {
             } catch (e) {}
             
             let global = obj.global || {};
-            if (global.floatingBar !== floatingBar || global.autoHideBar !== autoHideBar) {
+            if (global.floatingBar !== floatingBar || global.autoHideBar !== autoHideBar || global.showBS !== showBS) {
                 global.floatingBar = floatingBar;
                 global.autoHideBar = autoHideBar;
+                global.showBS = showBS;
                 obj.global = global;
                 configFile.setText(JSON.stringify(obj, null, 2));
             }
@@ -60,4 +65,5 @@ Singleton {
 
     onFloatingBarChanged: saveSettings()
     onAutoHideBarChanged: saveSettings()
+    onShowBSChanged: saveSettings()
 }

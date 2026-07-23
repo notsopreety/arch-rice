@@ -11,11 +11,12 @@
   },
   "global": {
     "autoHideBar": false,
-    "floatingBar": false
+    "floatingBar": false,
+    "showBS": true
   },
   "clock": {
-    "winX": 15,
-    "winY": 59,
+    "winX": 55,
+    "winY": 83,
     "winSize": 220,
     "scallops": 12,
     "amplitude": 5,

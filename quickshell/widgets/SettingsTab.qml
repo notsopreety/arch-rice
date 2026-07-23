@@ -156,6 +156,20 @@ Item {
                     }
                 }
 
+                // --- Nepali Calendar (BS) Toggle ---
+                SettingsToggle {
+                    id: showBSPill
+                    isActive: GlobalSettings.showBS
+                    title: "Nepali Calendar"
+                    statusText: GlobalSettings.showBS ? "Enabled" : "Disabled"
+                    iconName: "event"
+                    iconOffName: "event_busy"
+                    tooltipText: "Toggle Bikram Sambat Date in Overview"
+                    onClicked: {
+                        GlobalSettings.showBS = !GlobalSettings.showBS
+                    }
+                }
+
                 // --- HL Scale Toggle ---
                 SettingsToggle {
                     id: hlScalePill
