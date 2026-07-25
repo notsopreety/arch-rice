@@ -641,12 +641,12 @@ PanelWindow {
                             Layout.preferredHeight: 40 * Appearance.effectiveScale
                             spacing: 8 * Appearance.effectiveScale
 
-                            // DND/Silent Toggle Button
+                            // Silent Mode Toggle Button
                             Rectangle {
                                 Layout.preferredWidth: 56 * Appearance.effectiveScale
                                 Layout.preferredHeight: 40 * Appearance.effectiveScale
                                 radius: 20 * Appearance.effectiveScale
-                                color: Notifs.dnd 
+                                color: Notifs.silent 
                                     ? (window.glassmorphism ? Qt.rgba(Theme.primaryContainer.r, Theme.primaryContainer.g, Theme.primaryContainer.b, 0.5) : Theme.primaryContainer)
                                     : (window.glassmorphism ? window.glassActionBg : Theme.surfaceContainerHigh)
                                 border.color: window.glassmorphism ? window.glassBorder : Qt.rgba(Theme.outline.r, Theme.outline.g, Theme.outline.b, 0.1)
@@ -656,15 +656,15 @@ PanelWindow {
 
                                 DankIcon {
                                     anchors.centerIn: parent
-                                    name: Notifs.dnd ? "notifications_off" : "notifications_active"
+                                    name: Notifs.silent ? "notifications_off" : "notifications_active"
                                     size: 20 * Appearance.effectiveScale
-                                    color: Notifs.dnd ? Theme.onPrimaryContainer : "#ffffff"
+                                    color: Notifs.silent ? Theme.onPrimaryContainer : "#ffffff"
                                 }
 
                                 MouseArea {
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: Notifs.dnd = !Notifs.dnd
+                                    onClicked: Notifs.silent = !Notifs.silent
                                 }
                             }
 

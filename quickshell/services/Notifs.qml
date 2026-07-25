@@ -54,11 +54,25 @@ Singleton {
     }
     
     property bool dnd: false
+    property bool silent: false
     property double lastReadAt: 0
+
+    onDndChanged: {
+        if (dnd) {
+            silent = true;
+        }
+    }
+
+    onSilentChanged: {
+        if (!silent && dnd) {
+            dnd = false;
+        }
+    }
 
     PersistentProperties {
         id: persist
         property alias dnd: root.dnd
+        property alias silent: root.silent
         property alias lastReadAt: root.lastReadAt
         reloadableId: "notifications-state"
     }

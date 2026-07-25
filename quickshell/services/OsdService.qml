@@ -19,6 +19,7 @@ Singleton {
     signal powerProfileTriggered(string profile)
     signal idleInhibitorTriggered(bool active)
     signal dndTriggered(bool active)
+    signal silentTriggered(bool active)
     signal airplaneModeTriggered(bool active)
     signal kbdBrightnessTriggered()
     signal nightLightTriggered(bool active)
@@ -63,6 +64,7 @@ Singleton {
     property bool idleInhibited: false
     property string powerProfile: "balanced"
     property bool dndActive: false
+    property bool silentActive: false
     property bool airplaneModeActive: false
     property bool nightLightActive: false
     property string kbdPath: ""
@@ -414,6 +416,12 @@ Singleton {
             root.dndActive = Notifs.dnd;
             if (root.isStartupDone) {
                 root.dndTriggered(root.dndActive);
+            }
+        }
+        function onSilentChanged() {
+            root.silentActive = Notifs.silent;
+            if (root.isStartupDone) {
+                root.silentTriggered(root.silentActive);
             }
         }
     }

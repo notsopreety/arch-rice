@@ -41,7 +41,7 @@ PanelWindow {
     readonly property int margin: 16
     readonly property int popupWidth: 360
     readonly property int spacing: 10
-    readonly property int timeoutMs: 6000
+    readonly property int timeoutMs: 5000
 
     function urgencyColor(u) {
         if (u === NotificationUrgency.Critical) return errorColor
@@ -91,10 +91,27 @@ PanelWindow {
         })
     }
 
+    Timer {
+        id: soundDebounceTimer
+        interval: 150
+        repeat: false
+        onTriggered: {
+            let sndPath = Quickshell.env("HOME") + "/.config/quickshell/assets/notification.mp3";
+            Quickshell.execDetached(["sh", "-c", "pw-play " + sndPath + " || paplay " + sndPath + " || aplay " + sndPath + " || mpv --no-video " + sndPath]);
+        }
+    }
+
+    function playNotificationSound() {
+        soundDebounceTimer.restart();
+    }
+
     Connections {
         target: Notifs
         function onNotificationAdded(notifWrapper) {
-            root.createPopup(notifWrapper)
+            root.createPopup(notifWrapper);
+            if (!Notifs.silent) {
+                root.playNotificationSound();
+            }
         }
     }
 

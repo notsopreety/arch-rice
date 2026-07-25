@@ -36,9 +36,9 @@ Item {
     DankIcon {
         id: bell
         anchors.centerIn: parent
-        name: notifs.dnd ? "notifications_paused" : (unreadCount > 0 ? "notifications_active" : "notifications")
+        name: notifs.dnd ? "do_not_disturb_on" : (notifs.silent ? "notifications_off" : (unreadCount > 0 ? "notifications_active" : "notifications"))
         size: 18 * Appearance.effectiveScale
-        color: isActive || unreadCount > 0 || notifs.dnd
+        color: isActive || unreadCount > 0 || notifs.dnd || notifs.silent
             ? matugen.primary
             : isHovered
                 ? matugen.primary

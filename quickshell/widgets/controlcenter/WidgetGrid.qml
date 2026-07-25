@@ -19,6 +19,7 @@ Item {
     WifiToggle { id: wifiToggle }
     BluetoothToggle { id: bluetoothToggle }
     DndToggle { id: dndToggle }
+    SilentToggle { id: silentToggle }
     CaffeineToggle { id: caffeineToggle }
     ScreenshotToggle { id: screenshotToggle }
     ScreenRecordToggle { id: screenRecordToggle }
@@ -46,6 +47,7 @@ Item {
         "wifi": wifiToggle,
         "bluetooth": bluetoothToggle,
         "dnd": dndToggle,
+        "silent": silentToggle,
         "caffeine": caffeineToggle,
         "screenshot": screenshotToggle,
         "screenRecord": screenRecordToggle,
@@ -61,7 +63,7 @@ Item {
 
     // ── Toggle data sources ──
     readonly property var availableToggleTypes: [
-        "wifi", "bluetooth", "dnd", "darkMode", "caffeine", "nightLight",
+        "wifi", "bluetooth", "dnd", "silent", "darkMode", "caffeine", "nightLight",
         "colorPicker", "screenSnip", "gameMode", "screenRecord",
         "musicRecognition", "easyEffects", "conservationMode", "warp",
         "screenshot", "googleLens", "airplaneMode", "powerProfile", "systemUpdate"

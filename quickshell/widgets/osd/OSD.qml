@@ -38,6 +38,7 @@ Scope {
         { id: "idleInhibitor",  sourceUrl: "indicators/IdleInhibitorIndicator.qml" },
         { id: "powerProfile",   sourceUrl: "indicators/PowerProfileIndicator.qml" },
         { id: "dnd",            sourceUrl: "indicators/DndIndicator.qml" },
+        { id: "silent",         sourceUrl: "indicators/SilentIndicator.qml" },
         { id: "kbdBrightness",  sourceUrl: "indicators/KbdBrightnessIndicator.qml" },
         { id: "nightLight",     sourceUrl: "indicators/NightLightIndicator.qml" },
         { id: "wifi",           sourceUrl: "indicators/WifiIndicator.qml" },
@@ -141,6 +142,10 @@ Scope {
         }
         function onDndTriggered(active) {
             root.currentIndicator = "dnd";
+            root.triggerOsd();
+        }
+        function onSilentTriggered(active) {
+            root.currentIndicator = "silent";
             root.triggerOsd();
         }
         function onKbdBrightnessTriggered() {

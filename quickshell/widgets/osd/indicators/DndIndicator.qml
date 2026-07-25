@@ -35,7 +35,6 @@ Item {
     property bool isReady: false
 
     Component.onCompleted: {
-        // Trigger initial animation when OSD loads
         dndAnim.restart();
         isReady = true;
     }
@@ -72,7 +71,6 @@ Item {
             border.color: "transparent"
         }
 
-
         // Content Row Layout
         RowLayout {
             id: contentRow
@@ -94,7 +92,7 @@ Item {
                     height: parent.height
 
                     shapeString: "Gem"
-                    text: root.active ? "notifications_off" : "notifications_active"
+                    text: root.active ? "do_not_disturb_on" : "do_not_disturb_off"
                     iconSize: 18 * Appearance.effectiveScale
 
                     color: root.active ? Theme.primaryContainer : Qt.rgba(255, 255, 255, 0.1)
@@ -118,9 +116,10 @@ Item {
                     id: statusLabel
                     anchors.centerIn: parent
                     text: "Do Not Disturb • " + (root.active ? "On" : "Off")
+                    font.family: Theme.font.family
                     font.pixelSize: 13 * Appearance.effectiveScale
                     font.weight: Font.Medium
-                    color: "#ffffff"
+                    color: root.active ? Theme.primary : "#ffffff"
                     elide: Text.ElideRight
 
                     horizontalAlignment: Text.AlignHCenter
@@ -128,47 +127,58 @@ Item {
                     renderType: Text.NativeRendering
                 }
 
-                // ── Animated Bell & Slash Overlay Container ──
+                // ── Animated DND Shield & Pulse Aura Container ──
                 Item {
-                    id: bellContainer
+                    id: dndContainer
                     anchors.centerIn: parent
                     width: 24 * Appearance.effectiveScale
                     height: 24 * Appearance.effectiveScale
                     opacity: 0
 
-                    MaterialSymbol {
-                        id: animBell
+                    // Expanding Shield Aura Ring
+                    Rectangle {
+                        id: pulseRing
                         anchors.centerIn: parent
-                        text: "notifications"
-                        iconSize: 18 * Appearance.effectiveScale
-                        color: root.active ? Theme.error : "#ffffff"
+                        width: 22 * Appearance.effectiveScale
+                        height: 22 * Appearance.effectiveScale
+                        radius: width / 2
+                        color: "transparent"
+                        border.color: root.active ? Theme.primary : Theme.error
+                        border.width: 2 * Appearance.effectiveScale
+                        opacity: 0
+
+                        transform: Scale {
+                            id: ringScale
+                            origin.x: pulseRing.width / 2
+                            origin.y: pulseRing.height / 2
+                            xScale: 1.0
+                            yScale: 1.0
+                        }
+                    }
+
+                    // Central DND Icon Symbol with Elastic Overshoot & Rotation
+                    MaterialSymbol {
+                        id: animDndSymbol
+                        anchors.centerIn: parent
+                        text: root.active ? "do_not_disturb_on" : "do_not_disturb_off"
+                        iconSize: 22 * Appearance.effectiveScale
+                        color: root.active ? Theme.primary : Theme.error
 
                         transform: [
                             Rotation {
-                                id: bellRotation
-                                origin.x: animBell.width / 2
-                                origin.y: 0 // Swing from the top hook of the bell
+                                id: symbolRotation
+                                origin.x: animDndSymbol.width / 2
+                                origin.y: animDndSymbol.height / 2
                                 angle: 0
                             },
                             Scale {
-                                id: bellScale
-                                origin.x: animBell.width / 2
-                                origin.y: animBell.height / 2
+                                id: dndScale
+                                origin.x: animDndSymbol.width / 2
+                                origin.y: animDndSymbol.height / 2
                                 xScale: 1.0
                                 yScale: 1.0
                             }
                         ]
-                    }
-
-                    // The slashing line that cuts the bell when active is true
-                    Rectangle {
-                        id: slashLine
-                        anchors.centerIn: parent
-                        height: 2 * Appearance.effectiveScale
-                        width: 0 // Animated
-                        color: Theme.error
-                        rotation: -45
-                        radius: 1
                     }
                 }
             }
@@ -200,64 +210,54 @@ Item {
         }
     }
 
-    // ── DND Anim Sequence ──
+    // ── DND Animation Sequence (Shield Spin & Expanding Pulse Aura) ──
     SequentialAnimation {
         id: dndAnim
 
         // 1. Wait for OSD window slide/fade
-        PauseAnimation { duration: 300 }
+        PauseAnimation { duration: 280 }
 
         // 2. Fade status label out
         NumberAnimation { target: statusLabel; property: "opacity"; to: 0.0; duration: 120 }
 
-        // 3. Prepare initial state of the animation container
+        // 3. Prepare initial states
         ParallelAnimation {
-            PropertyAction { target: bellContainer; property: "opacity"; value: 1.0 }
-            PropertyAction { target: bellScale; property: "xScale"; value: 0.5 }
-            PropertyAction { target: bellScale; property: "yScale"; value: 0.5 }
-            PropertyAction { target: bellRotation; property: "angle"; value: 0 }
-            PropertyAction { target: slashLine; property: "width"; value: root.active ? 0 : 20 * Appearance.effectiveScale }
+            PropertyAction { target: dndContainer; property: "opacity"; value: 1.0 }
+            PropertyAction { target: dndScale; property: "xScale"; value: 0.3 }
+            PropertyAction { target: dndScale; property: "yScale"; value: 0.3 }
+            PropertyAction { target: symbolRotation; property: "angle"; value: root.active ? -90 : 90 }
+            PropertyAction { target: ringScale; property: "xScale"; value: 0.5 }
+            PropertyAction { target: ringScale; property: "yScale"; value: 0.5 }
+            PropertyAction { target: pulseRing; property: "opacity"; value: 1.0 }
         }
 
-        // 4. Scale up the bell
+        // 4. Elastic scale up & spin symbol
         ParallelAnimation {
-            NumberAnimation { target: bellScale; property: "xScale"; to: 1.2; duration: 250; easing.type: Easing.OutBack }
-            NumberAnimation { target: bellScale; property: "yScale"; to: 1.2; duration: 250; easing.type: Easing.OutBack }
+            NumberAnimation { target: dndScale; property: "xScale"; to: 1.35; duration: 300; easing.type: Easing.OutBack }
+            NumberAnimation { target: dndScale; property: "yScale"; to: 1.35; duration: 300; easing.type: Easing.OutBack }
+            NumberAnimation { target: symbolRotation; property: "angle"; to: 0; duration: 300; easing.type: Easing.OutCubic }
         }
 
-        // 5. Ring/Swing the bell
-        SequentialAnimation {
-            NumberAnimation { target: bellRotation; property: "angle"; from: 0; to: -15; duration: 80; easing.type: Easing.OutQuad }
-            NumberAnimation { target: bellRotation; property: "angle"; from: -15; to: 15; duration: 150; easing.type: Easing.InOutQuad }
-            NumberAnimation { target: bellRotation; property: "angle"; from: 15; to: -10; duration: 130; easing.type: Easing.InOutQuad }
-            NumberAnimation { target: bellRotation; property: "angle"; from: -10; to: 10; duration: 110; easing.type: Easing.InOutQuad }
-            NumberAnimation { target: bellRotation; property: "angle"; from: 10; to: 0; duration: 90; easing.type: Easing.InQuad }
-        }
-
-        // 6. Draw slash (if ON) or erase slash (if OFF)
+        // 5. Expand shield pulse aura ring outwards
         ParallelAnimation {
-            NumberAnimation {
-                target: slashLine
-                property: "width"
-                to: root.active ? 20 * Appearance.effectiveScale : 0
-                duration: 350
-                easing.type: Easing.InOutCubic
-            }
-            // Settle bell scale to 1.0
-            NumberAnimation { target: bellScale; property: "xScale"; to: 1.0; duration: 250 }
-            NumberAnimation { target: bellScale; property: "yScale"; to: 1.0; duration: 250 }
+            NumberAnimation { target: ringScale; property: "xScale"; to: 2.2; duration: 400; easing.type: Easing.OutQuad }
+            NumberAnimation { target: ringScale; property: "yScale"; to: 2.2; duration: 400; easing.type: Easing.OutQuad }
+            NumberAnimation { target: pulseRing; property: "opacity"; to: 0.0; duration: 400; easing.type: Easing.OutQuad }
+            // Settle symbol scale to 1.0
+            NumberAnimation { target: dndScale; property: "xScale"; to: 1.0; duration: 250 }
+            NumberAnimation { target: dndScale; property: "yScale"; to: 1.0; duration: 250 }
         }
 
-        PauseAnimation { duration: 350 }
+        PauseAnimation { duration: 300 }
 
-        // 7. Fade out anim container
+        // 6. Fade out anim container
         ParallelAnimation {
-            NumberAnimation { target: bellContainer; property: "opacity"; to: 0.0; duration: 180 }
-            NumberAnimation { target: bellScale; property: "xScale"; to: 0.7; duration: 180 }
-            NumberAnimation { target: bellScale; property: "yScale"; to: 0.7; duration: 180 }
+            NumberAnimation { target: dndContainer; property: "opacity"; to: 0.0; duration: 180 }
+            NumberAnimation { target: dndScale; property: "xScale"; to: 0.7; duration: 180 }
+            NumberAnimation { target: dndScale; property: "yScale"; to: 0.7; duration: 180 }
         }
 
-        // 8. Fade status label back in
+        // 7. Fade status label back in
         NumberAnimation { target: statusLabel; property: "opacity"; to: 1.0; duration: 200 }
     }
 }

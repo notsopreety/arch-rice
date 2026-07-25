@@ -160,6 +160,19 @@ Item {
         onLoaded: root.updateData()
     }
 
+    // 5-Minute Auto-Update Timer (Matching PhotoFrameWidget behavior)
+    Timer {
+        id: autoUpdateTimer
+        interval: 5 * 60 * 1000 // 5 minutes
+        running: true
+        repeat: true
+        onTriggered: {
+            forceSaveProc.running = true;
+            screentimeDataFile.path = Quickshell.env("HOME") + "/.cache/screentime/" + Qt.formatDateTime(new Date(), "yyyy-MM-dd") + ".json";
+            try { screentimeDataFile.reload(); } catch(e) {}
+        }
+    }
+
     Timer {
         interval: 30000; running: true; repeat: true
         onTriggered: {
