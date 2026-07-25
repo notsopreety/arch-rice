@@ -213,6 +213,44 @@ Rectangle {
             scale: freeSpaceContainer.scaleFactor
             transformOrigin: Item.Center
         }
+
+        // Lockscreen Weather under Clock
+        Column {
+            anchors.top: lockscreenHomeClock.bottom
+            anchors.topMargin: 12 * Appearance.effectiveScale
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 4 * Appearance.effectiveScale
+
+            Row {
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 8 * Appearance.effectiveScale
+
+                Image {
+                    width: 28 * Appearance.effectiveScale
+                    height: 28 * Appearance.effectiveScale
+                    fillMode: Image.PreserveAspectFit
+                    source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/google-weather/" + WeatherService.googleIcon
+                }
+
+                Text {
+                    text: Math.round(WeatherService.temp) + "°"
+                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                    font.pixelSize: 22 * Appearance.effectiveScale
+                    font.weight: Font.DemiBold
+                    color: Qt.rgba(255, 255, 255, 0.95)
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+
+            Text {
+                text: WeatherService.condition
+                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                font.pixelSize: 14 * Appearance.effectiveScale
+                font.weight: Font.Normal
+                color: Qt.rgba(255, 255, 255, 0.75)
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+        }
     }
 
     // ============================================

@@ -43,5 +43,9 @@ PanelWindow {
         ScreenTimeWidget {
             id: screenTimeWidget
         }
+
+        WeatherWidget {
+            id: weatherWidget
+        }
     }
 }

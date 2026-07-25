@@ -497,47 +497,6 @@ Item {
         Rectangle {
             anchors.centerIn: parent
             width: winSize * 0.04
-            height: width
-            radius: width / 2
-            color: accentColor
-        }
-    }
-
-    Column {
-        visible: root.showWeather
-        anchors.top: parent.bottom
-        anchors.topMargin: 16 * root.ratio
-        anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 6 * root.ratio
-        
-        Row {
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 8 * root.ratio
-            
-            Image {
-                width: 44 * root.ratio
-                height: 44 * root.ratio
-                fillMode: Image.PreserveAspectFit
-                source: "file:///home/sawmer/.config/quickshell/assets/google-weather/" + WeatherService.googleIcon
-            }
-            
-            Text {
-                text: Math.round(WeatherService.temp) + "°"
-                font.pixelSize: 36 * root.ratio
-                font.weight: Font.DemiBold
-                color: Theme.onSurfaceColor
-                font.family: Theme.font.family
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-        
-        Text {
-            text: WeatherService.condition
-            font.pixelSize: 16 * root.ratio
-            font.weight: Font.Normal
-            color: Theme.outline
-            font.family: Theme.font.family
-            anchors.horizontalCenter: parent.horizontalCenter
         }
     }
 }

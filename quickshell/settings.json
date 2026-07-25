@@ -15,8 +15,8 @@
     "showBS": true
   },
   "clock": {
-    "winX": 55,
-    "winY": 83,
+    "winX": 32,
+    "winY": 91,
     "winSize": 220,
     "scallops": 12,
     "amplitude": 5,
@@ -32,15 +32,15 @@
   },
   "photoFrame": {
     "imagePath": "/home/sawmer/Pictures/Wallpapers",
-    "photoFrameX": 52,
-    "photoFrameY": 395,
-    "photoFrameShape": "cookie_4",
+    "photoFrameX": 452,
+    "photoFrameY": 425,
+    "photoFrameShape": "puffy",
     "isActive": false
   },
   "screentime": {
-    "screentimeX": 81,
-    "screentimeY": 524,
-    "screentimeStyle": 3,
+    "screentimeX": 202,
+    "screentimeY": 822,
+    "screentimeStyle": 1,
     "isActive": true
   },
   "activateLinux": {
@@ -116,6 +116,14 @@
   "screentimeWidget": {
     "winX": 76,
     "winY": 768,
+    "isActive": true
+  },
+  "weatherWidget": {
+    "winX": 63,
+    "winY": 524,
+    "style": 1,
+    "styleMode": 1,
+    "shapeMode": 1,
     "isActive": true
   }
 }

@@ -20,6 +20,7 @@ Item {
     property bool activateLinuxWidgetActive: true
     property bool flowersWidgetActive: false
     property bool screenTimeWidgetActive: true
+    property bool weatherWidgetActive: true
 
     function loadWidgetSettings(jsonText) {
         if (!jsonText || jsonText.trim() === "") return;
@@ -37,6 +38,10 @@ Item {
                 root.screenTimeWidgetActive = data.screentime.isActive;
             else if (data.screentimeWidget && data.screentimeWidget.isActive !== undefined)
                 root.screenTimeWidgetActive = data.screentimeWidget.isActive;
+            if (data.weatherWidget && data.weatherWidget.isActive !== undefined)
+                root.weatherWidgetActive = data.weatherWidget.isActive;
+            else if (data.weather && data.weather.isActive !== undefined)
+                root.weatherWidgetActive = data.weather.isActive;
         } catch(e) {
             console.error("[SettingsTab] Failed to parse settings.json:", e);
         }
@@ -1357,6 +1362,21 @@ Item {
                     onClicked: {
                         root.screenTimeWidgetActive = !root.screenTimeWidgetActive;
                         root.saveWidgetSetting("screentime", root.screenTimeWidgetActive);
+                    }
+                }
+
+                // --- Weather Desktop Widget Toggle ---
+                SettingsToggle {
+                    id: weatherWidgetPill
+                    isActive: root.weatherWidgetActive
+                    title: "Weather Widget"
+                    statusText: root.weatherWidgetActive ? "Visible" : "Hidden"
+                    iconName: "thermostat"
+                    iconOffName: "device_thermostat"
+                    tooltipText: "Toggle Weather Desktop Widget"
+                    onClicked: {
+                        root.weatherWidgetActive = !root.weatherWidgetActive;
+                        root.saveWidgetSetting("weatherWidget", root.weatherWidgetActive);
                     }
                 }
             } // end Desktop Widgets GridLayout
