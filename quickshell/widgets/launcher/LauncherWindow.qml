@@ -26,8 +26,8 @@ PanelWindow {
     WlrLayershell.namespace: "quickshell-powermenu"
     WlrLayershell.keyboardFocus: LauncherService.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
-    property real cardWidth: 640 * Appearance.effectiveScale
-    property real cardHeight: 580 * Appearance.effectiveScale
+    property real cardWidth: Math.min(640 * Appearance.effectiveScale, launcherWindow.width * 0.9)
+    property real cardHeight: Math.min(580 * Appearance.effectiveScale, launcherWindow.height * 0.9)
 
     // Dynamic Colors mapped directly to Theme singleton
     property color col_primary: Theme.primary
@@ -530,7 +530,8 @@ PanelWindow {
                         id: grid
                         anchors.fill: parent
                         anchors.topMargin: 4 * Appearance.effectiveScale
-                        cellWidth: 96 * Appearance.effectiveScale
+                        property int columns: Math.max(1, Math.floor(width / (96 * Appearance.effectiveScale)))
+                        cellWidth: width / columns
                         cellHeight: 100 * Appearance.effectiveScale
                         cacheBuffer: 200
 
@@ -715,16 +716,16 @@ PanelWindow {
                                 if (currentIndex >= 0 && currentIndex < model.length) {
                                     launcherWindow.launchApp(model[currentIndex].cmd, model[currentIndex].id, model[currentIndex].terminal);
                                 }
-                            } else if (event.key === Qt.Key_Up && currentIndex < Math.floor(grid.width / grid.cellWidth)) {
+                            } else if (event.key === Qt.Key_Up && currentIndex < grid.columns) {
                                 searchInput.forceActiveFocus();
                                 event.accepted = true;
                             } else if (event.key === Qt.Key_PageUp) {
-                                var cols = Math.floor(grid.width / grid.cellWidth);
+                                var cols = grid.columns;
                                 var rows = Math.floor(grid.height / grid.cellHeight);
                                 currentIndex = Math.max(0, currentIndex - (cols * rows));
                                 event.accepted = true;
                             } else if (event.key === Qt.Key_PageDown) {
-                                var cols = Math.floor(grid.width / grid.cellWidth);
+                                var cols = grid.columns;
                                 var rows = Math.floor(grid.height / grid.cellHeight);
                                 currentIndex = Math.min(model.length - 1, currentIndex + (cols * rows));
                                 event.accepted = true;

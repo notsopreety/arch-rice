@@ -9,15 +9,36 @@ import "../../theme"
 import "../../components"
 import "../../core"
 import QtQuick.Shapes
+import "../widgetCanvas"
 
 Item {
     id: root
     
+    property real customWidth: -1
+    property real customHeight: -1
+
     // Default size for the widget
-    width: 200 * Appearance.effectiveScale
-    height: 200 * Appearance.effectiveScale
+    function getNaturalWidth() {
+        for (let i = 0; i < stylesList.length; i++) {
+            if (stylesList[i].shape === root.settingsShape) return stylesList[i].width * Appearance.effectiveScale;
+        }
+        return 200 * Appearance.effectiveScale;
+    }
+
+    function getNaturalHeight() {
+        for (let i = 0; i < stylesList.length; i++) {
+            if (stylesList[i].shape === root.settingsShape) return stylesList[i].height * Appearance.effectiveScale;
+        }
+        return 200 * Appearance.effectiveScale;
+    }
+
+    width: customWidth > 0 ? (customWidth * Appearance.effectiveScale) : getNaturalWidth()
+    height: customHeight > 0 ? (customHeight * Appearance.effectiveScale) : getNaturalHeight()
+
+    Behavior on width { enabled: typeof resizeFrame !== 'undefined' && resizeFrame ? !resizeFrame.isResizing : true; NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
+    Behavior on height { enabled: typeof resizeFrame !== 'undefined' && resizeFrame ? !resizeFrame.isResizing : true; NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
     
-    property string imagePath: "/home/sawmer/Pictures/Images/"
+    property string imagePath: Quickshell.env("HOME") + "/Pictures/Images/"
     property int settingsX: -1
     property int settingsY: -1
     property string settingsShape: "cookie_4"
@@ -87,10 +108,10 @@ Item {
         let nextIndex = (currentIndex + 1) % stylesList.length;
         let nextStyle = stylesList[nextIndex];
         
-        root.width = nextStyle.width * Appearance.effectiveScale;
-        root.height = nextStyle.height * Appearance.effectiveScale;
+        root.customWidth = -1;
+        root.customHeight = -1;
         root.settingsShape = nextStyle.shape;
-        root.saveSettings(root.x, root.y, nextStyle.shape);
+        root.saveSettings(root.x, root.y, nextStyle.shape, -1, -1);
     }
     
     // Align default position to bottom-right
@@ -110,22 +131,12 @@ Item {
             if (pf.imagePath) root.imagePath = pf.imagePath;
             if (pf.photoFrameX !== undefined) root.settingsX = pf.photoFrameX;
             if (pf.photoFrameY !== undefined) root.settingsY = pf.photoFrameY;
+            if (pf.photoFrameWidth !== undefined && pf.photoFrameWidth > 0) root.customWidth = pf.photoFrameWidth;
+            else root.customWidth = -1;
+            if (pf.photoFrameHeight !== undefined && pf.photoFrameHeight > 0) root.customHeight = pf.photoFrameHeight;
+            else root.customHeight = -1;
             if (pf.photoFrameShape !== undefined) {
                 root.settingsShape = pf.photoFrameShape;
-                // Apply dimensions based on loaded shape
-                let found = false;
-                for (let i = 0; i < root.stylesList.length; i++) {
-                    if (root.stylesList[i].shape === pf.photoFrameShape) {
-                        root.width = root.stylesList[i].width * Appearance.effectiveScale;
-                        root.height = root.stylesList[i].height * Appearance.effectiveScale;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    root.width = 200 * Appearance.effectiveScale;
-                    root.height = 200 * Appearance.effectiveScale;
-                }
             }
             console.log("[PhotoFrame] Successfully loaded settings. isActive:", root.isActive);
         } catch(e) {
@@ -155,7 +166,7 @@ Item {
         id: saveSettingsProc
     }
     
-    function saveSettings(newX, newY, newShape) {
+    function saveSettings(newX, newY, newShape, newW, newH) {
         let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
         let cmd = "import json, os; path = '" + path + "'; " +
                   "data = json.load(open(path)) if os.path.exists(path) else {}; " +
@@ -164,6 +175,10 @@ Item {
         if (newX !== undefined) updates.push("pf['photoFrameX'] = " + Math.round(newX));
         if (newY !== undefined) updates.push("pf['photoFrameY'] = " + Math.round(newY));
         if (newShape !== undefined) updates.push("pf['photoFrameShape'] = '" + newShape + "'");
+        if (newW !== undefined && newW > 0) updates.push("pf['photoFrameWidth'] = " + Math.round(newW));
+        else if (newW === -1) updates.push("pf.pop('photoFrameWidth', None)");
+        if (newH !== undefined && newH > 0) updates.push("pf['photoFrameHeight'] = " + Math.round(newH));
+        else if (newH === -1) updates.push("pf.pop('photoFrameHeight', None)");
         cmd += updates.join("; ") + "; " +
                "tmp = path + '.tmp'; " +
                "f = open(tmp, 'w'); " +
@@ -177,7 +192,7 @@ Item {
     
     readonly property string folderUrl: {
         if (!imagePath) return "";
-        let path = imagePath;
+        let path = imagePath.replace(/^~/, Quickshell.env("HOME"));
         if (path.startsWith("file://")) return path;
         if (path.startsWith("/")) return "file://" + path;
         return "file:///" + path;
@@ -395,8 +410,9 @@ Item {
         anchors.fill: parent
         shapeName: root.settingsShape
         fillColor: "transparent"
-        strokeColor: Theme.primary
-        strokeWidth: 2 * Appearance.effectiveScale
+        strokeColor: "transparent"
+        strokeWidth: 0
+        visible: false
     }
     
     // Interactive mouse area for dragging and right click popup
@@ -433,6 +449,31 @@ Item {
             if (touchPoints.length === 3) {
                 root.selectRandomImage();
             }
+        }
+    }
+
+    WidgetResizeFrame {
+        id: resizeFrame
+        target: root
+        widgetName: "Photo Frame"
+        minWidth: 100 * Appearance.effectiveScale
+        minHeight: 100 * Appearance.effectiveScale
+        maxWidth: 800 * Appearance.effectiveScale
+        maxHeight: 800 * Appearance.effectiveScale
+
+        onResized: (newW, newH) => {
+            root.customWidth = Math.round(newW / Appearance.effectiveScale);
+            root.customHeight = Math.round(newH / Appearance.effectiveScale);
+        }
+        onResizeEnded: (finalW, finalH) => {
+            root.customWidth = Math.round(finalW / Appearance.effectiveScale);
+            root.customHeight = Math.round(finalH / Appearance.effectiveScale);
+            root.saveSettings(root.x, root.y, root.settingsShape, root.customWidth, root.customHeight);
+        }
+        onResetRequested: {
+            root.customWidth = -1;
+            root.customHeight = -1;
+            root.saveSettings(root.x, root.y, root.settingsShape, -1, -1);
         }
     }
 }

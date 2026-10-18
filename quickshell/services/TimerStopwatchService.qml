@@ -37,7 +37,7 @@ Item {
                     root.timerRunning = false;
                     root.timerSetupMode = true;
                     // Play alarm sound using pw-play (timer only plays once)
-                    Quickshell.execDetached(["pw-play", "/home/sawmer/.config/quickshell/assets/alarm.mp3"]);
+                    Quickshell.execDetached(["pw-play", Quickshell.env("HOME") + "/.config/quickshell/assets/alarm.mp3"]);
                     // Send desktop notification
                     Quickshell.execDetached(["notify-send", "-r", "1005", "-a", "Timer", "Time's Up!", "Your timer has finished."]);
                 }
@@ -84,7 +84,7 @@ Item {
     property string activeAlarmLabel: ""
 
     property Process alarmPlayer: Process {
-        command: ["mpv", "--no-video", "--loop-file=inf", "/home/sawmer/.config/quickshell/assets/alarm.mp3"]
+        command: ["mpv", "--no-video", "--loop-file=inf", Quickshell.env("HOME") + "/.config/quickshell/assets/alarm.mp3"]
     }
 
     readonly property alias alarms: alarmsModel

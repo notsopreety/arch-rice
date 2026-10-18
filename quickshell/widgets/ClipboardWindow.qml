@@ -162,8 +162,8 @@ PanelWindow {
     }
 
     function cacheImage(id) {
-        var cachePath = "/home/sawmer/.cache/quickshell-clipboard/" + id + ".png";
-        var cmd = "mkdir -p /home/sawmer/.cache/quickshell-clipboard && cliphist decode \"$1\" > \"$2\"";
+        var cachePath = Quickshell.env("HOME") + "/.cache/quickshell-clipboard/" + id + ".png";
+        var cmd = "mkdir -p $HOME/.cache/quickshell-clipboard && cliphist decode \"$1\" > \"$2\"";
         Quickshell.execDetached(["bash", "-c", cmd, "_", id, cachePath]);
     }
 
@@ -548,7 +548,7 @@ PanelWindow {
                                         anchors.fill: parent
                                         fillMode: Image.PreserveAspectCrop
                                         asynchronous: true
-                                        source: isImage ? "file:///home/sawmer/.cache/quickshell-clipboard/" + itemId + ".png" : ""
+                                        source: isImage ? "file://" + Quickshell.env("HOME") + "/.cache/quickshell-clipboard/" + itemId + ".png" : ""
                                         cache: false
                                     }
 

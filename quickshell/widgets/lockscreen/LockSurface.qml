@@ -51,7 +51,7 @@ Rectangle {
     Image {
         id: wallpaper
         anchors.fill: parent
-        source: Theme.wallpaperPath ? "file://" + Theme.wallpaperPath : "file:///home/sawmer/.cache/awww-wal/wall.jpg"
+        source: Theme.wallpaperPath ? "file://" + Theme.wallpaperPath : "file://" + Quickshell.env("HOME") + "/.cache/awww-wal/wall.jpg"
         fillMode: Image.PreserveAspectCrop
         visible: false
     }

@@ -31,66 +31,21 @@ Item {
         anchors.fill: parent
         spacing: 0
         
-        // Horizontal Tab Bar
-        Rectangle {
+        // Horizontal Tab Bar (Compact 1-row Card Buttons)
+        StyledTabBar {
             Layout.fillWidth: true
-            implicitHeight: 60 * Appearance.effectiveScale
-            color: "transparent"
-            
-            RowLayout {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 8 * Appearance.effectiveScale
-                
-                Repeater {
-                    model: [
-                        { name: "Overview", icon: "dashboard" },
-                        { name: "CPU", icon: "monitoring" },
-                        { name: "GPU", icon: "videogame_asset" },
-                        { name: "Memory", icon: "memory" },
-                        { name: "Network", icon: "public" },
-                        { name: "Disk", icon: "storage" }
-                    ]
-                    
-                    delegate: RippleButton {
-                        implicitWidth: 120 * Appearance.effectiveScale
-                        implicitHeight: 40 * Appearance.effectiveScale
-                        buttonRadius: 20 * Appearance.effectiveScale
-                        colBackground: GlobalStates.performanceSubIndex === index 
-                            ? Functions.ColorUtils.transparentize(Appearance.colors.colPrimary, 0.8) 
-                            : "transparent"
-                        colBackgroundHover: GlobalStates.performanceSubIndex === index 
-                            ? colBackground 
-                            : Appearance.colors.colLayer2
-                        
-                        onClicked: GlobalStates.performanceSubIndex = index
-                        
-                        RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 8 * Appearance.effectiveScale
-                            MaterialSymbol {
-                                text: modelData.icon
-                                iconSize: 18 * Appearance.effectiveScale
-                                color: GlobalStates.performanceSubIndex === index ? Appearance.colors.colPrimary : "white"
-                            }
-                            StyledText {
-                                text: modelData.name
-                                font.pixelSize: 13 * Appearance.effectiveScale
-                                font.weight: GlobalStates.performanceSubIndex === index ? Font.DemiBold : Font.Medium
-                                color: GlobalStates.performanceSubIndex === index ? Appearance.colors.colPrimary : "white"
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Underline for the whole tab bar or active tab
-            Rectangle {
-                anchors.bottom: parent.bottom
-                width: parent.width
-                height: 1 * Appearance.effectiveScale
-                color: Appearance.colors.colLayer2
-            }
+            showIcon: true
+            iconOnTop: true
+            currentTab: GlobalStates.performanceSubIndex
+            onTabClicked: (index) => GlobalStates.performanceSubIndex = index
+            tabModel: [
+                { name: "Overview", icon: "dashboard" },
+                { name: "CPU", icon: "monitoring" },
+                { name: "GPU", icon: "videogame_asset" },
+                { name: "Memory", icon: "memory" },
+                { name: "Network", icon: "public" },
+                { name: "Disk", icon: "storage" }
+            ]
         }
         
         // Content Area

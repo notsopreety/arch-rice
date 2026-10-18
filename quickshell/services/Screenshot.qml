@@ -13,7 +13,7 @@ Singleton {
     property double recordingStartedAt: 0
     property string lastScreenshotPath: ""
     property string lastRecordingPath: ""
-    property string screenshotsDir: "/home/sawmer/Pictures/Screenshots"
+    property string screenshotsDir: Quickshell.env("HOME") + "/Pictures/Screenshots"
 
     property string _slurpGeometry: ""
     property string _ocrGeometry: ""

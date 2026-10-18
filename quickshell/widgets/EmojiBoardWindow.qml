@@ -54,7 +54,7 @@ PanelWindow {
     // Load emojis.json using FileView
     FileView {
         id: jsonFile
-        path: "/home/sawmer/.config/quickshell/assets/emojis.json"
+        path: Quickshell.env("HOME") + "/.config/quickshell/assets/emojis.json"
         
         function loadData() {
             var raw = text();

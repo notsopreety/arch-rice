@@ -30,8 +30,13 @@ QtObject {
 
     function runCommand(cmd) {
         console.log("PowerMenuService: running command:", cmd);
-        if (cmd === "lock")          lockProc.running = true;
-        else if (cmd === "sleep")    sleepProc.running = true;
+        if (cmd === "lock") {
+            LockService.lock();
+            lockProc.running = true;
+        } else if (cmd === "sleep") {
+            LockService.lock();
+            sleepProc.running = true;
+        }
         else if (cmd === "reload")   Quickshell.reload(true);
         else if (cmd === "reboot")   rebootProc.running = true;
         else if (cmd === "logout")   logoutProc.running = true;

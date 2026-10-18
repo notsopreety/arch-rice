@@ -469,7 +469,7 @@ PanelWindow {
         const sw = Math.round(w * scale)
         const sh = Math.round(h * scale)
 
-        const picturesDir = "/home/sawmer/Pictures/Screenshots"
+        const picturesDir = Quickshell.env("HOME") + "/Pictures/Screenshots"
         const now = new Date()
         const ts = Qt.formatDateTime(now, "yyyy-MM-dd_hh-mm-ss")
         const outputFilename = `screenshot-${ts}.png`

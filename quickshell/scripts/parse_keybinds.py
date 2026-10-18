@@ -1,8 +1,9 @@
 import sys
 import re
 import json
+import os
 
-file_path = "/home/sawmer/.config/hypr/lua.d/keybinds.lua"
+file_path = os.path.expanduser("~/.config/hypr/lua.d/keybinds.lua")
 binds = []
 
 with open(file_path, "r") as f:

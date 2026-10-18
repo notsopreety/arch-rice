@@ -281,6 +281,7 @@ Item {
                             fillMode: Image.PreserveAspectCrop
                             smooth: true
                             asynchronous: true
+                            cache: true
                             visible: false
                             
                             // Smooth subtle zoom effect on hover
@@ -292,12 +293,14 @@ Item {
                             anchors.fill: parent
                             source: previewImg
                             maskSource: maskShape
+                            visible: previewImg.status === Image.Ready
                         }
 
-                        // Bottom-to-top gradient shadow for readability
+                        // Bottom-to-top gradient shadow for readability (visible once ready)
                         Rectangle {
                             anchors.fill: parent
                             radius: 12
+                            visible: previewImg.status === Image.Ready
                             gradient: Gradient {
                                 GradientStop { position: 0.0; color: "transparent" }
                                 GradientStop { position: 0.7; color: Qt.rgba(0, 0, 0, 0.1) }
@@ -307,19 +310,42 @@ Item {
                             Behavior on opacity { NumberAnimation { duration: 200 } }
                         }
 
-                        // Loading spinner indicator
+                        // Skeleton shimmer placeholder (YouTube/Facebook preloaded card)
                         Rectangle {
                             anchors.fill: parent
                             radius: 12
-                            color: Qt.rgba(0, 0, 0, 0.2)
-                            visible: previewImg.status === Image.Loading
+                            color: Qt.rgba(255, 255, 255, 0.05)
+                            visible: previewImg.status !== Image.Ready
+                            clip: true
 
-                            Text {
+                            Rectangle {
+                                id: cardShimmer
+                                width: parent.width * 0.75
+                                height: parent.height
+                                property real shimmerPos: 0
+                                x: (parent.width + width) * shimmerPos - width
+
+                                gradient: Gradient {
+                                    orientation: Gradient.Horizontal
+                                    GradientStop { position: 0.0; color: "transparent" }
+                                    GradientStop { position: 0.5; color: Qt.rgba(255, 255, 255, 0.08) }
+                                    GradientStop { position: 1.0; color: "transparent" }
+                                }
+
+                                NumberAnimation on shimmerPos {
+                                    from: 0; to: 1
+                                    duration: 1200
+                                    loops: Animation.Infinite
+                                    running: previewImg.status !== Image.Ready
+                                }
+                            }
+
+                            // Subtle placeholder icon
+                            DankIcon {
                                 anchors.centerIn: parent
-                                text: "󰇚"
-                                font.family: Theme.font.monospace
-                                font.pixelSize: 22
-                                color: Qt.rgba(255, 255, 255, 0.4)
+                                name: "image"
+                                size: 22
+                                color: Qt.rgba(255, 255, 255, 0.15)
                             }
                         }
 
@@ -408,7 +434,7 @@ Item {
                                 } else if (mouse.button === Qt.RightButton) {
                                     Quickshell.execDetached([
                                         "sh", "-c",
-                                        "notify-send -r 1012 -a 'Anime Gallery' -t 1500 'Wallpaper' 'Applying wallpaper...' && mkdir -p /tmp/anime-walls && curl -sL '" + url + "' -o '" + dest + "' && /home/sawmer/.config/scripts/wall.sh -i '" + dest + "'"
+                                        "notify-send -r 1012 -a 'Anime Gallery' -t 1500 'Wallpaper' 'Applying wallpaper...' && mkdir -p /tmp/anime-walls && curl -sL '" + url + "' -o '" + dest + "' && $HOME/.config/scripts/wall.sh -i '" + dest + "'"
                                     ]);
                                 }
                             }
@@ -447,11 +473,11 @@ Item {
                                         else if (url.indexOf(".webp") !== -1) ext = "webp";
                                         
                                         let cleanName = "anime_" + index + "_" + Math.floor(Date.now() / 1000) + "." + ext;
-                                        let dest = "/home/sawmer/Pictures/" + cleanName;
+                                        let dest = Quickshell.env("HOME") + "/Pictures/" + cleanName;
                                         
                                         Quickshell.execDetached([
                                             "sh", "-c",
-                                            "notify-send -r 1013 -a 'Anime Gallery' -t 1500 'Download' 'Downloading image...' && mkdir -p /home/sawmer/Pictures && curl -sL '" + url + "' -o '" + dest + "' && notify-send -r 1013 -a 'Anime Gallery' 'Image Saved' 'Saved to ~/Pictures/" + cleanName + "'"
+                                            "notify-send -r 1013 -a 'Anime Gallery' -t 1500 'Download' 'Downloading image...' && mkdir -p $HOME/Pictures && curl -sL '" + url + "' -o '" + dest + "' && notify-send -r 1013 -a 'Anime Gallery' 'Image Saved' 'Saved to ~/Pictures/" + cleanName + "'"
                                         ]);
                                     }
                                 }
@@ -491,7 +517,61 @@ Item {
                 }
             }
 
-            // Loading spinner at bottom
+            // Preloaded skeleton cards grid (YouTube/Facebook style while initial data loads)
+            Grid {
+                anchors.fill: parent
+                columns: 2
+                visible: BooruService.images.count === 0 && BooruService.isLoading
+                clip: true
+
+                Repeater {
+                    model: 14 // Fills the entire vertical height of the sidebar
+                    delegate: Item {
+                        width: imageGrid.cellWidth
+                        height: imageGrid.cellHeight
+
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 8
+                            radius: 12
+                            color: Qt.rgba(255, 255, 255, 0.05)
+                            border.color: Qt.rgba(255, 255, 255, 0.08)
+                            border.width: 1
+                            clip: true
+
+                            Rectangle {
+                                width: parent.width * 0.75
+                                height: parent.height
+                                property real shimmerPos: 0
+                                x: (parent.width + width) * shimmerPos - width
+
+                                gradient: Gradient {
+                                    orientation: Gradient.Horizontal
+                                    GradientStop { position: 0.0; color: "transparent" }
+                                    GradientStop { position: 0.5; color: Qt.rgba(255, 255, 255, 0.08) }
+                                    GradientStop { position: 1.0; color: "transparent" }
+                                }
+
+                                NumberAnimation on shimmerPos {
+                                    from: 0; to: 1
+                                    duration: 1200
+                                    loops: Animation.Infinite
+                                    running: BooruService.images.count === 0 && BooruService.isLoading
+                                }
+                            }
+
+                            DankIcon {
+                                anchors.centerIn: parent
+                                name: "image"
+                                size: 22
+                                color: Qt.rgba(255, 255, 255, 0.15)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Loading pill when loading more at bottom
             Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
@@ -500,7 +580,7 @@ Item {
                 height: 32
                 radius: 16
                 color: Qt.rgba(0, 0, 0, 0.6)
-                visible: BooruService.isLoading
+                visible: BooruService.isLoading && BooruService.images.count > 0
 
                 RowLayout {
                     id: loadingRow

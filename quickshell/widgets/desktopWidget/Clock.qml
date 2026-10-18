@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import "../../core"
 import "../../theme"
 import "../../services"
+import "../widgetCanvas"
 
 Item {
     id: root
@@ -94,7 +95,7 @@ Item {
         id: saveSettingsProc
     }
     
-    function saveSettings(newX, newY) {
+    function saveSettings(newX, newY, newWinSize) {
         let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
         let cmd = "import json, os; path = '" + path + "'; " +
                   "data = json.load(open(path)) if os.path.exists(path) else {}; " +
@@ -102,6 +103,7 @@ Item {
         let updates = [];
         if (newX !== undefined) updates.push("clk['winX'] = " + Math.round(newX));
         if (newY !== undefined) updates.push("clk['winY'] = " + Math.round(newY));
+        if (newWinSize !== undefined) updates.push("clk['winSize'] = " + Math.round(newWinSize));
         cmd += updates.join("; ") + "; " +
                "tmp = path + '.tmp'; " +
                "f = open(tmp, 'w'); " +
@@ -181,8 +183,31 @@ Item {
         
         onReleased: {
             if (drag.active) {
-                root.saveSettings(root.x, root.y);
+                root.saveSettings(root.x, root.y, root.baseWinSize);
             }
+        }
+    }
+
+    WidgetResizeFrame {
+        target: root
+        widgetName: "Clock"
+        lockAspectRatio: true
+        aspectRatio: 1.0
+        minWidth: 120 * Appearance.effectiveScale
+        minHeight: 120 * Appearance.effectiveScale
+        maxWidth: 600 * Appearance.effectiveScale
+        maxHeight: 600 * Appearance.effectiveScale
+
+        onResized: (newW, newH) => {
+            root.baseWinSize = Math.round(newW / Appearance.effectiveScale);
+        }
+        onResizeEnded: (finalW, finalH) => {
+            root.baseWinSize = Math.round(finalW / Appearance.effectiveScale);
+            root.saveSettings(root.x, root.y, root.baseWinSize);
+        }
+        onResetRequested: {
+            root.baseWinSize = 220;
+            root.saveSettings(root.x, root.y, 220);
         }
     }
 

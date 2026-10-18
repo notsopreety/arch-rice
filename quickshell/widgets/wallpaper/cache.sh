@@ -10,8 +10,8 @@ if [[ ! -f "$CONFIG" ]]; then
     exit 1
 fi
 
-wallpaper_path=$(python3 -c "import json; print(json.load(open('$CONFIG')).get('wallpaper_path', ''))")
-cache_path=$(python3 -c "import json; print(json.load(open('$CONFIG')).get('cache_path', ''))")
+wallpaper_path=$(python3 -c "import json, os; print(os.path.expanduser(json.load(open('$CONFIG')).get('wallpaper_path', '')))")
+cache_path=$(python3 -c "import json, os; print(os.path.expanduser(json.load(open('$CONFIG')).get('cache_path', '')))")
 cache_batch_size=$(python3 -c "import json; print(json.load(open('$CONFIG')).get('cache_batch_size', 4))")
 
 if [[ -z "$wallpaper_path" || -z "$cache_path" ]]; then

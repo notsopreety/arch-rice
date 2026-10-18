@@ -119,7 +119,7 @@ Flickable {
                     Image {
                         id: chargingBolt
                         anchors.centerIn: parent
-                        source: "file:///home/sawmer/.config/quickshell/assets/bolt.svg"
+                        source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/bolt.svg"
                         sourceSize.width: 40 * Appearance.effectiveScale
                         sourceSize.height: 40 * Appearance.effectiveScale
                         width: 40 * Appearance.effectiveScale

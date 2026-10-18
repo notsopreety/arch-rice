@@ -191,7 +191,7 @@ Card {
         height: 130 * Appearance.effectiveScale
         playing: root.isPlaying
         speed: 0.35 // Slow down the default animation speed further
-        source: "file:///home/sawmer/.config/quickshell/assets/bongocat.gif"
+        source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/bongocat.gif"
         asynchronous: true
         fillMode: AnimatedImage.PreserveAspectFit
         opacity: root.hasPlayer ? 1.0 : 0.0

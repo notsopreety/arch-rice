@@ -1,5 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
 import "../theme"
 import "../services"
 import "../core"
@@ -10,7 +12,8 @@ Card {
     pad: 8 * Appearance.effectiveScale
 
     RowLayout {
-        anchors.centerIn: parent
+        anchors.fill: parent
+        anchors.margins: 4 * Appearance.effectiveScale
         spacing: 10 * Appearance.effectiveScale
         
         // Avatar container
@@ -36,14 +39,27 @@ Card {
             spacing: 2 * Appearance.effectiveScale
             Layout.fillWidth: true
             
-            Text {
-                text: "sawmer"
-                font.family: Theme.font.family
+            StyledText {
+                id: userNameText
+                text: Quickshell.env("USER") || "user"
                 font.pixelSize: 14 * Appearance.effectiveScale
-                font.weight: Font.Medium
+                font.weight: Font.DemiBold
                 color: "white"
                 elide: Text.ElideRight
                 Layout.fillWidth: true
+            }
+            
+            Process {
+                id: userProc
+                command: ["whoami"]
+                running: true
+                stdout: StdioCollector {
+                    onStreamFinished: {
+                        if (this.text && this.text.trim().length > 0) {
+                            userNameText.text = this.text.trim();
+                        }
+                    }
+                }
             }
             
             RowLayout {

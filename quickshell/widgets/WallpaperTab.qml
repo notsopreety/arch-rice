@@ -62,7 +62,7 @@ Item {
 
     Process {
         id: readCurrentWallpaper
-        command: ["cat", "/home/sawmer/.cache/awww-wal/current"]
+        command: ["cat", Quickshell.env("HOME") + "/.cache/awww-wal/current"]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
@@ -90,7 +90,7 @@ Item {
 
     FolderListModel {
         id: folderModel
-        folder: configs.wallpaper_path ? ("file://" + configs.wallpaper_path) : ""
+        folder: configs.wallpaper_path ? ("file://" + configs.wallpaper_path.replace(/^~/, Quickshell.env("HOME"))) : ""
         showDirs: false
         caseSensitive: false
         nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.webp"]
@@ -159,7 +159,7 @@ Item {
                 if (item && item.filePath) {
                     var cleanPath = item.filePath.toString().replace(/^file:\/\//, '');
                     root.currentWallpaperPath = cleanPath;
-                    Quickshell.execDetached(["/home/sawmer/.config/scripts/wall.sh", "-i=" + cleanPath]);
+                    Quickshell.execDetached([Quickshell.env("HOME") + "/.config/scripts/wall.sh", "-i=" + cleanPath]);
                     DankDashService.close(); // Close dashboard on select
                 }
             }
@@ -413,7 +413,7 @@ Item {
                         visible: false
 
                         property string thumbName: modelData.fileName ? (modelData.fileName.substring(0, modelData.fileName.lastIndexOf('.')) + ".jpg") : ""
-                        source: (configs.cache_path && thumbName) ? ("file://" + configs.cache_path + thumbName) : ""
+                        source: (configs.cache_path && thumbName) ? ("file://" + configs.cache_path.replace(/^~/, Quickshell.env("HOME")) + thumbName) : ""
 
                         onStatusChanged: {
                             if (status === Image.Error) {
@@ -507,7 +507,7 @@ Item {
                             if (modelData.filePath) {
                                 var cleanPath = modelData.filePath.toString().replace(/^file:\/\//, '');
                                 root.currentWallpaperPath = cleanPath;
-                                Quickshell.execDetached(["/home/sawmer/.config/scripts/wall.sh", "-i=" + cleanPath]);
+                                Quickshell.execDetached([Quickshell.env("HOME") + "/.config/scripts/wall.sh", "-i=" + cleanPath]);
                                 DankDashService.close(); // Close dashboard on select
                             }
                         }

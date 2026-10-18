@@ -10,7 +10,15 @@ ToolTip {
     property bool extraVisibleCondition: true
     property bool alternativeVisibleCondition: false
 
-    readonly property bool internalVisibleCondition: (extraVisibleCondition && (parent && (parent.hovered || parent.realHovered))) || alternativeVisibleCondition
+    readonly property bool parentHovered: {
+        if (!parent) return false;
+        if (parent.hovered !== undefined) return Boolean(parent.hovered);
+        if (parent.realHovered !== undefined) return Boolean(parent.realHovered);
+        if (parent.containsMouse !== undefined) return Boolean(parent.containsMouse);
+        return false;
+    }
+
+    readonly property bool internalVisibleCondition: alternativeVisibleCondition || (extraVisibleCondition && parentHovered)
     
     // Minimal padding to match ToggleDelegate
     padding: 0

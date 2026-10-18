@@ -7,6 +7,7 @@ import Quickshell.Io
 import "../../core"
 import "../../theme"
 import "../../components"
+import "../widgetCanvas"
 
 Item {
     id: root
@@ -15,6 +16,9 @@ Item {
     property int settingsY: -1
     property bool isActive: true
     property int styleMode: 3 // 1: Minimal, 2: Vertical Badges, 3: Bubble Graph
+
+    property real customWidth: -1
+    property real customHeight: -1
 
     // ── Glassmorphism Toggle (Matching Clock.qml) ─────────────────────────
     property bool glassmorphism: false
@@ -34,17 +38,20 @@ Item {
     property var topApps: []
     property var appsData: []
 
-    // Snug widget dimensions removing all remaining useless padding
-    width: styleMode === 1 ? (155 * Appearance.effectiveScale) : (styleMode === 2 ? (175 * Appearance.effectiveScale) : (210 * Appearance.effectiveScale))
-    height: styleMode === 1 ? (135 * Appearance.effectiveScale) : (styleMode === 2 ? (185 * Appearance.effectiveScale) : (165 * Appearance.effectiveScale))
+    // Snug widget dimensions
+    readonly property real baseWidth: styleMode === 1 ? (170 * Appearance.effectiveScale) : (styleMode === 2 ? (215 * Appearance.effectiveScale) : (230 * Appearance.effectiveScale))
+    readonly property real baseHeight: styleMode === 1 ? (135 * Appearance.effectiveScale) : (styleMode === 2 ? (225 * Appearance.effectiveScale) : (165 * Appearance.effectiveScale))
+
+    width: customWidth > 0 ? (customWidth * Appearance.effectiveScale) : baseWidth
+    height: customHeight > 0 ? (customHeight * Appearance.effectiveScale) : baseHeight
 
     x: settingsX >= 0 ? settingsX : (Appearance.sizes.screen.width - width - 40)
     y: settingsY >= 0 ? settingsY : 120
 
     visible: isActive
 
-    Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
-    Behavior on height { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
+    Behavior on width { enabled: typeof resizeFrame !== 'undefined' && resizeFrame ? !resizeFrame.isResizing : true; NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
+    Behavior on height { enabled: typeof resizeFrame !== 'undefined' && resizeFrame ? !resizeFrame.isResizing : true; NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
 
     // Dynamic Colors: Matugen Theme & Glassmorphism
     property color bgColor: root.glassmorphism 
@@ -60,8 +67,10 @@ Item {
 
     // Cycle Style (1 -> 2 -> 3 -> 1)
     function cycleNextStyle() {
+        root.customWidth = -1;
+        root.customHeight = -1;
         root.styleMode = (root.styleMode % 3) + 1;
-        root.saveSettings(root.x, root.y, root.styleMode);
+        root.saveSettings(root.x, root.y, root.styleMode, -1, -1);
     }
 
     // Load Settings from settings.json
@@ -79,6 +88,10 @@ Item {
             
             if (st.screentimeStyle !== undefined) root.styleMode = st.screentimeStyle;
             else if (st.styleMode !== undefined) root.styleMode = st.styleMode;
+            if (st.width !== undefined && st.width > 0) root.customWidth = st.width;
+            else root.customWidth = -1;
+            if (st.height !== undefined && st.height > 0) root.customHeight = st.height;
+            else root.customHeight = -1;
         } catch(e) {
             console.log("[ScreenTimeWidget] Error loading settings:", e);
         }
@@ -107,7 +120,7 @@ Item {
     }
 
     // Atomic Save Settings to settings.json
-    function saveSettings(newX, newY, newStyle) {
+    function saveSettings(newX, newY, newStyle, newW, newH) {
         let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
         let cmd = "import json, os; path = '" + path + "'; " +
                   "data = json.load(open(path)) if os.path.exists(path) else {}; " +
@@ -116,6 +129,10 @@ Item {
         if (newX !== undefined) updates.push("st['screentimeX'] = " + Math.round(newX));
         if (newY !== undefined) updates.push("st['screentimeY'] = " + Math.round(newY));
         if (newStyle !== undefined) updates.push("st['screentimeStyle'] = " + Math.round(newStyle));
+        if (newW !== undefined && newW > 0) updates.push("st['width'] = " + Math.round(newW));
+        else if (newW === -1) updates.push("st.pop('width', None)");
+        if (newH !== undefined && newH > 0) updates.push("st['height'] = " + Math.round(newH));
+        else if (newH === -1) updates.push("st.pop('height', None)");
         cmd += updates.join("; ") + "; " +
                "tmp = path + '.tmp'; " +
                "f = open(tmp, 'w'); " +
@@ -536,6 +553,31 @@ Item {
                     }
                 }
             }
+        }
+    }
+
+    WidgetResizeFrame {
+        id: resizeFrame
+        target: root
+        widgetName: "Screen Time"
+        minWidth: 130 * Appearance.effectiveScale
+        minHeight: 110 * Appearance.effectiveScale
+        maxWidth: 600 * Appearance.effectiveScale
+        maxHeight: 500 * Appearance.effectiveScale
+
+        onResized: (newW, newH) => {
+            root.customWidth = Math.round(newW / Appearance.effectiveScale);
+            root.customHeight = Math.round(newH / Appearance.effectiveScale);
+        }
+        onResizeEnded: (finalW, finalH) => {
+            root.customWidth = Math.round(finalW / Appearance.effectiveScale);
+            root.customHeight = Math.round(finalH / Appearance.effectiveScale);
+            root.saveSettings(root.x, root.y, root.styleMode, root.customWidth, root.customHeight);
+        }
+        onResetRequested: {
+            root.customWidth = -1;
+            root.customHeight = -1;
+            root.saveSettings(root.x, root.y, root.styleMode, -1, -1);
         }
     }
 }

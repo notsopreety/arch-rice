@@ -17,6 +17,8 @@ Singleton {
     property string accumulatedResponse: ""
     property bool userInterrupted: false
 
+    property var promptHistory: []
+
     readonly property ListModel messages: ListModel {}
 
     readonly property bool _appInit: {
@@ -171,6 +173,10 @@ Singleton {
         if (!apiKey) {
             addMessage("error", "API Key is not set. Please set it using: /key YOUR_API_KEY");
             return;
+        }
+
+        if (promptHistory.indexOf(text) === -1) {
+            promptHistory.push(text);
         }
 
         // Add user message

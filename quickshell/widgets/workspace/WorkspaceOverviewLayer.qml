@@ -94,7 +94,7 @@ Item {
     // Read active wallpaper dynamically
     Process {
         id: readCurrentWallpaper
-        command: ["cat", "/home/sawmer/.cache/awww-wal/current"]
+        command: ["cat", Quickshell.env("HOME") + "/.cache/awww-wal/current"]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {

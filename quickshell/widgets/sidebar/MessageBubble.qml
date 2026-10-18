@@ -42,15 +42,16 @@ Item {
                 spacing: 8 * Appearance.effectiveScale
 
                 // Left side: User or model name & icon
-                MaterialSymbol {
-                    text: root.role === "user" ? "person" : "smart_toy"
-                    iconSize: 14 * Appearance.effectiveScale
+                DankIcon {
+                    name: root.role === "user" ? "person" : "wand_stars"
+                    size: 15 * Appearance.effectiveScale
                     color: root.role === "user" ? Theme.primary : "#c084fc"
+                    filled: root.role !== "user"
                     Layout.alignment: Qt.AlignVCenter
                 }
 
                 Text {
-                    text: root.role === "user" ? (Quickshell.env("USER") || "sawmer") : "Gemini 2.5 Flash"
+                    text: root.role === "user" ? (Quickshell.env("USER") || "You") : "Gemini"
                     font.family: Theme.font.family
                     font.pixelSize: 12 * Appearance.effectiveScale
                     font.weight: Font.Bold
@@ -64,14 +65,12 @@ Item {
                 // User Actions (Copy, Edit, Delete)
                 RowLayout {
                     visible: root.role === "user"
-                    spacing: 12
+                    spacing: 8 * Appearance.effectiveScale
 
-                    // Copy icon
-                    Text {
-                        text: "󰆏"
-                        font.family: Theme.font.monospace
-                        font.pixelSize: 14
-                        color: copyUserMouse.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
+                    DankIcon {
+                        name: "content_copy"
+                        size: 14 * Appearance.effectiveScale
+                        color: copyUserMouse.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.45)
                         Behavior on color { ColorAnimation { duration: 150 } }
 
                         MouseArea {
@@ -86,12 +85,10 @@ Item {
                         }
                     }
 
-                    // Edit icon
-                    Text {
-                        text: "󰏫"
-                        font.family: Theme.font.monospace
-                        font.pixelSize: 14
-                        color: editUserMouse.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
+                    DankIcon {
+                        name: "edit"
+                        size: 14 * Appearance.effectiveScale
+                        color: editUserMouse.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.45)
                         Behavior on color { ColorAnimation { duration: 150 } }
 
                         MouseArea {
@@ -107,12 +104,10 @@ Item {
                         }
                     }
 
-                    // Delete icon
-                    Text {
-                        text: "󰅖"
-                        font.family: Theme.font.monospace
-                        font.pixelSize: 14
-                        color: deleteUserMouse.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.5)
+                    DankIcon {
+                        name: "delete"
+                        size: 14 * Appearance.effectiveScale
+                        color: deleteUserMouse.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.45)
                         Behavior on color { ColorAnimation { duration: 150 } }
 
                         MouseArea {
@@ -130,14 +125,12 @@ Item {
                 // AI Actions (Regenerate, Copy, Delete)
                 RowLayout {
                     visible: root.role === "assistant" && !root.isStreaming
-                    spacing: 12
+                    spacing: 8 * Appearance.effectiveScale
 
-                    // Regenerate icon
-                    Text {
-                        text: "󰑐"
-                        font.family: Theme.font.monospace
-                        font.pixelSize: 14
-                        color: regenAiMouse.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
+                    DankIcon {
+                        name: "refresh"
+                        size: 14 * Appearance.effectiveScale
+                        color: regenAiMouse.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.45)
                         Behavior on color { ColorAnimation { duration: 150 } }
 
                         MouseArea {
@@ -151,12 +144,10 @@ Item {
                         }
                     }
 
-                    // Copy icon
-                    Text {
-                        text: "󰆏"
-                        font.family: Theme.font.monospace
-                        font.pixelSize: 14
-                        color: copyAiMouse.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.5)
+                    DankIcon {
+                        name: "content_copy"
+                        size: 14 * Appearance.effectiveScale
+                        color: copyAiMouse.containsMouse ? Theme.primary : Qt.rgba(255, 255, 255, 0.45)
                         Behavior on color { ColorAnimation { duration: 150 } }
 
                         MouseArea {
@@ -171,12 +162,10 @@ Item {
                         }
                     }
 
-                    // Delete icon
-                    Text {
-                        text: "󰅖"
-                        font.family: Theme.font.monospace
-                        font.pixelSize: 14
-                        color: deleteAiMouse.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.5)
+                    DankIcon {
+                        name: "delete"
+                        size: 14 * Appearance.effectiveScale
+                        color: deleteAiMouse.containsMouse ? Theme.error : Qt.rgba(255, 255, 255, 0.45)
                         Behavior on color { ColorAnimation { duration: 150 } }
 
                         MouseArea {
@@ -199,14 +188,14 @@ Item {
             implicitHeight: contentLayout.implicitHeight + 24 * Appearance.effectiveScale
             radius: Theme.rounding.normal
             color: root.role === "user"
-                   ? Qt.rgba(255, 255, 255, 0.03)
+                   ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.08)
                    : (root.role === "error"
                       ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.1)
                       : "transparent")
             border.color: root.role === "user"
-                          ? Qt.rgba(255, 255, 255, 0.04)
+                          ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.15)
                           : (root.role === "error"
-                             ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.2)
+                             ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.25)
                              : "transparent")
             border.width: root.role === "user" || root.role === "error" ? 1 : 0
 
@@ -217,6 +206,34 @@ Item {
                 anchors.top: parent.top
                 anchors.margins: 12 * Appearance.effectiveScale
                 spacing: 8 * Appearance.effectiveScale
+
+                // Animated typing dots when assistant is waiting for stream
+                RowLayout {
+                    visible: root.role === "assistant" && root.isStreaming && (!root.content || root.content.trim().length === 0)
+                    spacing: 6 * Appearance.effectiveScale
+                    Layout.topMargin: 4
+                    Layout.bottomMargin: 4
+
+                    Repeater {
+                        model: 3
+                        delegate: Rectangle {
+                            id: typingDot
+                            width: 7 * Appearance.effectiveScale
+                            height: 7 * Appearance.effectiveScale
+                            radius: 3.5 * Appearance.effectiveScale
+                            color: Theme.primary
+
+                            SequentialAnimation on opacity {
+                                loops: Animation.Infinite
+                                running: root.isStreaming
+                                PauseAnimation { duration: index * 180 }
+                                NumberAnimation { to: 0.2; duration: 320; easing.type: Easing.InOutQuad }
+                                NumberAnimation { to: 1.0; duration: 320; easing.type: Easing.InOutQuad }
+                                PauseAnimation { duration: (2 - index) * 180 }
+                            }
+                        }
+                    }
+                }
 
                 // View Mode (rendered as blocks to support native code block styling)
                 Repeater {
@@ -398,10 +415,9 @@ Item {
                             RowLayout {
                                 anchors.centerIn: parent
                                 spacing: 4
-                                Text {
-                                    text: "✕"
-                                    font.family: Theme.font.monospace
-                                    font.pixelSize: 10
+                                DankIcon {
+                                    name: "close"
+                                    size: 13
                                     color: "white"
                                     Layout.alignment: Qt.AlignVCenter
                                 }
@@ -425,7 +441,7 @@ Item {
 
                         // Save Button
                         Rectangle {
-                            width: 60
+                            width: 68
                             height: 28
                             radius: 6
                             color: Theme.primary
@@ -433,10 +449,9 @@ Item {
                             RowLayout {
                                 anchors.centerIn: parent
                                 spacing: 4
-                                Text {
-                                    text: "󰄬"
-                                    font.family: Theme.font.monospace
-                                    font.pixelSize: 12
+                                DankIcon {
+                                    name: "check"
+                                    size: 14
                                     color: Theme.background
                                     Layout.alignment: Qt.AlignVCenter
                                 }

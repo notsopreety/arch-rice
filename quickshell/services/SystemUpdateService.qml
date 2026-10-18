@@ -19,7 +19,7 @@ Singleton {
 
     Process {
         id: countProc
-        command: ["/home/sawmer/.config/quickshell/scripts/update_system.sh", "--check"]
+        command: [Quickshell.env("HOME") + "/.config/quickshell/scripts/update_system.sh", "--check"]
         running: false
         
         onRunningChanged: {
@@ -49,7 +49,7 @@ Singleton {
 
     Process {
         id: updateProc
-        command: ["kitty", "-e", "/home/sawmer/.config/quickshell/scripts/update_system.sh"]
+        command: ["kitty", "-e", Quickshell.env("HOME") + "/.config/quickshell/scripts/update_system.sh"]
         running: false
         
         onRunningChanged: {

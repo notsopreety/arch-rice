@@ -40,6 +40,7 @@ FloatingWindow {
     Rectangle {
         id: root
         property int currentIndex: 0
+        property bool sidebarExpanded: true
         anchors.fill: parent
         color: Theme.background
         border.color: Theme.outlineVariant
@@ -95,11 +96,20 @@ FloatingWindow {
                     anchors.rightMargin: 12 * Appearance.effectiveScale
                     spacing: 20 * Appearance.effectiveScale
 
-                    MaterialSymbol {
-                        text: "monitoring"
-                        iconSize: 28 * Appearance.effectiveScale
-                        color: Theme.primary
+                    RippleButton {
                         Layout.alignment: Qt.AlignVCenter
+                        implicitWidth: 48 * Appearance.effectiveScale
+                        implicitHeight: 48 * Appearance.effectiveScale
+                        buttonRadius: 24 * Appearance.effectiveScale
+                        colBackground: "transparent"
+                        onClicked: root.sidebarExpanded = !root.sidebarExpanded
+                        
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            text: root.sidebarExpanded ? "menu_open" : "menu"
+                            iconSize: 24 * Appearance.effectiveScale
+                            color: Theme.primary
+                        }
                     }
 
                     StyledText {
@@ -124,8 +134,9 @@ FloatingWindow {
                 Rectangle {
                     id: sidebar
                     Layout.fillHeight: true
-                    Layout.preferredWidth: isNarrow ? 72 * Appearance.effectiveScale : 220 * Appearance.effectiveScale
+                    Layout.preferredWidth: (root.sidebarExpanded && !isNarrow) ? 220 * Appearance.effectiveScale : 72 * Appearance.effectiveScale
                     Layout.fillWidth: false
+                    Behavior on Layout.preferredWidth { NumberAnimation { duration: 200; easing.type: Easing.OutQuint } }
                     color: Theme.surfaceContainerLow
                     radius: 20 * Appearance.effectiveScale
                     
@@ -162,9 +173,9 @@ FloatingWindow {
                                     
                                     RowLayout {
                                         anchors.fill: parent
-                                        anchors.leftMargin: isNarrow ? 0 : 16 * Appearance.effectiveScale
-                                        spacing: isNarrow ? 0 : 16 * Appearance.effectiveScale
-                                        Layout.alignment: isNarrow ? Qt.AlignCenter : Qt.AlignLeft
+                                        anchors.leftMargin: (root.sidebarExpanded && !isNarrow) ? 16 * Appearance.effectiveScale : 0
+                                        spacing: (root.sidebarExpanded && !isNarrow) ? 16 * Appearance.effectiveScale : 0
+                                        Layout.alignment: (root.sidebarExpanded && !isNarrow) ? Qt.AlignLeft : Qt.AlignCenter
                                         
                                         MaterialSymbol {
                                             text: modelData.icon
@@ -176,7 +187,7 @@ FloatingWindow {
                                         }
                                         
                                         StyledText {
-                                            visible: !isNarrow
+                                            visible: root.sidebarExpanded && !isNarrow
                                             text: modelData.name
                                             font.pixelSize: 14 * Appearance.effectiveScale
                                             font.weight: GlobalStates.systemMonitorIndex === modelData.stackIndex ? Font.Medium : Font.Normal
@@ -195,7 +206,7 @@ FloatingWindow {
                         
                         // Bottom Profile info (Using universal widget)
                         UserInfoCard {
-                            visible: !isNarrow
+                            visible: root.sidebarExpanded && !isNarrow
                             Layout.fillWidth: true
                             Layout.preferredHeight: 90 * Appearance.effectiveScale
                         }

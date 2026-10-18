@@ -52,7 +52,7 @@ PanelWindow {
 
     Process {
         id: fetchProc
-        command: ["python3", "/home/sawmer/.config/quickshell/scripts/parse_keybinds.py"]
+        command: ["python3", Quickshell.env("HOME") + "/.config/quickshell/scripts/parse_keybinds.py"]
         running: false
         stdout: StdioCollector {
             onStreamFinished: {

@@ -21,6 +21,7 @@ Item {
     property bool flowersWidgetActive: false
     property bool screenTimeWidgetActive: true
     property bool weatherWidgetActive: true
+    property bool mediaPlayerWidgetActive: true
 
     function loadWidgetSettings(jsonText) {
         if (!jsonText || jsonText.trim() === "") return;
@@ -42,6 +43,8 @@ Item {
                 root.weatherWidgetActive = data.weatherWidget.isActive;
             else if (data.weather && data.weather.isActive !== undefined)
                 root.weatherWidgetActive = data.weather.isActive;
+            if (data.mediaPlayer && data.mediaPlayer.isActive !== undefined)
+                root.mediaPlayerWidgetActive = data.mediaPlayer.isActive;
         } catch(e) {
             console.error("[SettingsTab] Failed to parse settings.json:", e);
         }
@@ -1377,6 +1380,35 @@ Item {
                     onClicked: {
                         root.weatherWidgetActive = !root.weatherWidgetActive;
                         root.saveWidgetSetting("weatherWidget", root.weatherWidgetActive);
+                    }
+                }
+
+                // --- Media Player Desktop Widget Toggle ---
+                SettingsToggle {
+                    id: mediaPlayerWidgetPill
+                    isActive: root.mediaPlayerWidgetActive
+                    title: "Media Player Widget"
+                    statusText: root.mediaPlayerWidgetActive ? "Visible" : "Hidden"
+                    iconName: "music_note"
+                    iconOffName: "music_off"
+                    tooltipText: "Toggle Media Player Desktop Widget"
+                    onClicked: {
+                        root.mediaPlayerWidgetActive = !root.mediaPlayerWidgetActive;
+                        root.saveWidgetSetting("mediaPlayer", root.mediaPlayerWidgetActive);
+                    }
+                }
+
+                // --- Edit Widgets Mode Toggle ---
+                SettingsToggle {
+                    id: editWidgetsModePill
+                    isActive: DesktopEditModeService.isEditing
+                    title: "Edit Widgets Mode"
+                    statusText: DesktopEditModeService.isEditing ? "Editing" : "Off"
+                    iconName: "tune"
+                    iconOffName: "tune"
+                    tooltipText: "Toggle Desktop Widget Resize & Drag Edit Mode"
+                    onClicked: {
+                        DesktopEditModeService.toggle();
                     }
                 }
             } // end Desktop Widgets GridLayout

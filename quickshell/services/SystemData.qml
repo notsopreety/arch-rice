@@ -154,7 +154,7 @@ Singleton {
 
     Process {
         id: dgopProcess
-        command: ["python3", "/home/sawmer/.config/quickshell/scripts/sysinfo.py", root.activeModules]
+        command: ["python3", Quickshell.env("HOME") + "/.config/quickshell/scripts/sysinfo.py", root.activeModules]
         
         stdout: StdioCollector {
             onStreamFinished: {

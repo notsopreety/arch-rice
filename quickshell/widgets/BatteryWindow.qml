@@ -399,7 +399,7 @@ PanelWindow {
                         }
                     }
 
-                    // ── SECTION 2: Power Profiles Selector ──
+                    // ── SECTION 2: Power Profiles Selector (Material 3 Button Group) ──
                     ColumnLayout {
                         Layout.fillWidth: true
                         spacing: 8 * Appearance.effectiveScale
@@ -413,110 +413,91 @@ PanelWindow {
                             Layout.leftMargin: 2 * Appearance.effectiveScale
                         }
 
-                        // M3 Segmented Pill (Long pill with sliding indicator)
-                        Rectangle {
-                            id: segmentedPill
+                        // Material 3 Connected Button Group
+                        RowLayout {
+                            id: m3ButtonGroup
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 38 * Appearance.effectiveScale
-                            radius: 19 * Appearance.effectiveScale
-                            color: window.cCard
-                            border.color: window.cCardBorder
-                            border.width: 1
-                            clip: true
+                            Layout.preferredHeight: 40 * Appearance.effectiveScale
+                            spacing: 2 * Appearance.effectiveScale
 
                             readonly property var profiles: ["power-saver", "balanced", "performance"]
                             readonly property var labels: ["Saver", "Balanced", "Performance"]
                             readonly property var icons: ["eco", "balance", "speed"]
                             readonly property int activeIndex: PowerProfiles.activeProfile === "power-saver" ? 0 : (PowerProfiles.activeProfile === "balanced" ? 1 : 2)
 
-                            function getProfileColor(idx) {
-                                if (idx === 0) return "#4caf50";
-                                if (idx === 1) return Theme.primary;
-                                if (idx === 2) return "#ff5722";
-                                return Theme.primary;
-                            }
+                            Repeater {
+                                model: 3
+                                delegate: Rectangle {
+                                    id: segmentBtn
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
 
-                            function getProfileTint(idx) {
-                                if (idx === 0) return Qt.rgba(76/255, 175/255, 80/255, 0.22);
-                                if (idx === 1) return Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.22);
-                                if (idx === 2) return Qt.rgba(255/255, 87/255, 34/255, 0.22);
-                                return Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.22);
-                            }
+                                    readonly property bool isActive: m3ButtonGroup.activeIndex === index
+                                    readonly property bool isFirst: index === 0
+                                    readonly property bool isLast: index === 2
 
-                            // Sliding highlight indicator
-                            Rectangle {
-                                id: sliderIndicator
-                                height: parent.height - 8 * Appearance.effectiveScale
-                                width: (parent.width - 8 * Appearance.effectiveScale) / 3
-                                y: 4 * Appearance.effectiveScale
-                                radius: 15 * Appearance.effectiveScale
-                                color: segmentedPill.getProfileTint(segmentedPill.activeIndex)
-                                border.color: segmentedPill.getProfileColor(segmentedPill.activeIndex)
-                                border.width: 1
+                                    // Material You Connected Button Group Spec:
+                                    // Full pill radius (height / 2 = 20) on ends and active selected item.
+                                    // Neighboring inner unselected boundaries use small inner radius (4-8).
+                                    readonly property real pillRadius: height / 2
+                                    readonly property real innerCornerRadius: 6 * Appearance.effectiveScale
 
-                                x: 4 * Appearance.effectiveScale + segmentedPill.activeIndex * width
+                                    topLeftRadius: (isActive || isFirst) ? pillRadius : innerCornerRadius
+                                    bottomLeftRadius: (isActive || isFirst) ? pillRadius : innerCornerRadius
+                                    topRightRadius: (isActive || isLast) ? pillRadius : innerCornerRadius
+                                    bottomRightRadius: (isActive || isLast) ? pillRadius : innerCornerRadius
 
-                                Behavior on x {
-                                    NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
-                                }
-                                Behavior on color {
-                                    ColorAnimation { duration: 200 }
-                                }
-                                Behavior on border.color {
-                                    ColorAnimation { duration: 200 }
-                                }
-                            }
+                                    // Material You (M3) Color Roles:
+                                    // Selected segment: container = Theme.secondaryContainer, onContainer = Theme.onSecondaryContainer
+                                    // Unselected segment: surface container / outline variant, onSurface / onSurfaceVariant
+                                    color: isActive
+                                        ? Theme.secondaryContainer
+                                        : (btnMouseArea.containsMouse 
+                                            ? Qt.rgba(Theme.onSurface.r, Theme.onSurface.g, Theme.onSurface.b, 0.08)
+                                            : (window.glassmorphism 
+                                                ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.50) 
+                                                : Theme.surfaceContainerHigh))
 
-                            RowLayout {
-                                anchors.fill: parent
-                                spacing: 0
+                                    border.color: isActive 
+                                        ? "transparent" 
+                                        : (window.glassmorphism ? Qt.rgba(1, 1, 1, 0.12) : Theme.outlineVariant)
+                                    border.width: isActive ? 0 : 1
 
-                                Repeater {
-                                    model: 3
-                                    delegate: Item {
-                                        Layout.fillWidth: true
-                                        Layout.fillHeight: true
+                                    Behavior on color { ColorAnimation { duration: 180 } }
+                                    Behavior on topLeftRadius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                                    Behavior on bottomLeftRadius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                                    Behavior on topRightRadius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                                    Behavior on bottomRightRadius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
-                                        readonly property bool isActive: segmentedPill.activeIndex === index
+                                    MouseArea {
+                                        id: btnMouseArea
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        hoverEnabled: true
+                                        onClicked: {
+                                            PowerProfiles.setProfile(m3ButtonGroup.profiles[index]);
+                                        }
+                                    }
 
-                                        RippleButton {
-                                            id: profileBtn
-                                            anchors.fill: parent
-                                            colBackground: "transparent"
-                                            colBackgroundHover: "transparent"
-                                            colBackgroundToggled: "transparent"
-                                            
-                                            onClicked: {
-                                                PowerProfiles.setProfile(segmentedPill.profiles[index]);
-                                            }
+                                    RowLayout {
+                                        anchors.centerIn: parent
+                                        spacing: 5 * Appearance.effectiveScale
 
-                                            MouseArea {
-                                                id: buttonMouseArea
-                                                anchors.fill: parent
-                                                hoverEnabled: true
-                                                onClicked: profileBtn.clicked()
-                                            }
+                                        // M3 Leading Icon: Checkmark when selected, profile icon when unselected
+                                        MaterialSymbol {
+                                            text: segmentBtn.isActive ? "check" : m3ButtonGroup.icons[index]
+                                            iconSize: segmentBtn.isActive ? 16 * Appearance.effectiveScale : 15 * Appearance.effectiveScale
+                                            color: segmentBtn.isActive ? window.cTextPrimary : window.cTextSecondary
+                                            Behavior on color { ColorAnimation { duration: 150 } }
+                                        }
 
-                                            contentItem: RowLayout {
-                                                anchors.centerIn: parent
-                                                spacing: 5 * Appearance.effectiveScale
-
-                                                MaterialSymbol {
-                                                    text: segmentedPill.icons[index]
-                                                    iconSize: 14 * Appearance.effectiveScale
-                                                    color: isActive ? segmentedPill.getProfileColor(index) : window.cTextSecondary
-                                                    Behavior on color { ColorAnimation { duration: 150 } }
-                                                }
-
-                                                Text {
-                                                    text: segmentedPill.labels[index]
-                                                    font.family: "Inter"
-                                                    font.pixelSize: 11 * Appearance.effectiveScale
-                                                    font.weight: Font.Bold
-                                                    color: isActive ? segmentedPill.getProfileColor(index) : window.cTextSecondary
-                                                    Behavior on color { ColorAnimation { duration: 150 } }
-                                                }
-                                            }
+                                        Text {
+                                            text: m3ButtonGroup.labels[index]
+                                            font.family: "Google Sans, Inter, " + Theme.font.family
+                                            font.pixelSize: 11 * Appearance.effectiveScale
+                                            font.weight: segmentBtn.isActive ? Font.Bold : Font.Normal
+                                            color: segmentBtn.isActive ? window.cTextPrimary : window.cTextSecondary
+                                            Behavior on color { ColorAnimation { duration: 150 } }
                                         }
                                     }
                                 }

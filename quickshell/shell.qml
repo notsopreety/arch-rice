@@ -249,7 +249,7 @@ ShellRoot {
                 let parts = command.split(" ");
                 if (parts.length > 1) {
                     let dev = parts[1];
-                    ejectProcess.command = ["/home/sawmer/.config/quickshell/scripts/usb_monitor.sh", "--eject", dev];
+                    ejectProcess.command = [Quickshell.env("HOME") + "/.config/quickshell/scripts/usb_monitor.sh", "--eject", dev];
                     ejectProcess.running = true;
                 }
                 return;

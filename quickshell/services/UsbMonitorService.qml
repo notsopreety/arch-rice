@@ -15,7 +15,7 @@ Singleton {
     // Helper to safely eject a device node
     function ejectDevice(node) {
         console.log("⚡ UsbMonitorService requesting eject for:", node);
-        ejectProc.command = ["/home/sawmer/.config/quickshell/scripts/usb_monitor.sh", "--eject", node];
+        ejectProc.command = [Quickshell.env("HOME") + "/.config/quickshell/scripts/usb_monitor.sh", "--eject", node];
         ejectProc.running = true;
     }
 
@@ -124,7 +124,7 @@ Singleton {
     // Query connected devices at startup
     Process {
         id: initialListProc
-        command: ["/home/sawmer/.config/quickshell/scripts/usb_monitor.sh", "--list"]
+        command: [Quickshell.env("HOME") + "/.config/quickshell/scripts/usb_monitor.sh", "--list"]
         running: true
         stdout: StdioCollector {
             onRead: data => {
@@ -145,7 +145,7 @@ Singleton {
 
     Process {
         id: monitorProc
-        command: ["/home/sawmer/.config/quickshell/scripts/usb_monitor.sh"]
+        command: [Quickshell.env("HOME") + "/.config/quickshell/scripts/usb_monitor.sh"]
         running: true
 
         stdout: SplitParser {
@@ -161,7 +161,7 @@ Singleton {
                     // Maintain the connected devices list in real-time
                     let temp = [...root.devicesList];
                     if (info.event === "add") {
-                        root.playSound("/home/sawmer/.config/quickshell/assets/USB-Insert.wav");
+                        root.playSound(Quickshell.env("HOME") + "/.config/quickshell/assets/USB-Insert.wav");
                         let exists = false;
                         for (let i = 0; i < temp.length; i++) {
                             if (temp[i].device === info.device) {
@@ -188,7 +188,7 @@ Singleton {
 
                         if (foundItem !== null) {
                             // Only play sound and broadcast event if we actually track this device removal
-                            root.playSound("/home/sawmer/.config/quickshell/assets/USB-Remove.wav");
+                            root.playSound(Quickshell.env("HOME") + "/.config/quickshell/assets/USB-Remove.wav");
                             
                             let removalInfo = {
                                 event: "remove",

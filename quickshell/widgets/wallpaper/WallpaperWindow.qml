@@ -90,7 +90,7 @@ PanelWindow {
 
     Process {
         id: readCurrentWallpaper
-        command: ["cat", "/home/sawmer/.cache/awww-wal/current"]
+        command: ["cat", Quickshell.env("HOME") + "/.cache/awww-wal/current"]
         running: true
         stdout: SplitParser {
             onRead: data => {
@@ -124,7 +124,7 @@ PanelWindow {
     // ============================================
     FolderListModel {
         id: folderModel
-        folder: configs.wallpaper_path ? ("file://" + configs.wallpaper_path) : ""
+        folder: configs.wallpaper_path ? ("file://" + configs.wallpaper_path.replace(/^~/, Quickshell.env("HOME"))) : ""
         showDirs: false
         caseSensitive: false
         nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.webp"]
@@ -151,7 +151,7 @@ PanelWindow {
     function activateCurrent() {
         const path = folderModel.get(selectedIndex, "filePath")
         if (path) {
-            Quickshell.execDetached(["/home/sawmer/.config/scripts/wall.sh", "-i=" + path])
+            Quickshell.execDetached([Quickshell.env("HOME") + "/.config/scripts/wall.sh", "-i=" + path])
         }
         WallpaperService.close()
     }
@@ -328,7 +328,7 @@ PanelWindow {
 
                     // Safely construct thumbnail name
                     property string thumbName: fileName ? (fileName.substring(0, fileName.lastIndexOf('.')) + ".jpg") : ""
-                    source: (configs.cache_path && thumbName) ? ("file://" + configs.cache_path + thumbName) : ""
+                    source: (configs.cache_path && thumbName) ? ("file://" + configs.cache_path.replace(/^~/, Quickshell.env("HOME")) + thumbName) : ""
 
                     sourceSize.width: 400
                     sourceSize.height: 600
@@ -542,7 +542,7 @@ PanelWindow {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        Quickshell.execDetached(["/home/sawmer/.config/scripts/wall.sh", "-i=rand"])
+                        Quickshell.execDetached([Quickshell.env("HOME") + "/.config/scripts/wall.sh", "-i=rand"])
                         WallpaperService.close()
                     }
                 }
@@ -708,7 +708,7 @@ PanelWindow {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        Quickshell.execDetached(["bash", "-c", "rm -rf " + configs.cache_path + "* && bash " + Quickshell.shellPath("widgets/wallpaper/cache.sh")])
+                        Quickshell.execDetached(["bash", "-c", "rm -rf " + configs.cache_path.replace(/^~/, Quickshell.env("HOME")) + "* && bash " + Quickshell.shellPath("widgets/wallpaper/cache.sh")])
                     }
                 }
 
