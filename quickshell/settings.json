@@ -1,0 +1,154 @@
+{
+  "ai": {
+    "apiKey": "YOUR_API_KEY",
+    "systemInstruction": "I do use arch linux in hyprland WM.",
+    "currentModel": "gemini-2.5-flash-lite",
+    "temperature": 0.7
+  },
+  "booru": {
+    "currentProvider": "yande.re",
+    "nsfwEnabled": false
+  },
+  "global": {
+    "autoHideBar": false,
+    "floatingBar": false,
+    "showBS": true
+  },
+  "clock": {
+    "winX": 795,
+    "winY": 169,
+    "winSize": 237,
+    "scallops": 12,
+    "amplitude": 5,
+    "showNumbers": false,
+    "showTicks": true,
+    "showDayLabel": false,
+    "showDigitalTime": true,
+    "showDateBadge": true,
+    "showSecondHand": true,
+    "showSecondHandLine": false,
+    "showWeather": true,
+    "isActive": true
+  },
+  "photoFrame": {
+    "imagePath": "~/Pictures/Wallpapers",
+    "photoFrameX": 693,
+    "photoFrameY": 655,
+    "photoFrameShape": "square",
+    "isActive": true
+  },
+  "screentime": {
+    "screentimeX": 1089,
+    "screentimeY": 905,
+    "screentimeStyle": 3,
+    "isActive": true,
+    "winX": 227,
+    "winY": 108
+  },
+  "activateLinux": {
+    "isActive": true,
+    "scale": 0.99
+  },
+  "flowersWidget": {
+    "isActive": false
+  },
+  "quickSettings": {
+    "toggles": [
+      {
+        "type": "wifi",
+        "size": 2
+      },
+      {
+        "type": "bluetooth",
+        "size": 2
+      },
+      {
+        "type": "dnd",
+        "size": 2
+      },
+      {
+        "type": "silent",
+        "size": 2
+      },
+      {
+        "type": "caffeine",
+        "size": 2
+      },
+      {
+        "type": "screenshot",
+        "size": 2
+      },
+      {
+        "type": "screenRecord",
+        "size": 2
+      },
+      {
+        "type": "powerProfile",
+        "size": 2
+      },
+      {
+        "type": "conservationMode",
+        "size": 2
+      },
+      {
+        "type": "nightLight",
+        "size": 2
+      },
+      {
+        "type": "colorPicker",
+        "size": 2
+      },
+      {
+        "type": "googleLens",
+        "size": 2
+      },
+      {
+        "type": "screenSnip",
+        "size": 2
+      },
+      {
+        "type": "airplaneMode",
+        "size": 2
+      },
+      {
+        "type": "systemUpdate",
+        "size": 2
+      }
+    ]
+  },
+  "screentimeWidget": {
+    "winX": 76,
+    "winY": 768,
+    "isActive": true
+  },
+  "weatherWidget": {
+    "winX": 167,
+    "winY": 827,
+    "style": 1,
+    "styleMode": 2,
+    "shapeMode": 2,
+    "isActive": true,
+    "width": 200,
+    "height": 80
+  },
+  "mediaPlayer": {
+    "x": 1375,
+    "y": 319,
+    "showLyrics": false,
+    "isActive": true,
+    "lyricsHeight": 384,
+    "styleMode": 1
+  },
+  "systemUsageWidget": {
+    "x": 363,
+    "y": 176,
+    "styleMode": 1
+  },
+  "ramStorageWidget": {
+    "x": 1407,
+    "y": 85,
+    "styleMode": 1,
+    "width": 241,
+    "height": 145
+  }
+}
