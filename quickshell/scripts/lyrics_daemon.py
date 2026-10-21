@@ -6,9 +6,15 @@ outputs JSON lines like Tide-island's lyricsmpris binary:
   {"type":"status","status":"loading"}
   {"type":"status","status":"missing"}
 """
-import subprocess, json, sys, os, re, urllib.request, urllib.parse, hashlib, time, threading
+import subprocess, json, sys, os, re, urllib.request, urllib.parse, hashlib, time, threading, signal
 
 POLL_MS = 150
+
+def _exit_on_signal(signum, frame):
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, _exit_on_signal)
+signal.signal(signal.SIGINT, _exit_on_signal)
 
 def emit(obj):
     print(json.dumps(obj), flush=True)
@@ -230,6 +236,7 @@ def get_active_player():
     return None, None, None, None
 
 def main():
+    parent_pid = os.getppid()
     current_track  = None
     current_artist = None
     synced_lines   = []
@@ -239,6 +246,11 @@ def main():
     emit({"type": "status", "status": "idle"})
 
     while True:
+        # Exit if our parent (quickshell) is gone, so we don't leak across reloads.
+        # ppid 1 means already orphaned (parent died before we even started).
+        ppid = os.getppid()
+        if ppid == 1 or ppid != parent_pid:
+            break
         try:
             player_name, title, artist, status = get_active_player()
 

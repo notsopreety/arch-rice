@@ -10,19 +10,8 @@ import "../../"
 Item {
     id: root
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); root.glassmorphism = true; } catch(e) { root.glassmorphism = false; } }
-        onLoaded: root.glassmorphism = true
-        onLoadFailed: root.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     readonly property bool isSliderPressed: false
 

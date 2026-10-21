@@ -108,14 +108,14 @@ PanelWindow {
                         spacing: 4
                         Text {
                             text: "Material You 3 Shape Library"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 22
                             font.weight: Font.Bold
                             color: "#ffffff"
                         }
                         Text {
                             text: "GPU-accelerated shapes for premium UI design"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 12
                             color: Qt.rgba(1, 1, 1, 0.6)
                         }
@@ -230,7 +230,7 @@ PanelWindow {
                                     Layout.alignment: Qt.AlignHCenter
                                     Layout.maximumWidth: grid.cellWidth - 10
                                     text: modelData.name
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 10
                                     font.weight: ma.containsMouse ? Font.Medium : Font.Normal
                                     color: ma.containsMouse ? "#ffffff" : Qt.rgba(1, 1, 1, 0.7)

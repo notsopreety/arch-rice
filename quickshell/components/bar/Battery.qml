@@ -44,12 +44,6 @@ Item {
         return m + "m"
     }
 
-    Timer {
-        interval: 30000
-        running: true
-        repeat: true
-    }
-    
     // Detect plug-in event
     onIsPluggedInChanged: {
         if (isPluggedIn && !wasPluggedIn) {
@@ -221,7 +215,7 @@ Item {
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.showTime && root.timeString !== "" ? root.timeString : batteryLevel + "%"
-                font.family: "Inter"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 11 * Appearance.effectiveScale
                 font.weight: (isWarning || isLow) ? Font.Bold : Font.Medium
                 color: compactBatteryColor
@@ -330,7 +324,7 @@ Item {
             Text {
                 anchors.centerIn: parent
                 text: batteryLevel + "%"
-                font.family: "Inter"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 11 * Appearance.effectiveScale
                 font.weight: Font.Bold
                 color: Qt.rgba(1, 1, 1, 0.95)

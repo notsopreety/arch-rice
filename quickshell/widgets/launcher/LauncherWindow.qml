@@ -94,27 +94,8 @@ PanelWindow {
     property string _activeQuery: ""
     property string _activeCat: "All"
 
-    // Glassmorphism Detector
-    property bool glassmorphism: false
-    FileView {
-        id: glassmorphismFlagFile
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        preload: true
-        watchChanges: true
-        onFileChanged: glassmorphismReloadTimer.restart()
-        Component.onCompleted: {
-            try { glassmorphismFlagFile.reload(); launcherWindow.glassmorphism = true; } catch(e) { launcherWindow.glassmorphism = false; }
-        }
-        onLoaded: launcherWindow.glassmorphism = true
-        onLoadFailed: launcherWindow.glassmorphism = false
-    }
-    Timer {
-        id: glassmorphismReloadTimer
-        interval: 200; repeat: false
-        onTriggered: {
-            try { glassmorphismFlagFile.reload(); } catch(e) {}
-        }
-    }
+    // Glassmorphism (shared flag, see services/Glassmorphism.qml)
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     property var filteredAppList: {
         var query = _activeQuery;
@@ -156,6 +137,12 @@ PanelWindow {
     }
 
     function launchApp(cmd, id, terminal) {
+        if (cmd === undefined || typeof cmd === "number") {
+            // index form: launchApp(i)
+            var app = filteredAppList[cmd >= 0 ? cmd : 0];
+            if (!app) return;
+            cmd = app.cmd; id = app.id; terminal = app.terminal;
+        }
         if (terminal) {
             Quickshell.execDetached(["kitty", "-e", "bash", "-c", cmd]);
         } else if (id) {
@@ -180,9 +167,9 @@ PanelWindow {
 
     Timer {
         id: refreshTimer
-        interval: 120000 // Refresh every 2 minutes in background
+        interval: 120000 // Refresh every 2 minutes while the launcher is open
         repeat: true
-        running: true
+        running: launcherWindow.visible
         onTriggered: appFetcher.running = true
     }
 
@@ -325,7 +312,7 @@ PanelWindow {
                             anchors.centerIn: parent
                             text: "Applications"
                             font.pixelSize: 10 * Appearance.effectiveScale
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.weight: Font.Medium
                             color: searchInput.activeFocus ? launcherWindow.col_primary : launcherWindow.col_outline
                             Behavior on color { ColorAnimation { duration: 180 } }
@@ -352,7 +339,7 @@ PanelWindow {
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignVCenter
                             font.pixelSize: 15 * Appearance.effectiveScale
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             color: launcherWindow.col_on_surface
                             selectionColor: Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.3)
                             clip: true
@@ -378,9 +365,8 @@ PanelWindow {
                                             Quickshell.execDetached(["sh", "-c", cmd]);
                                             LauncherService.close();
                                         }
-                                    } else if (launcherWindow.filteredApps && launcherWindow.filteredApps.length > 0) {
-                                        var firstApp = launcherWindow.filteredApps[0];
-                                        launcherWindow.launchApp(firstApp.cmd, firstApp.id, firstApp.terminal);
+                                    } else if (launcherWindow.filteredAppList && launcherWindow.filteredAppList.length > 0) {
+                                        launcherWindow.launchApp(grid.currentIndex >= 0 ? grid.currentIndex : 0);
                                     }
                                 }
                             }
@@ -535,11 +521,20 @@ PanelWindow {
                         cellHeight: 100 * Appearance.effectiveScale
                         cacheBuffer: 200
 
+                        // Keep the first match highlighted as the user types, so Enter just works.
+                        onModelChanged: Qt.callLater(function() {
+                            positionViewAtBeginning();
+                            currentIndex = model && model.length > 0 ? 0 : -1;
+                        })
+
                         focus: true
                         keyNavigationEnabled: true
                         highlightFollowsCurrentItem: true
 
                         model: launcherWindow.filteredAppList
+
+                        // No highlight delegate: the current tile paints its own highlight.
+                        highlight: null
 
                         add: Transition {
                             NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 100; easing.type: Easing.OutCubic }
@@ -575,12 +570,12 @@ PanelWindow {
                                 width: 88 * Appearance.effectiveScale; height: 88 * Appearance.effectiveScale
                                 radius: ma.containsMouse ? 24 * Appearance.effectiveScale : 16 * Appearance.effectiveScale
 
-                                color: (ma.containsMouse || (gridDelegate.GridView.isCurrentItem && grid.activeFocus))
+                                color: (ma.containsMouse || gridDelegate.GridView.isCurrentItem)
                                     ? Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.15)
                                     : (launcherWindow.glassmorphism
                                         ? Qt.rgba(launcherWindow.col_surface_container_high.r, launcherWindow.col_surface_container_high.g, launcherWindow.col_surface_container_high.b, 0.4)
                                         : launcherWindow.col_surface_container_high)
-                                border.color: (ma.containsMouse || (gridDelegate.GridView.isCurrentItem && grid.activeFocus))
+                                border.color: (ma.containsMouse || gridDelegate.GridView.isCurrentItem)
                                     ? Qt.rgba(launcherWindow.col_primary.r, launcherWindow.col_primary.g, launcherWindow.col_primary.b, 0.35)
                                     : (launcherWindow.glassmorphism ? Qt.rgba(1, 1, 1, 0.06) : launcherWindow.col_outline_variant)
                                 border.width: 1
@@ -714,7 +709,7 @@ PanelWindow {
                             if (event.key === Qt.Key_Escape) LauncherService.close();
                             else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                                 if (currentIndex >= 0 && currentIndex < model.length) {
-                                    launcherWindow.launchApp(model[currentIndex].cmd, model[currentIndex].id, model[currentIndex].terminal);
+                                    launcherWindow.launchApp(currentIndex);
                                 }
                             } else if (event.key === Qt.Key_Up && currentIndex < grid.columns) {
                                 searchInput.forceActiveFocus();

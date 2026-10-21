@@ -30,19 +30,8 @@ PanelWindow {
     color: "transparent"
     visible: false
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); dashWindow.glassmorphism = true; } catch(e) { dashWindow.glassmorphism = false; } }
-        onLoaded: dashWindow.glassmorphism = true
-        onLoadFailed: dashWindow.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     Connections {
         target: DankDashService

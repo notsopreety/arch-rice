@@ -23,13 +23,9 @@ Singleton {
     
     property var savedNetworks: []
     
-    // Consumer visibility control - set to false to pause polling when UI is hidden
-    property bool pollingActive: true
-
-    function enableWifi(enabled: bool): void {
-        const cmd = enabled ? "on" : "off";
-        enableWifiProc.exec(["nmcli", "radio", "wifi", cmd]);
-    }
+    // Only the Wi-Fi center window consumes savedNetworks, so only poll while it is open.
+    property bool pollingActive: QsServices.WifiCenterService.visible
+    onPollingActiveChanged: if (pollingActive) refreshSavedNetworks()
 
     function toggleWifi(): void {
         const cmd = wifiEnabled ? "off" : "on";
@@ -71,22 +67,12 @@ Singleton {
         checkSavedProc.running = true;
     }
     
-    function isNetworkSaved(ssid: string): bool {
-        refreshSavedNetworks();
-        return savedNetworks.includes(ssid);
-    }
-
-    function disconnectFromNetwork(): void {
-        if (active) {
-            disconnectProc.exec(["nmcli", "connection", "down", active.ssid]);
-        }
-    }
-
     function getWifiStatus(): void {
         wifiStatusProc.running = true;
     }
 
     Process {
+        id: nmcliMonitor
         running: true
         command: ["nmcli", "m"]
         stdout: SplitParser {
@@ -95,6 +81,7 @@ Singleton {
                 getWiredStatus.running = true;
             }
         }
+        Component.onDestruction: nmcliMonitor.running = false
     }
 
     Process {
@@ -176,14 +163,6 @@ Singleton {
         }
     }
 
-    Process {
-        id: disconnectProc
-
-        stdout: SplitParser {
-            onRead: getNetworks.running = true
-        }
-    }
-    
     Process {
         id: checkSavedProc
         

@@ -17,6 +17,11 @@ import "systemmonitor/pages"
 FloatingWindow {
     id: win
 
+    signal closed()
+    function close() {
+        win.closed();
+    }
+
     color: "transparent"
     title: "System Monitor"
 

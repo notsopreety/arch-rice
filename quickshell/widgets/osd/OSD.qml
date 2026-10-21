@@ -14,7 +14,7 @@ import "../../services"
 Scope {
     id: root
     property string protectionMessage: ""
-    property var focusedScreen: Quickshell.screens.find(s => s.name === (Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "")) || Quickshell.screens[0]
+    property var focusedScreen: Quickshell.screens.find(s => s.name === (Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "")) || Quickshell.screens[0] || null
 
     property string currentIndicator: "volume"
     property bool ready: false

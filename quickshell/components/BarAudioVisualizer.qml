@@ -16,7 +16,8 @@ Item {
     height: 14 * Appearance.effectiveScale
 
     Loader {
-        active: true
+        // cava runs at 25 fps; only keep it alive while media is actually playing.
+        active: root.isPlaying
         sourceComponent: Component {
             Ref {
                 service: CavaService

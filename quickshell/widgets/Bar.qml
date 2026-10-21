@@ -47,27 +47,8 @@ PanelWindow {
         anchors.topMargin: 4 * Appearance.effectiveScale
         anchors.bottomMargin: 4 * Appearance.effectiveScale
 
-        // ── Glassmorphism toggle (reads ~/.config/hypr/.glassmorphism_enabled) ──
-        property bool glassmorphism: false
-
-        FileView {
-            id: glassmorphismFlagFile
-            path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-            watchChanges: true
-            onFileChanged: glassmorphismReloadTimer.restart()
-            Component.onCompleted: {
-                try { glassmorphismFlagFile.reload(); barContainer.glassmorphism = true; } catch(e) { barContainer.glassmorphism = false; }
-            }
-            onLoaded: barContainer.glassmorphism = true
-            onLoadFailed: barContainer.glassmorphism = false
-        }
-        Timer {
-            id: glassmorphismReloadTimer
-            interval: 200; repeat: false
-            onTriggered: {
-                try { glassmorphismFlagFile.reload(); } catch(e) {}
-            }
-        }
+        // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+        readonly property bool glassmorphism: Glassmorphism.enabled
 
         // Glassmorphic color helpers
         readonly property color pillColor: glassmorphism
@@ -454,7 +435,7 @@ PanelWindow {
 
                         Text {
                             text: "Dismiss: " + TimerStopwatchService.activeAlarmLabel
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 10 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: "white"

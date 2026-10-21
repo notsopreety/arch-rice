@@ -15,19 +15,8 @@ import "../core"
 PanelWindow {
     id: window
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); window.glassmorphism = true; } catch(e) { window.glassmorphism = false; } }
-        onLoaded: window.glassmorphism = true
-        onLoadFailed: window.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
     
     readonly property color cBg: window.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
     readonly property color cCard: window.glassmorphism ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.40) : Theme.surfaceContainerHigh
@@ -58,15 +47,15 @@ PanelWindow {
     property var selectedDevice: null
 
     function deviceIcon(icon) {
-        if (!icon) return "󰂯"
-        if (icon.includes("audio") || icon.includes("headphone") || icon.includes("headset")) return "󰋋"
-        if (icon.includes("phone")) return "󰄜"
-        if (icon.includes("computer") || icon.includes("laptop")) return "󰌢"
-        if (icon.includes("mouse")) return "󰍽"
-        if (icon.includes("keyboard")) return "󰌌"
-        if (icon.includes("speaker")) return "󰝚"
-        if (icon.includes("car")) return "󰀘"
-        return "󰂯"
+        if (!icon) return "bluetooth"
+        if (icon.includes("audio") || icon.includes("headphone") || icon.includes("headset")) return "headphones"
+        if (icon.includes("phone")) return "smartphone"
+        if (icon.includes("computer") || icon.includes("laptop")) return "laptop"
+        if (icon.includes("mouse")) return "mouse"
+        if (icon.includes("keyboard")) return "keyboard"
+        if (icon.includes("speaker")) return "speaker"
+        if (icon.includes("car")) return "directions_car"
+        return "bluetooth"
     }
 
     function deviceDisplayName(device) {
@@ -238,7 +227,7 @@ PanelWindow {
 
                         Text {
                             text: "Bluetooth"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 18 * Appearance.effectiveScale
                             font.weight: Font.DemiBold
                             color: window.cTextPrimary
@@ -281,8 +270,8 @@ PanelWindow {
                                 // Checkmark icon when ON
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "󰄬"
-                                    font.family: "Material Design Icons"
+                                    text: "check"
+                                    font.family: "Material Symbols Rounded"
                                     font.pixelSize: 14 * Appearance.effectiveScale
                                     color: window.cAccent
                                     opacity: adapter?.enabled ? 1.0 : 0.0
@@ -314,7 +303,7 @@ PanelWindow {
                             default: return ""
                             }
                         }
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 12 * Appearance.effectiveScale
                         color: window.cTextMuted
                         visible: adapter && !adapter.enabled
@@ -335,7 +324,7 @@ PanelWindow {
 
                             Text {
                                 text: "Device name"
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 14 * Appearance.effectiveScale
                                 color: window.cTextPrimary
                                 Layout.fillWidth: true
@@ -343,7 +332,7 @@ PanelWindow {
 
                             Text {
                                 text: adapter?.name || ""
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 13 * Appearance.effectiveScale
                                 font.weight: Font.Medium
                                 color: window.cTextMuted
@@ -351,8 +340,8 @@ PanelWindow {
                             }
 
                             Text {
-                                text: "󰅂"
-                                font.family: "Material Design Icons"
+                                text: "chevron_right"
+                                font.family: "Material Symbols Rounded"
                                 font.pixelSize: 14 * Appearance.effectiveScale
                                 color: window.cTextMuted
                             }
@@ -402,7 +391,7 @@ PanelWindow {
                                     Text {
                                         anchors.centerIn: parent
                                         text: window.deviceIcon(modelData.icon)
-                                        font.family: "Material Design Icons"
+                                        font.family: "Material Symbols Rounded"
                                         font.pixelSize: 20 * Appearance.effectiveScale
                                         color: window.cAccent
                                     }
@@ -415,7 +404,7 @@ PanelWindow {
 
                                     Text {
                                         text: window.deviceDisplayName(modelData)
-                                        font.family: "Inter"
+                                        font.family: "Google Sans Flex"
                                         font.pixelSize: 14 * Appearance.effectiveScale
                                         font.weight: Font.DemiBold
                                         color: window.cTextPrimary
@@ -425,7 +414,7 @@ PanelWindow {
 
                                     Text {
                                         text: window.deviceSubtitle(modelData)
-                                        font.family: "Inter"
+                                        font.family: "Google Sans Flex"
                                         font.pixelSize: 11 * Appearance.effectiveScale
                                         color: window.cAccent
                                     }
@@ -442,8 +431,8 @@ PanelWindow {
 
                                     Text {
                                         anchors.centerIn: parent
-                                        text: "󰌊"
-                                        font.family: "Material Design Icons"
+                                        text: "bluetooth_disabled"
+                                        font.family: "Material Symbols Rounded"
                                         font.pixelSize: 14 * Appearance.effectiveScale
                                         color: window.cError
                                     }
@@ -480,7 +469,7 @@ PanelWindow {
                         Layout.bottomMargin: 8 * Appearance.effectiveScale
                         Layout.topMargin: (connectedDevices.length > 0 ? 6 : 0) * Appearance.effectiveScale
                         text: "Paired devices"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 13 * Appearance.effectiveScale
                         font.weight: Font.Medium
                         color: window.cTextSecondary
@@ -524,7 +513,7 @@ PanelWindow {
 
                                         Text {
                                             text: window.deviceIcon(modelData.icon)
-                                            font.family: "Material Design Icons"
+                                            font.family: "Material Symbols Rounded"
                                             font.pixelSize: 18
                                             color: window.cTextSecondary
                                         }
@@ -535,7 +524,7 @@ PanelWindow {
 
                                             Text {
                                                 text: window.deviceDisplayName(modelData)
-                                                font.family: "Inter"
+                                                font.family: "Google Sans Flex"
                                                 font.pixelSize: 14
                                                 color: window.cTextPrimary
                                                 elide: Text.ElideRight
@@ -544,7 +533,7 @@ PanelWindow {
 
                                             Text {
                                                 text: window.deviceSubtitle(modelData)
-                                                font.family: "Inter"
+                                                font.family: "Google Sans Flex"
                                                 font.pixelSize: 11
                                                 color: window.cTextMuted
                                             }
@@ -561,8 +550,8 @@ PanelWindow {
 
                                             Text {
                                                 anchors.centerIn: parent
-                                                text: "󰌘"
-                                                font.family: "Material Design Icons"
+                                                text: "bluetooth_connected"
+                                                font.family: "Material Symbols Rounded"
                                                 font.pixelSize: 14
                                                 color: window.cAccent
                                             }
@@ -606,7 +595,7 @@ PanelWindow {
 
                         Text {
                             text: "AVAILABLE DEVICES"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 12
                             font.weight: Font.Medium
                             color: window.cTextSecondary
@@ -626,7 +615,7 @@ PanelWindow {
                                 id: deviceCountText
                                 anchors.centerIn: parent
                                 text: availableDevices.length
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 10
                                 font.weight: Font.Bold
                                 color: window.cAccent
@@ -643,8 +632,8 @@ PanelWindow {
                             visible: adapter?.discovering ?? false
 
                             Text {
-                                text: "󰑐"
-                                font.family: "Material Design Icons"
+                                text: "sync"
+                                font.family: "Material Symbols Rounded"
                                 font.pixelSize: 14
                                 color: window.cAccent
                                 RotationAnimation on rotation {
@@ -655,7 +644,7 @@ PanelWindow {
 
                             Text {
                                 text: "Scanning..."
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 12
                                 font.weight: Font.Medium
                                 color: window.cAccent
@@ -665,7 +654,7 @@ PanelWindow {
                         // Refresh button (when not scanning)
                         Text {
                             text: "Refresh"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 13
                             font.weight: Font.Medium
                             color: window.cAccent
@@ -754,7 +743,7 @@ PanelWindow {
 
                                             Text {
                                                 text: window.deviceIcon(modelData.icon)
-                                                font.family: "Material Design Icons"
+                                                font.family: "Material Symbols Rounded"
                                                 font.pixelSize: 18 * Appearance.effectiveScale
                                                 color: window.cTextSecondary
                                             }
@@ -765,7 +754,7 @@ PanelWindow {
 
                                                 Text {
                                                     text: window.deviceDisplayName(modelData)
-                                                    font.family: "Inter"
+                                                    font.family: "Google Sans Flex"
                                                     font.pixelSize: 14 * Appearance.effectiveScale
                                                     color: window.cTextPrimary
                                                     elide: Text.ElideRight
@@ -774,7 +763,7 @@ PanelWindow {
 
                                                 Text {
                                                     text: window.deviceSubtitle(modelData)
-                                                    font.family: "Inter"
+                                                    font.family: "Google Sans Flex"
                                                     font.pixelSize: 11 * Appearance.effectiveScale
                                                     color: window.cTextMuted
                                                 }
@@ -791,8 +780,8 @@ PanelWindow {
 
                                                 Text {
                                                     anchors.centerIn: parent
-                                                    text: modelData.pairing ? "󰑐" : "󰌘"
-                                                    font.family: "Material Design Icons"
+                                                    text: modelData.pairing ? "sync" : "bluetooth_connected"
+                                                    font.family: "Material Symbols Rounded"
                                                     font.pixelSize: 14 * Appearance.effectiveScale
                                                     color: window.cAccent
                                                 }
@@ -871,8 +860,8 @@ PanelWindow {
                                  Text {
                                      Layout.alignment: Qt.AlignHCenter
                                      visible: !(adapter?.discovering ?? false)
-                                     text: "󰂲"
-                                     font.family: "Material Design Icons"
+                                     text: "bluetooth"
+                                     font.family: "Material Symbols Rounded"
                                      font.pixelSize: 28
                                      color: Qt.rgba(window.cTextPrimary.r, window.cTextPrimary.g, window.cTextPrimary.b, 0.18)
                                  }
@@ -880,7 +869,7 @@ PanelWindow {
                                  Text {
                                      Layout.alignment: Qt.AlignHCenter
                                      text: adapter?.discovering ?? false ? "Scanning for devices..." : (adapter?.enabled ? "No devices found" : "Bluetooth disabled")
-                                     font.family: "Inter"
+                                     font.family: "Google Sans Flex"
                                      font.pixelSize: 12
                                      color: window.cTextMuted
                                      horizontalAlignment: Text.AlignHCenter
@@ -893,7 +882,7 @@ PanelWindow {
                                       Layout.topMargin: 12
                                       visible: adapter?.discovering ?? false
                                       text: "Stop Scanning"
-                                      font.family: "Inter"
+                                      font.family: "Google Sans Flex"
                                       font.pixelSize: 12
                                       font.weight: Font.Medium
                                       color: stopScanMouse.containsMouse ? window.cError : window.cTextMuted
@@ -926,15 +915,15 @@ PanelWindow {
                             spacing: 6
 
                             Text {
-                                text: "󰒓"
-                                font.family: "Material Design Icons"
+                                text: "settings"
+                                font.family: "Material Symbols Rounded"
                                 font.pixelSize: 14
                                 color: window.cTextMuted
                             }
 
                             Text {
                                 text: "Bluetooth Settings"
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 12
                                 color: window.cTextMuted
                             }
@@ -1003,7 +992,7 @@ PanelWindow {
 
             Text {
                 text: selectedDevice?.connected ? "Disconnect device?" : "Forget device?"
-                font.family: "Inter"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 16
                 font.weight: Font.Bold
                 color: window.cTextPrimary
@@ -1015,7 +1004,7 @@ PanelWindow {
                     if (selectedDevice?.connected) return `Disconnect from "${name}"?`
                     return `Remove "${name}" from paired devices?`
                 }
-                font.family: "Inter"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 13
                 color: window.cTextSecondary
                 wrapMode: Text.WordWrap
@@ -1037,7 +1026,7 @@ PanelWindow {
                     Text {
                         anchors.centerIn: parent
                         text: "Cancel"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 13
                         font.weight: Font.Medium
                         color: window.cTextPrimary
@@ -1061,7 +1050,7 @@ PanelWindow {
                     Text {
                         anchors.centerIn: parent
                         text: selectedDevice?.connected ? "Disconnect" : "Forget"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 13
                         font.weight: Font.Medium
                         color: "#ffffff"
@@ -1122,7 +1111,7 @@ PanelWindow {
 
             Text {
                 text: "Rename adapter"
-                font.family: "Inter"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 16
                 font.weight: Font.Bold
                 color: window.cTextPrimary
@@ -1130,7 +1119,7 @@ PanelWindow {
 
             Text {
                 text: "Set a new name for this device"
-                font.family: "Inter"
+                font.family: "Google Sans Flex"
                 font.pixelSize: 12
                 color: window.cTextSecondary
             }
@@ -1164,7 +1153,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         text: "Name"
                         font.pixelSize: 10
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.weight: Font.Medium
                         color: renameInput.activeFocus ? window.cAccent : window.cTextSecondary
                     }
@@ -1180,7 +1169,7 @@ PanelWindow {
                     placeholderTextColor: window.cTextMuted
                     color: window.cTextPrimary
                     background: Item {}
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 14
 
                     onAccepted: {
@@ -1207,7 +1196,7 @@ PanelWindow {
                     Text {
                         anchors.centerIn: parent
                         text: "Cancel"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 13
                         font.weight: Font.Medium
                         color: window.cTextPrimary
@@ -1231,7 +1220,7 @@ PanelWindow {
                     Text {
                         anchors.centerIn: parent
                         text: "Rename"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 13
                         font.weight: Font.Medium
                         color: "#ffffff"

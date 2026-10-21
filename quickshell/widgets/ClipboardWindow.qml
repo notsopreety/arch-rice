@@ -13,19 +13,8 @@ import "../core"
 PanelWindow {
     id: clipboardWindow
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); clipboardWindow.glassmorphism = true; } catch(e) { clipboardWindow.glassmorphism = false; } }
-        onLoaded: clipboardWindow.glassmorphism = true
-        onLoadFailed: clipboardWindow.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
 
     property var allHistory: []
@@ -325,7 +314,7 @@ PanelWindow {
 
                         Text {
                             text: "Clipboard History"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 20 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: "#ffffff"
@@ -354,7 +343,7 @@ PanelWindow {
                                 }
                                 Text {
                                     text: "Clear All"
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     color: Theme.error
@@ -395,7 +384,7 @@ PanelWindow {
                                 anchors.centerIn: parent
                                 text: "Clipboard"
                                 font.pixelSize: 10 * Appearance.effectiveScale
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.weight: Font.Medium
                                 color: searchInput.activeFocus ? Theme.primary : Theme.outline
                                 Behavior on color { ColorAnimation { duration: 180 } }
@@ -422,7 +411,7 @@ PanelWindow {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignVCenter
                                 color: "#ffffff"
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 14 * Appearance.effectiveScale
                                 clip: true
                                 selectByMouse: true
@@ -569,7 +558,7 @@ PanelWindow {
                                     Text {
                                         Layout.fillWidth: true
                                         text: isImage ? "Image Entry" : displayContent.trim()
-                                        font.family: "Inter"
+                                        font.family: "Google Sans Flex"
                                         font.pixelSize: 13 * Appearance.effectiveScale
                                         font.weight: isImage ? Font.Medium : Font.Normal
                                         color: "#ffffff"
@@ -579,7 +568,7 @@ PanelWindow {
                                     
                                     Text {
                                         text: isImage ? displayContent.trim() : "Text"
-                                        font.family: "Inter"
+                                        font.family: "Google Sans Flex"
                                         font.pixelSize: 10 * Appearance.effectiveScale
                                         color: Qt.rgba(255, 255, 255, 0.4)
                                     }
@@ -667,7 +656,7 @@ PanelWindow {
                                 Layout.alignment: Qt.AlignCenter
                                 text: "Clipboard is empty"
                                 color: Qt.rgba(255, 255, 255, 0.4)
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 14 * Appearance.effectiveScale
                                 font.weight: Font.Medium
                             }

@@ -22,19 +22,8 @@ PanelWindow {
         { name: "Translator", icon: "translate" }
     ]
 
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlag.reload()
-        onLoaded: window.glassmorphism = true
-        onLoadFailed: window.glassmorphism = false
-        Component.onCompleted: {
-            try { glassFlag.reload(); } catch(e) {}
-        }
-    }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
     // Glassmorphic surface helpers (matching ControlCenterWindow)
     readonly property color glassCanvasBg: Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35)
     readonly property color glassBorder:   Qt.rgba(1, 1, 1, 0.18)
@@ -60,20 +49,9 @@ PanelWindow {
         }
     }
 
-    Process {
-        id: saveSettingsProc
-        running: false
-    }
-
     function saveWidth() {
         let rawW = Math.round(window.sidebarWidth / Appearance.effectiveScale);
-        let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
-        let cmd = "import json, os; path = '" + path + "'; " +
-                  "data = json.load(open(path)) if os.path.exists(path) else {}; " +
-                  "data.setdefault('sidebar', {})['width'] = " + rawW + "; " +
-                  "tmp = path + '.tmp'; f = open(tmp, 'w'); json.dump(data, f, indent=2); f.close(); os.replace(tmp, path)";
-        saveSettingsProc.command = ["python3", "-c", cmd];
-        saveSettingsProc.running = true;
+        Config.setSection("sidebar", { width: rawW });
     }
 
     anchors {

@@ -13,19 +13,8 @@ import "../core"
 PanelWindow {
     id: emojiBoardWindow
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); emojiBoardWindow.glassmorphism = true; } catch(e) { emojiBoardWindow.glassmorphism = false; } }
-        onLoaded: emojiBoardWindow.glassmorphism = true
-        onLoadFailed: emojiBoardWindow.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
 
     anchors {
@@ -227,7 +216,7 @@ PanelWindow {
 
                         Text {
                             text: "Emoji Board"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 20 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: "#ffffff"
@@ -265,7 +254,7 @@ PanelWindow {
                                 anchors.centerIn: parent
                                 text: "Emojis"
                                 font.pixelSize: 10
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.weight: Font.Medium
                                 color: searchInput.activeFocus ? Theme.primary : Theme.outline
                                 Behavior on color { ColorAnimation { duration: 180 } }
@@ -292,7 +281,7 @@ PanelWindow {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignVCenter
                                 color: "#ffffff"
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 14 * Appearance.effectiveScale
                                 clip: true
                                 selectByMouse: true
@@ -429,7 +418,7 @@ PanelWindow {
                                      contentItem: Text {
                                          text: tooltip.text
                                          color: Theme.primary
-                                         font.family: "Inter"
+                                         font.family: "Google Sans Flex"
                                          font.pixelSize: 11 * Appearance.effectiveScale
                                          font.weight: Font.Medium
                                      }
@@ -467,7 +456,7 @@ PanelWindow {
                             visible: emojiBoardWindow.filteredEmojis.length === 0
                             text: "No emojis found"
                             color: Qt.rgba(255, 255, 255, 0.4)
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 14 * Appearance.effectiveScale
                         }
                     }

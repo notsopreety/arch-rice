@@ -162,32 +162,16 @@ Item {
         onFileChanged: reloadTimer.restart()
     }
     
-    Process {
-        id: saveSettingsProc
-    }
-    
     function saveSettings(newX, newY, newShape, newW, newH) {
-        let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
-        let cmd = "import json, os; path = '" + path + "'; " +
-                  "data = json.load(open(path)) if os.path.exists(path) else {}; " +
-                  "pf = data.setdefault('photoFrame', {}); ";
-        let updates = [];
-        if (newX !== undefined) updates.push("pf['photoFrameX'] = " + Math.round(newX));
-        if (newY !== undefined) updates.push("pf['photoFrameY'] = " + Math.round(newY));
-        if (newShape !== undefined) updates.push("pf['photoFrameShape'] = '" + newShape + "'");
-        if (newW !== undefined && newW > 0) updates.push("pf['photoFrameWidth'] = " + Math.round(newW));
-        else if (newW === -1) updates.push("pf.pop('photoFrameWidth', None)");
-        if (newH !== undefined && newH > 0) updates.push("pf['photoFrameHeight'] = " + Math.round(newH));
-        else if (newH === -1) updates.push("pf.pop('photoFrameHeight', None)");
-        cmd += updates.join("; ") + "; " +
-               "tmp = path + '.tmp'; " +
-               "f = open(tmp, 'w'); " +
-               "json.dump(data, f, indent=2); " +
-               "f.close(); " +
-               "os.replace(tmp, path)";
-        
-        saveSettingsProc.command = ["python3", "-c", cmd];
-        saveSettingsProc.running = true;
+        let obj = {};
+        if (newX !== undefined) obj.photoFrameX = Math.round(newX);
+        if (newY !== undefined) obj.photoFrameY = Math.round(newY);
+        if (newShape !== undefined) obj.photoFrameShape = newShape;
+        if (newW !== undefined && newW > 0) obj.photoFrameWidth = Math.round(newW);
+        else if (newW === -1) obj.photoFrameWidth = null;
+        if (newH !== undefined && newH > 0) obj.photoFrameHeight = Math.round(newH);
+        else if (newH === -1) obj.photoFrameHeight = null;
+        Config.setSection("photoFrame", obj);
     }
     
     readonly property string folderUrl: {

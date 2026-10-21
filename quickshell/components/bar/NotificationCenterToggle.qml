@@ -75,7 +75,7 @@ Item {
             id: badgeText
             anchors.centerIn: parent
             text: unreadCount > 99 ? "99+" : `${unreadCount}`
-            font.family: "Inter"
+            font.family: "Google Sans Flex"
             font.pixelSize: 9 * Appearance.effectiveScale
             font.weight: Font.Bold
             color: matugen.background

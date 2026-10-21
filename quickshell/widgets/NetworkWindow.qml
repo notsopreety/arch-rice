@@ -14,19 +14,8 @@ import "../core"
 PanelWindow {
     id: window
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); window.glassmorphism = true; } catch(e) { window.glassmorphism = false; } }
-        onLoaded: window.glassmorphism = true
-        onLoadFailed: window.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
     
     readonly property color cBg: window.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
     readonly property color cCard: window.glassmorphism ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.40) : Theme.surfaceContainerHigh
@@ -54,6 +43,7 @@ PanelWindow {
     property bool wrongPassword: false
     property string pendingConnectSSID: ""
     property string addNetError: ""
+    property string qrImagePath: ""
 
     // ═══ Processes ═══
     Process {
@@ -65,6 +55,8 @@ PanelWindow {
                     window.dialogSSID = data.substring(14)
                 } else if (data.startsWith("Password: ")) {
                     window.dialogPassword = data.substring(10)
+                } else if (data.startsWith("QR path: ")) {
+                    window.qrImagePath = data.substring(9)
                 }
             }
         }
@@ -78,7 +70,8 @@ PanelWindow {
         interval: 200
         onTriggered: {
             qrImage.source = ""
-            qrImage.source = "file:///tmp/qr_wifi.png"
+            if (window.qrImagePath.length > 0)
+                qrImage.source = "file://" + window.qrImagePath
         }
     }
 
@@ -161,6 +154,7 @@ PanelWindow {
     function openQRShare() {
         if (!connectedNet) return
         window.activeDialog = "qrcode"
+        window.qrImagePath = ""
         qrProc.running = true
     }
 
@@ -325,7 +319,7 @@ PanelWindow {
 
                         Text {
                             text: "Wi-Fi"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 18 * Appearance.effectiveScale
                             font.weight: Font.DemiBold
                             color: window.cTextPrimary
@@ -403,7 +397,7 @@ PanelWindow {
 
                                 Text {
                                     text: network.wiredConnectionName
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 14 * Appearance.effectiveScale
                                     font.weight: Font.DemiBold
                                     color: "#ffffff"
@@ -413,7 +407,7 @@ PanelWindow {
 
                                 Text {
                                     text: "Connected via Ethernet"
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 12 * Appearance.effectiveScale
                                     color: Qt.rgba(1, 1, 1, 0.7)
                                 }
@@ -451,7 +445,7 @@ PanelWindow {
 
                                     Text {
                                         text: connectedNet ? connectedNet.ssid : ""
-                                        font.family: "Inter"
+                                        font.family: "Google Sans Flex"
                                         font.pixelSize: 14 * Appearance.effectiveScale
                                         font.weight: Font.DemiBold
                                         color: "#ffffff"
@@ -471,7 +465,7 @@ PanelWindow {
                                             id: badge5g
                                             anchors.centerIn: parent
                                             text: "5G"
-                                            font.family: "Inter"
+                                            font.family: "Google Sans Flex"
                                             font.pixelSize: 10 * Appearance.effectiveScale
                                             font.weight: Font.Medium
                                             color: "#ffffff"
@@ -481,7 +475,7 @@ PanelWindow {
 
                                 Text {
                                     text: "Tap to share password"
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 12 * Appearance.effectiveScale
                                     color: Qt.rgba(1, 1, 1, 0.7)
                                 }
@@ -522,7 +516,7 @@ PanelWindow {
                         Layout.fillWidth: true
                         Layout.bottomMargin: 8 * Appearance.effectiveScale
                         text: "Saved networks"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 13 * Appearance.effectiveScale
                         font.weight: Font.Medium
                         color: window.cTextSecondary
@@ -571,7 +565,7 @@ PanelWindow {
                                             spacing: 6 * Appearance.effectiveScale
                                             Text {
                                                 text: modelData.ssid
-                                                font.family: "Inter"
+                                                font.family: "Google Sans Flex"
                                                 font.pixelSize: 14 * Appearance.effectiveScale
                                                 color: window.cTextPrimary
                                                 elide: Text.ElideRight
@@ -589,7 +583,7 @@ PanelWindow {
                                                     id: savedBadge5g
                                                     anchors.centerIn: parent
                                                     text: "5G"
-                                                    font.family: "Inter"
+                                                    font.family: "Google Sans Flex"
                                                     font.pixelSize: 9 * Appearance.effectiveScale
                                                     font.weight: Font.Medium
                                                     color: window.cTextSecondary
@@ -639,7 +633,7 @@ PanelWindow {
 
                         Text {
                             text: "Available networks"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 13 * Appearance.effectiveScale
                             font.weight: Font.Medium
                             color: window.cTextSecondary
@@ -653,7 +647,7 @@ PanelWindow {
 
                             Text {
                                 text: "Refresh"
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 13 * Appearance.effectiveScale
                                 font.weight: Font.Medium
                                 color: window.cAccent
@@ -684,7 +678,7 @@ PanelWindow {
 
                             Text {
                                 text: "Scanning"
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 13 * Appearance.effectiveScale
                                 font.weight: Font.Medium
                                 color: window.cAccent
@@ -774,7 +768,7 @@ PanelWindow {
 
                                                 Text {
                                                     text: modelData.ssid
-                                                    font.family: "Inter"
+                                                    font.family: "Google Sans Flex"
                                                     font.pixelSize: 14 * Appearance.effectiveScale
                                                     color: window.cTextPrimary
                                                     elide: Text.ElideRight
@@ -793,7 +787,7 @@ PanelWindow {
                                                         id: availBadge5g
                                                         anchors.centerIn: parent
                                                         text: "5G"
-                                                        font.family: "Inter"
+                                                        font.family: "Google Sans Flex"
                                                         font.pixelSize: 9 * Appearance.effectiveScale
                                                         font.weight: Font.Medium
                                                         color: window.cTextSecondary
@@ -839,7 +833,7 @@ PanelWindow {
                                         anchors.leftMargin: 12 * Appearance.effectiveScale
                                         anchors.verticalCenter: parent.verticalCenter
                                         text: "Add network"
-                                        font.family: "Inter"
+                                        font.family: "Google Sans Flex"
                                         font.pixelSize: 14 * Appearance.effectiveScale
                                         color: window.cAccent
                                     }
@@ -911,7 +905,7 @@ PanelWindow {
 
                 Text {
                     text: "Enter password"
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 16
                     font.weight: Font.Bold
                     color: window.cTextPrimary
@@ -919,7 +913,7 @@ PanelWindow {
 
                 Text {
                     text: window.dialogSSID
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 12
                     color: window.cTextSecondary
                 }
@@ -927,7 +921,7 @@ PanelWindow {
                 Text {
                     visible: window.wrongPassword
                     text: "Wrong password. Try again."
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 12
                     color: window.cError
                 }
@@ -961,7 +955,7 @@ PanelWindow {
                             anchors.centerIn: parent
                             text: "Password"
                             font.pixelSize: 10
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.weight: Font.Medium
                             color: pwInput.activeFocus ? window.cAccent : window.cTextSecondary
                         }
@@ -981,7 +975,7 @@ PanelWindow {
                         echoMode: showPw ? QQC.TextField.Normal : QQC.TextField.Password
                         color: window.cTextPrimary
                         background: Item {}
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 14
                         
                         property bool showPw: false
@@ -1040,7 +1034,7 @@ PanelWindow {
                         Text {
                             anchors.centerIn: parent
                             text: "Cancel"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 13
                             font.weight: Font.Medium
                             color: window.cTextPrimary
@@ -1062,7 +1056,7 @@ PanelWindow {
                         Text {
                             anchors.centerIn: parent
                             text: "Connect"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 13
                             font.weight: Font.Medium
                             color: "#ffffff"
@@ -1118,7 +1112,7 @@ PanelWindow {
 
                 Text {
                     text: "Share Wi-Fi network"
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 16 * Appearance.effectiveScale
                     font.weight: Font.Bold
                     color: window.cTextPrimary
@@ -1127,7 +1121,7 @@ PanelWindow {
 
                 Text {
                     text: "Password: " + window.dialogPassword
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 13 * Appearance.effectiveScale
                     color: window.cTextSecondary
                     Layout.alignment: Qt.AlignHCenter
@@ -1152,7 +1146,7 @@ PanelWindow {
 
                 Text {
                     text: "To share, scan the QR code above."
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 12 * Appearance.effectiveScale
                     color: window.cTextSecondary
                     Layout.alignment: Qt.AlignHCenter
@@ -1167,7 +1161,7 @@ PanelWindow {
                     Text {
                         anchors.centerIn: parent
                         text: "Done"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 14 * Appearance.effectiveScale
                         font.weight: Font.Medium
                         color: "#ffffff"
@@ -1218,7 +1212,7 @@ PanelWindow {
 
                 Text {
                     text: "Modify network"
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 16
                     font.weight: Font.Bold
                     color: window.cTextPrimary
@@ -1226,7 +1220,7 @@ PanelWindow {
 
                 Text {
                     text: window.dialogSSID
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 12
                     color: window.cTextSecondary
                 }
@@ -1260,7 +1254,7 @@ PanelWindow {
                             anchors.centerIn: parent
                             text: "Password"
                             font.pixelSize: 10
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.weight: Font.Medium
                             color: modifyPwInput.activeFocus ? window.cAccent : window.cTextSecondary
                         }
@@ -1280,7 +1274,7 @@ PanelWindow {
                         echoMode: showPw ? QQC.TextField.Normal : QQC.TextField.Password
                         color: window.cTextPrimary
                         background: Item {}
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 14
                         
                         property bool showPw: false
@@ -1329,7 +1323,7 @@ PanelWindow {
                         Text {
                             anchors.centerIn: parent
                             text: "Forget network"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 13
                             font.weight: Font.Medium
                             color: window.cError
@@ -1353,7 +1347,7 @@ PanelWindow {
                         Text {
                             anchors.centerIn: parent
                             text: "Save"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 13
                             font.weight: Font.Medium
                             color: "#ffffff"
@@ -1405,7 +1399,7 @@ PanelWindow {
 
                 Text {
                     text: "Forget network?"
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 16
                     font.weight: Font.Bold
                     color: window.cTextPrimary
@@ -1413,7 +1407,7 @@ PanelWindow {
 
                 Text {
                     text: `This will remove "${window.dialogSSID}" from saved networks.`
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 13
                     color: window.cTextSecondary
                     wrapMode: Text.WordWrap
@@ -1435,7 +1429,7 @@ PanelWindow {
                         Text {
                             anchors.centerIn: parent
                             text: "Cancel"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 13
                             font.weight: Font.Medium
                             color: window.cTextPrimary
@@ -1459,7 +1453,7 @@ PanelWindow {
                         Text {
                             anchors.centerIn: parent
                             text: "Forget"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 13
                             font.weight: Font.Medium
                             color: "#ffffff"
@@ -1511,7 +1505,7 @@ PanelWindow {
 
                 Text {
                     text: "Add network"
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 16
                     font.weight: Font.Bold
                     color: window.cTextPrimary
@@ -1546,7 +1540,7 @@ PanelWindow {
                             anchors.centerIn: parent
                             text: "SSID"
                             font.pixelSize: 10
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.weight: Font.Medium
                             color: addSsidInput.activeFocus ? window.cAccent : window.cTextSecondary
                         }
@@ -1562,7 +1556,7 @@ PanelWindow {
                         placeholderTextColor: window.cTextMuted
                         color: window.cTextPrimary
                         background: Item {}
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 14
 
                         onAccepted: addPasswordInput.forceActiveFocus()
@@ -1598,7 +1592,7 @@ PanelWindow {
                             anchors.centerIn: parent
                             text: "Password"
                             font.pixelSize: 10
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.weight: Font.Medium
                             color: addPasswordInput.activeFocus ? window.cAccent : window.cTextSecondary
                         }
@@ -1618,7 +1612,7 @@ PanelWindow {
                         echoMode: showPw ? QQC.TextField.Normal : QQC.TextField.Password
                         color: window.cTextPrimary
                         background: Item {}
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 14
                         property bool showPw: false
 
@@ -1656,7 +1650,7 @@ PanelWindow {
                 Text {
                     visible: window.addNetError.length > 0
                     text: window.addNetError
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 12
                     color: window.cError
                 }
@@ -1676,7 +1670,7 @@ PanelWindow {
                         Text {
                             anchors.centerIn: parent
                             text: "Cancel"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 13
                             font.weight: Font.Medium
                             color: window.cTextPrimary
@@ -1705,7 +1699,7 @@ PanelWindow {
                         Text {
                             anchors.centerIn: parent
                             text: "Connect"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 13
                             font.weight: Font.Medium
                             color: addSsidInput.text.length > 0 ? "#ffffff" : Qt.rgba(1, 1, 1, 0.4)

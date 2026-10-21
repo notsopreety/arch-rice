@@ -276,8 +276,14 @@ def get_cpu(cache, new_cache):
         "architecture": arch
     }
 
-def get_gpu():
-    gpus = []
+_LSPCI_DEVICES = None
+
+def get_pci_devices():
+    """Parsed `lspci -vmm` output, cached for the life of the process."""
+    global _LSPCI_DEVICES
+    if _LSPCI_DEVICES is not None:
+        return _LSPCI_DEVICES
+    devices = []
     try:
         import subprocess
         out = subprocess.check_output(["lspci", "-vmm"]).decode("utf-8")
@@ -285,133 +291,148 @@ def get_gpu():
         for line in out.splitlines():
             if not line.strip():
                 if current_device:
-                    dev_class = current_device.get("Class", "").lower()
-                    if "vga" in dev_class or "3d" in dev_class or "display" in dev_class:
-                        vendor = current_device.get("Vendor", "")
-                        device_name = current_device.get("Device", "")
-                        slot = current_device.get("Slot", "")
-                        
-                        is_dgpu = True
-                        name_lower = device_name.lower()
-                        vendor_lower = vendor.lower()
-                        
-                        if "intel" in vendor_lower:
-                            if not "arc" in name_lower:
-                                is_dgpu = False
-                        elif "amd" in vendor_lower:
-                            if "integrated" in name_lower or "apus" in name_lower or "graphics" in name_lower and not any(x in name_lower for x in ["rx ", "xt ", "pro "]):
-                                is_dgpu = False
-                        
-                        temp = 0.0
-                        try:
-                            found_temp = False
-                            for card in os.listdir("/sys/class/drm"):
-                                if card.startswith("card") and not "-" in card:
-                                    hwmon_path = f"/sys/class/drm/{card}/device/hwmon"
-                                    if os.path.exists(hwmon_path):
-                                        for hw in os.listdir(hwmon_path):
-                                            t_file = f"{hwmon_path}/{hw}/temp1_input"
-                                            if os.path.exists(t_file):
-                                                temp = int(open(t_file).read().strip()) / 1000.0
-                                                found_temp = True
-                                                break
-                                    if found_temp:
-                                        break
-                        except:
-                            pass
-                        
-                        if temp == 0.0:
-                            # For integrated GPUs, read CPU package temperature as they share the same die
-                            if not is_dgpu:
-                                try:
-                                    hwmon_path = None
-                                    if os.path.exists("/sys/devices/platform/coretemp.0/hwmon"):
-                                        for hw in os.listdir("/sys/devices/platform/coretemp.0/hwmon"):
-                                            if hw.startswith("hwmon"):
-                                                hwmon_path = f"/sys/devices/platform/coretemp.0/hwmon/{hw}"
-                                                break
-                                    if not hwmon_path and os.path.exists("/sys/devices/platform/coretemp.0"):
-                                        hwmon_path = "/sys/devices/platform/coretemp.0"
-                                    if hwmon_path:
-                                        for f_name in os.listdir(hwmon_path):
-                                            if f_name.startswith("temp") and f_name.endswith("_label"):
-                                                label = open(f"{hwmon_path}/{f_name}").read().strip()
-                                                if label.startswith("Package") or "pkg" in label.lower():
-                                                    input_path = f"{hwmon_path}/{f_name.replace('_label', '_input')}"
-                                                    if os.path.exists(input_path):
-                                                        temp = int(open(input_path).read().strip()) / 1000.0
-                                                        break
-                                except:
-                                    pass
-
-                        if temp == 0.0:
-                            for path in ["/sys/class/thermal/thermal_zone8/temp", "/sys/class/thermal/thermal_zone6/temp", "/sys/class/thermal/thermal_zone0/temp", "/sys/class/thermal/thermal_zone1/temp", "/sys/class/thermal/thermal_zone2/temp"]:
-                                if os.path.exists(path):
-                                    temp = float(open(path).read().strip()) / 1000.0
-                                    break
-                        
-                        usage = 0.0
-                        if "intel" in vendor_lower:
-                            try:
-                                for card in os.listdir("/sys/class/drm"):
-                                    if card.startswith("card") and not "-" in card:
-                                        cur_paths = [
-                                            f"/sys/class/drm/{card}/gt_cur_freq_mhz",
-                                            f"/sys/class/drm/{card}/device/drm/{card}/gt_cur_freq_mhz",
-                                            f"/sys/class/drm/{card}/device/gt_cur_freq_mhz"
-                                        ]
-                                        max_paths = [
-                                            f"/sys/class/drm/{card}/gt_max_freq_mhz",
-                                            f"/sys/class/drm/{card}/device/drm/{card}/gt_max_freq_mhz",
-                                            f"/sys/class/drm/{card}/device/gt_max_freq_mhz"
-                                        ]
-                                        cur_f, max_f = 0.0, 0.0
-                                        for p in cur_paths:
-                                            if os.path.exists(p):
-                                                cur_f = float(open(p).read().strip())
-                                                break
-                                        for p in max_paths:
-                                            if os.path.exists(p):
-                                                max_f = float(open(p).read().strip())
-                                                break
-                                        if max_f > 0:
-                                            usage = (cur_f / max_f) * 100.0
-                                            break
-                            except:
-                                pass
-                        elif "nvidia" in vendor_lower:
-                            try:
-                                nv_out = subprocess.check_output(["nvidia-smi", "--query-gpu=utilization.gpu", "--format=csv,noheader,nounits"]).decode("utf-8")
-                                usage = float(nv_out.strip())
-                            except:
-                                pass
-                        elif "amd" in vendor_lower:
-                            try:
-                                for card in os.listdir("/sys/class/drm"):
-                                    if card.startswith("card") and not "-" in card:
-                                        busy_path = f"/sys/class/drm/{card}/device/gpu_busy_percent"
-                                        if os.path.exists(busy_path):
-                                            usage = float(open(busy_path).read().strip())
-                                            break
-                            except:
-                                pass
-
-                        gpus.append({
-                            "displayName": device_name,
-                            "name": device_name,
-                            "vendor": vendor,
-                            "temperature": temp,
-                            "usage": round(usage, 1),
-                            "pciId": slot,
-                            "isDedicated": is_dgpu,
-                            "typeLabel": "Dedicated (dGPU)" if is_dgpu else "Integrated (iGPU)",
-                            "driver": current_device.get("Driver", "System GPU driver")
-                        })
-                current_device = {}
+                    devices.append(current_device)
+                    current_device = {}
             else:
                 parts = line.split(":", 1)
                 if len(parts) == 2:
                     current_device[parts[0].strip()] = parts[1].strip()
+        if current_device:
+            devices.append(current_device)
+    except Exception:
+        pass
+    _LSPCI_DEVICES = devices
+    return devices
+
+def get_gpu():
+    gpus = []
+    try:
+        import subprocess
+        for current_device in get_pci_devices():
+            dev_class = current_device.get("Class", "").lower()
+            if not ("vga" in dev_class or "3d" in dev_class or "display" in dev_class):
+                continue
+
+            vendor = current_device.get("Vendor", "")
+            device_name = current_device.get("Device", "")
+            slot = current_device.get("Slot", "")
+
+            is_dgpu = True
+            name_lower = device_name.lower()
+            vendor_lower = vendor.lower()
+
+            if "intel" in vendor_lower:
+                if not "arc" in name_lower:
+                    is_dgpu = False
+            elif "amd" in vendor_lower:
+                if "integrated" in name_lower or "apus" in name_lower or "graphics" in name_lower and not any(x in name_lower for x in ["rx ", "xt ", "pro "]):
+                    is_dgpu = False
+
+            temp = 0.0
+            try:
+                found_temp = False
+                for card in os.listdir("/sys/class/drm"):
+                    if card.startswith("card") and not "-" in card:
+                        hwmon_path = f"/sys/class/drm/{card}/device/hwmon"
+                        if os.path.exists(hwmon_path):
+                            for hw in os.listdir(hwmon_path):
+                                t_file = f"{hwmon_path}/{hw}/temp1_input"
+                                if os.path.exists(t_file):
+                                    temp = int(open(t_file).read().strip()) / 1000.0
+                                    found_temp = True
+                                    break
+                        if found_temp:
+                            break
+            except:
+                pass
+
+            if temp == 0.0:
+                # For integrated GPUs, read CPU package temperature as they share the same die
+                if not is_dgpu:
+                    try:
+                        hwmon_path = None
+                        if os.path.exists("/sys/devices/platform/coretemp.0/hwmon"):
+                            for hw in os.listdir("/sys/devices/platform/coretemp.0/hwmon"):
+                                if hw.startswith("hwmon"):
+                                    hwmon_path = f"/sys/devices/platform/coretemp.0/hwmon/{hw}"
+                                    break
+                        if not hwmon_path and os.path.exists("/sys/devices/platform/coretemp.0"):
+                            hwmon_path = "/sys/devices/platform/coretemp.0"
+                        if hwmon_path:
+                            for f_name in os.listdir(hwmon_path):
+                                if f_name.startswith("temp") and f_name.endswith("_label"):
+                                    label = open(f"{hwmon_path}/{f_name}").read().strip()
+                                    if label.startswith("Package") or "pkg" in label.lower():
+                                        input_path = f"{hwmon_path}/{f_name.replace('_label', '_input')}"
+                                        if os.path.exists(input_path):
+                                            temp = int(open(input_path).read().strip()) / 1000.0
+                                            break
+                    except:
+                        pass
+
+            if temp == 0.0:
+                for path in ["/sys/class/thermal/thermal_zone8/temp", "/sys/class/thermal/thermal_zone6/temp", "/sys/class/thermal/thermal_zone0/temp", "/sys/class/thermal/thermal_zone1/temp", "/sys/class/thermal/thermal_zone2/temp"]:
+                    if os.path.exists(path):
+                        temp = float(open(path).read().strip()) / 1000.0
+                        break
+
+            usage = 0.0
+            if "intel" in vendor_lower:
+                try:
+                    for card in os.listdir("/sys/class/drm"):
+                        if card.startswith("card") and not "-" in card:
+                            cur_paths = [
+                                f"/sys/class/drm/{card}/gt_cur_freq_mhz",
+                                f"/sys/class/drm/{card}/device/drm/{card}/gt_cur_freq_mhz",
+                                f"/sys/class/drm/{card}/device/gt_cur_freq_mhz"
+                            ]
+                            max_paths = [
+                                f"/sys/class/drm/{card}/gt_max_freq_mhz",
+                                f"/sys/class/drm/{card}/device/drm/{card}/gt_max_freq_mhz",
+                                f"/sys/class/drm/{card}/device/gt_max_freq_mhz"
+                            ]
+                            cur_f, max_f = 0.0, 0.0
+                            for p in cur_paths:
+                                if os.path.exists(p):
+                                    cur_f = float(open(p).read().strip())
+                                    break
+                            for p in max_paths:
+                                if os.path.exists(p):
+                                    max_f = float(open(p).read().strip())
+                                    break
+                            if max_f > 0:
+                                usage = (cur_f / max_f) * 100.0
+                                break
+                except:
+                    pass
+            elif "nvidia" in vendor_lower:
+                try:
+                    nv_out = subprocess.check_output(["nvidia-smi", "--query-gpu=utilization.gpu", "--format=csv,noheader,nounits"]).decode("utf-8")
+                    usage = float(nv_out.strip())
+                except:
+                    pass
+            elif "amd" in vendor_lower:
+                try:
+                    for card in os.listdir("/sys/class/drm"):
+                        if card.startswith("card") and not "-" in card:
+                            busy_path = f"/sys/class/drm/{card}/device/gpu_busy_percent"
+                            if os.path.exists(busy_path):
+                                usage = float(open(busy_path).read().strip())
+                                break
+                except:
+                    pass
+
+            gpus.append({
+                "displayName": device_name,
+                "name": device_name,
+                "vendor": vendor,
+                "temperature": temp,
+                "usage": round(usage, 1),
+                "pciId": slot,
+                "isDedicated": is_dgpu,
+                "typeLabel": "Dedicated (dGPU)" if is_dgpu else "Integrated (iGPU)",
+                "driver": current_device.get("Driver", "System GPU driver")
+            })
     except Exception as e:
         pass
     return gpus
@@ -421,7 +442,13 @@ def main():
     new_cache = {}
     now = time.time()
     new_cache["timestamp"] = now
-    
+
+    # Only pay for the expensive probes the caller asked for.
+    modules = sys.argv[1] if len(sys.argv) > 1 else ""
+    include_proc = "processes" in modules
+    include_gpu = "gpu" in modules
+    include_diskmounts = "diskmounts" in modules
+
     time_diff = now - cache.get("timestamp", 0) if "timestamp" in cache else 0
     if time_diff <= 0:
         time_diff = 1.0
@@ -535,33 +562,33 @@ def main():
 
     # --- Disk Mounts ---
     mounts = []
-    try:
-        import subprocess
-        out = subprocess.check_output(["df", "-B1"]).decode("utf-8")
-        lines = out.strip().split("\n")
-        for line in lines[1:]:
-            parts = line.split()
-            if len(parts) >= 6:
-                mount = parts[5]
-                total = int(parts[1])
-                used = int(parts[2])
-                percent = parts[4]
-                mounts.append({
-                    "mount": mount,
-                    "mountpoint": mount,
-                    "percent_used": float(percent.strip("%")),
-                    "total_bytes": total,
-                    "used_bytes": used
-                })
-    except:
-        pass
+    if include_diskmounts:
+        try:
+            import subprocess
+            out = subprocess.check_output(["df", "-B1"]).decode("utf-8")
+            lines = out.strip().split("\n")
+            for line in lines[1:]:
+                parts = line.split()
+                if len(parts) >= 6:
+                    mount = parts[5]
+                    total = int(parts[1])
+                    used = int(parts[2])
+                    percent = parts[4]
+                    mounts.append({
+                        "mount": mount,
+                        "mountpoint": mount,
+                        "percent_used": float(percent.strip("%")),
+                        "total_bytes": total,
+                        "used_bytes": used
+                    })
+        except:
+            pass
 
     # --- GPU ---
-    gpus = get_gpu()
+    gpus = get_gpu() if include_gpu else []
 
     # --- Processes ---
     processes = []
-    include_proc = len(sys.argv) > 1 and "processes" in sys.argv[1]
     if include_proc:
         processes = get_processes(cache, new_cache, time_diff)
 

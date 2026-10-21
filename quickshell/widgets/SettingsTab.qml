@@ -15,7 +15,6 @@ Item {
     Layout.fillHeight: true
 
     // Widget visibility states
-    property bool clockWidgetActive: true
     property bool photoFrameWidgetActive: true
     property bool activateLinuxWidgetActive: true
     property bool flowersWidgetActive: false
@@ -27,8 +26,6 @@ Item {
         if (!jsonText || jsonText.trim() === "") return;
         try {
             let data = JSON.parse(jsonText);
-            if (data.clock && data.clock.isActive !== undefined)
-                root.clockWidgetActive = data.clock.isActive;
             if (data.photoFrame && data.photoFrame.isActive !== undefined)
                 root.photoFrameWidgetActive = data.photoFrame.isActive;
             if (data.activateLinux && data.activateLinux.isActive !== undefined)
@@ -51,19 +48,7 @@ Item {
     }
 
     function saveWidgetSetting(widgetKey, isActive) {
-        let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
-        let val = isActive ? "True" : "False";
-        let cmd = "import json, os; path = '" + path + "'; " +
-                  "data = json.load(open(path)) if os.path.exists(path) else {}; " +
-                  "w = data.setdefault('" + widgetKey + "', {}); " +
-                  "w['isActive'] = " + val + "; " +
-                  "tmp = path + '.tmp'; " +
-                  "f = open(tmp, 'w'); " +
-                  "json.dump(data, f, indent=2); " +
-                  "f.close(); " +
-                  "os.replace(tmp, path)";
-        widgetSaveProc.command = ["python3", "-c", cmd];
-        widgetSaveProc.running = true;
+        Config.setSection(widgetKey, { isActive: isActive });
     }
 
     FileView {
@@ -82,10 +67,6 @@ Item {
         running: false
         repeat: false
         onTriggered: widgetSettingsFile.reload()
-    }
-
-    Process {
-        id: widgetSaveProc
     }
 
     QQC.ScrollView {
@@ -203,6 +184,11 @@ Item {
                         }
                         hlScalePill.currentScale = nextScale;
                         Quickshell.execDetached(["sh", "-c", "sed -i -E 's/(scale *= *)\"[^\"]+\"/\\1\"" + nextScale + "\"/g' ~/.config/hypr/lua.d/monitors.lua; hyprctl reload"]);
+                    }
+                    Process {
+                        id: updateScaleProc
+                        running: false
+                        onExited: () => {}
                     }
                     Process {
                         id: checkScaleState
@@ -408,7 +394,8 @@ Item {
                                         let v = parseInt(text);
                                         if (!isNaN(v)) {
                                             roundingPill.value = v;
-                                            updateRoundingProc.command = ["sh", "-c", "hyprctl keyword decoration:rounding " + v + " && sed -i -E 's/(rounding *= )[0-9]+(,*)/\\1" + v + "\\2/' ~/.config/hypr/lua.d/look_and_feel.lua"];
+                        Quickshell.execDetached(HyprlandCompat.keyword("decoration", "rounding", String(v)));
+                                            updateRoundingProc.command = ["sed", "-i", "-E", "s/(rounding *= )[0-9]+(,*)/\\1" + v + "\\2/", Directories.home + "/.config/hypr/lua.d/look_and_feel.lua"];
                                             updateRoundingProc.running = true;
                                         }
                                     }
@@ -598,7 +585,8 @@ Item {
                                         let v = parseInt(text);
                                         if (!isNaN(v)) {
                                             borderSizePill.value = v;
-                                            updateBorderSizeProc.command = ["sh", "-c", "hyprctl keyword general:border_size " + v + " && sed -i -E 's/(border_size *= )[0-9]+(,*)/\\1" + v + "\\2/' ~/.config/hypr/lua.d/look_and_feel.lua"];
+                            Quickshell.execDetached(HyprlandCompat.keyword("general", "border_size", String(v)));
+                                            updateBorderSizeProc.command = ["sed", "-i", "-E", "s/(border_size *= )[0-9]+(,*)/\\1" + v + "\\2/", Directories.home + "/.config/hypr/lua.d/look_and_feel.lua"];
                                             updateBorderSizeProc.running = true;
                                         }
                                     }
@@ -945,7 +933,9 @@ Item {
                         acceptedButtons: Qt.RightButton
                         onTapped: {
                             gapsInSlider.value = 3;
-                            Quickshell.execDetached(["sh", "-c", "hyprctl keyword general:gaps_in 3 && sed -i -E 's/(gaps_in *= )[0-9]+(,*)/\\13\\2/' ~/.config/hypr/lua.d/look_and_feel.lua"]);
+                            Quickshell.execDetached(HyprlandCompat.keyword("general", "gaps_in", "3"));
+                            setGapsInProc.command = ["sed", "-i", "-E", "s/(gaps_in *= )[0-9]+(,*)/\\13\\2/", Directories.home + "/.config/hypr/lua.d/look_and_feel.lua"];
+                            setGapsInProc.running = true;
                         }
                     }
 
@@ -1015,7 +1005,8 @@ Item {
 
                                 onMoved: {
                                     var val = Math.round(value);
-                                    setGapsInProc.command = ["sh", "-c", "hyprctl keyword general:gaps_in " + val + " && sed -i -E 's/(gaps_in *= )[0-9]+(,*)/\\1" + val + "\\2/' ~/.config/hypr/lua.d/look_and_feel.lua"];
+                                    Quickshell.execDetached(HyprlandCompat.keyword("general", "gaps_in", String(val)));
+                                    setGapsInProc.command = ["sed", "-i", "-E", "s/(gaps_in *= )[0-9]+(,*)/\\1" + val + "\\2/", Directories.home + "/.config/hypr/lua.d/look_and_feel.lua"];
                                     setGapsInProc.running = true;
                                 }
                             }
@@ -1071,7 +1062,9 @@ Item {
                         acceptedButtons: Qt.RightButton
                         onTapped: {
                             gapsOutSlider.value = 10;
-                            Quickshell.execDetached(["sh", "-c", "hyprctl keyword general:gaps_out 10 && sed -i -E 's/(gaps_out *= )[0-9]+(,*)/\\110\\2/' ~/.config/hypr/lua.d/look_and_feel.lua"]);
+                            Quickshell.execDetached(HyprlandCompat.keyword("general", "gaps_out", "10"));
+                            setGapsOutProc.command = ["sed", "-i", "-E", "s/(gaps_out *= )[0-9]+(,*)/\\110\\2/", Directories.home + "/.config/hypr/lua.d/look_and_feel.lua"];
+                            setGapsOutProc.running = true;
                         }
                     }
 
@@ -1141,7 +1134,8 @@ Item {
 
                                 onMoved: {
                                     var val = Math.round(value);
-                                    setGapsOutProc.command = ["sh", "-c", "hyprctl keyword general:gaps_out " + val + " && sed -i -E 's/(gaps_out *= )[0-9]+(,*)/\\1" + val + "\\2/' ~/.config/hypr/lua.d/look_and_feel.lua"];
+                                    Quickshell.execDetached(HyprlandCompat.keyword("general", "gaps_out", String(val)));
+                                    setGapsOutProc.command = ["sed", "-i", "-E", "s/(gaps_out *= )[0-9]+(,*)/\\1" + val + "\\2/", Directories.home + "/.config/hypr/lua.d/look_and_feel.lua"];
                                     setGapsOutProc.running = true;
                                 }
                             }
@@ -1207,7 +1201,10 @@ Item {
                         onTapped: {
                             gapsInSlider.value = 3;
                             gapsOutSlider.value = 10;
-                            Quickshell.execDetached(["sh", "-c", "hyprctl keyword general:gaps_in 3 && hyprctl keyword general:gaps_out 10 && sed -i -E 's/(gaps_in *= )[0-9]+(,*)/\\13\\2/; s/(gaps_out *= )[0-9]+(,*)/\\110\\2/' ~/.config/hypr/lua.d/look_and_feel.lua"]);
+                            Quickshell.execDetached(HyprlandCompat.keyword("general", "gaps_in", "3"));
+                            Quickshell.execDetached(HyprlandCompat.keyword("general", "gaps_out", "10"));
+                            setGapsInProc.command = ["sed", "-i", "-E", "s/(gaps_in *= )[0-9]+(,*)/\\13\\2/; s/(gaps_out *= )[0-9]+(,*)/\\110\\2/", Directories.home + "/.config/hypr/lua.d/look_and_feel.lua"];
+                            setGapsInProc.running = true;
                         }
                     }
                     QQC.ToolTip {
@@ -1269,7 +1266,9 @@ Item {
                         onClicked: {
                             var val = gapsInSlider.value;
                             gapsOutSlider.value = val;
-                            Quickshell.execDetached(["sh", "-c", "hyprctl keyword general:gaps_out " + val + " && sed -i -E 's/(gaps_out *= )[0-9]+(,*)/\\1" + val + "\\2/' ~/.config/hypr/lua.d/look_and_feel.lua"]);
+                            Quickshell.execDetached(HyprlandCompat.keyword("general", "gaps_out", String(val)));
+                            setGapsOutProc.command = ["sed", "-i", "-E", "s/(gaps_out *= )[0-9]+(,*)/\\1" + val + "\\2/", Directories.home + "/.config/hypr/lua.d/look_and_feel.lua"];
+                            setGapsOutProc.running = true;
                         }
                     }
                 }
@@ -1292,21 +1291,6 @@ Item {
                 columns: 2
                 columnSpacing: 16 * Appearance.effectiveScale
                 rowSpacing: 16 * Appearance.effectiveScale
-
-                // --- Clock Widget Toggle ---
-                SettingsToggle {
-                    id: clockWidgetPill
-                    isActive: root.clockWidgetActive
-                    title: "Clock Widget"
-                    statusText: root.clockWidgetActive ? "Visible" : "Hidden"
-                    iconName: "schedule"
-                    iconOffName: "timer_off"
-                    tooltipText: "Toggle Clock Desktop Widget"
-                    onClicked: {
-                        root.clockWidgetActive = !root.clockWidgetActive;
-                        root.saveWidgetSetting("clock", root.clockWidgetActive);
-                    }
-                }
 
                 // --- Photo Frame Widget Toggle ---
                 SettingsToggle {

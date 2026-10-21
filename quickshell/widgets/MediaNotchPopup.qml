@@ -28,27 +28,8 @@ Variants {
         readonly property string notchStyle: (Config.ready && Config.options.media && Config.options.media.notchMediaStyle) ? Config.options.media.notchMediaStyle : "mini"
         readonly property bool isFull: notchStyle === "full"
 
-        // Glassmorphism detector
-        property bool glassmorphism: false
-        FileView {
-            id: glassmorphismFlagFile
-            path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-            preload: true
-            watchChanges: true
-            onFileChanged: glassmorphismReloadTimer.restart()
-            Component.onCompleted: {
-                try { glassmorphismFlagFile.reload(); popupWindow.glassmorphism = true; } catch(e) { popupWindow.glassmorphism = false; }
-            }
-            onLoaded: popupWindow.glassmorphism = true
-            onLoadFailed: popupWindow.glassmorphism = false
-        }
-        Timer {
-            id: glassmorphismReloadTimer
-            interval: 200; repeat: false
-            onTriggered: {
-                try { glassmorphismFlagFile.reload(); } catch(e) {}
-            }
-        }
+        // Glassmorphism (shared flag, see services/Glassmorphism.qml)
+        readonly property bool glassmorphism: Glassmorphism.enabled
 
         // Positioning: Center top, below status bar
         WlrLayershell.layer: WlrLayer.Top

@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import Quickshell.Services.Mpris
 import "../theme"
 import "../components"

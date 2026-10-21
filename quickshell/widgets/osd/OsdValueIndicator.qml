@@ -2,6 +2,7 @@ import "../../core"
 import "../../widgets"
 import "../../core/functions" as Functions
 import "../../theme"
+import "../../services"
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -41,19 +42,8 @@ Item {
         badgeSlideIn.start();
     }
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); valueIndicatorRoot.glassmorphism = true; } catch(e) { valueIndicatorRoot.glassmorphism = false; } }
-        onLoaded: valueIndicatorRoot.glassmorphism = true
-        onLoadFailed: valueIndicatorRoot.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     // Main Glassmorphic Container
     Rectangle {

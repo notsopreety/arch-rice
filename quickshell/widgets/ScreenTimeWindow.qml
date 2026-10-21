@@ -14,6 +14,11 @@ import "../components"
 FloatingWindow {
     id: win
 
+    signal closed()
+    function close() {
+        win.closed();
+    }
+
     color: "transparent"
     title: "Digital Wellbeing - Screen Time"
 
@@ -27,19 +32,8 @@ FloatingWindow {
         running: false
     }
 
-    // ── Glassmorphism Toggle Listener ─────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); win.glassmorphism = true; } catch(e) { win.glassmorphism = false; } }
-        onLoaded: win.glassmorphism = true
-        onLoadFailed: win.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     readonly property color cBg: win.glassmorphism 
         ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.55) 

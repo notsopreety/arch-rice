@@ -8,6 +8,9 @@ QtObject {
 
     property bool visible: false
 
+    // argv arrays bypass the shell, so env vars must be resolved here
+    readonly property string sessionId: Quickshell.env("XDG_SESSION_ID")
+
     function open() {
         visible = true;
     }
@@ -23,9 +26,8 @@ QtObject {
     // Processes
     property Process lockProc: Process { command: ["loginctl", "lock-session"] }
     property Process sleepProc: Process { command: ["sh", "-c", "loginctl lock-session && systemctl suspend"] }
-    property Process reloadProc: Process { command: ["quickshell", "ipc", "call", "quickshell", "run", "reload"] }
     property Process rebootProc: Process { command: ["systemctl", "reboot"] }
-    property Process logoutProc: Process { command: ["loginctl", "terminate-session", "$XDG_SESSION_ID"] }
+    property Process logoutProc: Process { command: ["loginctl", "terminate-session", sessionId] }
     property Process poweroffProc: Process { command: ["systemctl", "poweroff"] }
 
     function runCommand(cmd) {

@@ -13,19 +13,8 @@ import "../core"
 PanelWindow {
     id: window
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); window.glassmorphism = true; } catch(e) { window.glassmorphism = false; } }
-        onLoaded: window.glassmorphism = true
-        onLoadFailed: window.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     readonly property color cBg: window.glassmorphism ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35) : Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.95)
     readonly property color cCard: window.glassmorphism ? Qt.rgba(Theme.surfaceContainerHigh.r, Theme.surfaceContainerHigh.g, Theme.surfaceContainerHigh.b, 0.4) : Theme.surfaceContainerHigh
@@ -198,7 +187,7 @@ PanelWindow {
 
                         Text {
                             text: "Battery & Power"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 18 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: window.cTextPrimary
@@ -340,7 +329,7 @@ PanelWindow {
 
                                     Text {
                                         text: Math.round(window.displayPercentage * 100) + "%"
-                                        font.family: "Inter"
+                                        font.family: "Google Sans Flex"
                                         font.pixelSize: 34 * Appearance.effectiveScale
                                         font.weight: Font.Black
                                         color: "white"
@@ -359,7 +348,7 @@ PanelWindow {
                                         Text {
                                             anchors.centerIn: parent
                                             text: Math.abs(Battery.energyRate).toFixed(1) + " W"
-                                            font.family: "Inter"
+                                            font.family: "Google Sans Flex"
                                             font.pixelSize: 10 * Appearance.effectiveScale
                                             font.weight: Font.Bold
                                             color: Theme.primary
@@ -369,7 +358,7 @@ PanelWindow {
 
                                 Text {
                                     text: Battery.isCharging ? "Charging" : (Battery.chargeState === 4 ? "Fully Charged" : "Discharging")
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 13 * Appearance.effectiveScale
                                     font.weight: Font.Bold
                                     color: Theme.primary
@@ -383,7 +372,7 @@ PanelWindow {
                                         const m = Math.floor((secs % 3600) / 60);
                                         return (Battery.isCharging ? "Time to full: " : "Time remaining: ") + (h > 0 ? h + "h " + m + "m" : m + "m");
                                     }
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 11 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     color: window.cTextSecondary
@@ -391,7 +380,7 @@ PanelWindow {
 
                                 Text {
                                     text: Battery.isPluggedIn ? "Power Source: AC Adapter" : "Power Source: Internal Battery"
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 9 * Appearance.effectiveScale
                                     color: window.cTextMuted
                                 }
@@ -406,7 +395,7 @@ PanelWindow {
 
                         Text {
                             text: "Power Mode"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 11 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: window.cTextMuted
@@ -493,7 +482,7 @@ PanelWindow {
 
                                         Text {
                                             text: m3ButtonGroup.labels[index]
-                                            font.family: "Google Sans, Inter, " + Theme.font.family
+                                            font.family: Theme.font.family
                                             font.pixelSize: 11 * Appearance.effectiveScale
                                             font.weight: segmentBtn.isActive ? Font.Bold : Font.Normal
                                             color: segmentBtn.isActive ? window.cTextPrimary : window.cTextSecondary
@@ -567,14 +556,14 @@ PanelWindow {
 
                                         Text {
                                             text: statsGrid.titles[index]
-                                            font.family: "Inter"
+                                            font.family: "Google Sans Flex"
                                             font.pixelSize: 9 * Appearance.effectiveScale
                                             font.weight: Font.Bold
                                             color: window.cTextMuted
                                         }
                                         Text {
                                             text: statsGrid.values[index]
-                                            font.family: "Inter"
+                                            font.family: "Google Sans Flex"
                                             font.pixelSize: 13 * Appearance.effectiveScale
                                             font.weight: Font.Bold
                                             color: window.cTextPrimary
@@ -623,7 +612,7 @@ PanelWindow {
 
                                 Text {
                                     text: "Conservation Mode"
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Bold
                                     color: window.cTextPrimary
@@ -631,7 +620,7 @@ PanelWindow {
 
                                 Text {
                                     text: "Limits charge to 80% to protect lifespan"
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 9 * Appearance.effectiveScale
                                     color: window.cTextMuted
                                 }

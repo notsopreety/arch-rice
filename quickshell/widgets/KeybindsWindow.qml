@@ -181,7 +181,7 @@ PanelWindow {
                         
                         Text {
                             text: "Keybindings"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 20
                             font.weight: Font.Bold
                             color: "#ffffff"
@@ -199,7 +199,7 @@ PanelWindow {
                                 id: countText
                                 anchors.centerIn: parent
                                 text: bindsModel.count + " total"
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 11
                                 font.weight: Font.Medium
                                 color: Theme.primary
@@ -234,7 +234,7 @@ PanelWindow {
                                 anchors.centerIn: parent
                                 text: "Search"
                                 font.pixelSize: 10
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.weight: Font.Medium
                                 color: searchInput.activeFocus ? Theme.primary : Theme.outline
                                 Behavior on color { ColorAnimation { duration: 180 } }
@@ -258,7 +258,7 @@ PanelWindow {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignVCenter
                                 color: "#ffffff"
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 14
                                 clip: true
                                 selectByMouse: true
@@ -356,7 +356,7 @@ PanelWindow {
                                     Text {
                                         Layout.fillWidth: true
                                         text: desc
-                                        font.family: "Inter"
+                                        font.family: "Google Sans Flex"
                                         font.pixelSize: 11
                                         color: Qt.rgba(255, 255, 255, 0.8)
                                         elide: Text.ElideRight

@@ -97,14 +97,17 @@ Singleton {
     
     // Add notification from external NotificationServer
     function addNotification(notif) {
-        // Enable tracking on the notification so replacement and updates are handled in-place
-        notif.tracked = true
-
         // Check DND mode
         if (dnd && notif.urgency !== NotificationUrgency.Critical) {
             QsServices.Logger.debug("Notifs", `DND active - suppressing: ${notif.summary}`)
+            // Drop without tracking so it can't bypass the cap/cleanup below
+            if (typeof notif.dismiss === "function")
+                notif.dismiss()
             return;
         }
+
+        // Enable tracking on the notification so replacement and updates are handled in-place
+        notif.tracked = true
 
         QsServices.Logger.debug("Notifs", `Adding notification: ${notif.summary}`)
         

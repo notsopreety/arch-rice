@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 import "." as QsServices
+import "../core"
 
 Singleton {
     id: root
@@ -165,15 +166,6 @@ Singleton {
     
     function updateTopProcesses() {
         topProcessesProc.running = true
-    }
-    
-    function formatBytes(bytes) {
-        const gb = bytes / (1024 ** 3)
-        if (gb >= 1) return { value: gb, unit: "GB" }
-        const mb = bytes / (1024 ** 2)
-        if (mb >= 1) return { value: mb, unit: "MB" }
-        const kb = bytes / 1024
-        return { value: kb, unit: "KB" }
     }
     
     // CPU usage calculation
@@ -387,12 +379,12 @@ Singleton {
     }
     
     // Update timer - optimized with staggered updates
-    // Only runs when active (controlled by consumer visibility)
+    // Always-on: the bar CPU/MEM/temp pill and the desktop RAM/disk widget need live values.
     Timer {
         id: updateTimer
-        interval: 2000  // Base interval
+        interval: 3000  // Base interval
         repeat: true
-        running: root.active  // Pause when no consumer is visible
+        running: root.active
         triggeredOnStart: true  // Immediate first read
         
         property int tickCount: 0
@@ -400,25 +392,29 @@ Singleton {
         onTriggered: {
             tickCount++
             
-            // Update CPU, Memory, Network every tick (2s)
+            // Update CPU, Memory, Network every tick (3s)
             updateCpu()
             updateMemory()
             updateNetwork()
             cpuFreqProc.running = true
             
-            // Update Disk less frequently (every 10s)
+            // Update Disk less frequently (every 15s)
             if (tickCount % 5 === 0) {
                 updateDisk()
             }
             
-            // Update GPU moderately (every 4s)
-            if (tickCount % 2 === 0) {
-                updateGpu()
-            }
-            
-            // Update top processes less frequently (every 6s)
-            if (tickCount % 3 === 0) {
-                updateTopProcesses()
+            // GPU and the process list only feed the system-monitor dash, so
+            // only pay for nvidia-smi/ps while it is open.
+            if (GlobalStates.systemMonitorOpen) {
+                // Update GPU moderately (every 6s)
+                if (tickCount % 2 === 0) {
+                    updateGpu()
+                }
+                
+                // Update top processes less frequently (every 9s)
+                if (tickCount % 3 === 0) {
+                    updateTopProcesses()
+                }
             }
         }
     }

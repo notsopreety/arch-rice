@@ -12,19 +12,8 @@ import "../components"
 PanelWindow {
     id: root
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); root.glassmorphism = true; } catch(e) { root.glassmorphism = false; } }
-        onLoaded: root.glassmorphism = true
-        onLoadFailed: root.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     readonly property color surface: root.glassmorphism
         ? Qt.rgba(Theme.surfaceContainer.r, Theme.surfaceContainer.g, Theme.surfaceContainer.b, 0.35)
@@ -49,7 +38,7 @@ PanelWindow {
         return primaryColor
     }
 
-    screen: Quickshell.screens[0]
+    screen: Quickshell.screens.length ? Quickshell.screens[0] : null
     anchors { top: true; right: true }
     margins { top: root.margin; right: root.margin }
     visible: notifStack.children.length > 0
@@ -333,8 +322,8 @@ PanelWindow {
                     color: card.dragX > 0 ? Qt.rgba(root.errorColor.r, root.errorColor.g, root.errorColor.b, 0.06) : Qt.rgba(root.primaryColor.r, root.primaryColor.g, root.primaryColor.b, 0.06)
                     Text {
                         anchors.centerIn: parent
-                        text: card.dragX > 0 ? "󰅖" : "󰄬"
-                        font.family: "Material Design Icons"
+                        text: card.dragX > 0 ? "close" : "check"
+                        font.family: "Material Symbols Rounded"
                         font.pixelSize: 22
                         color: card.dragX > 0 ? root.errorColor : root.primaryColor
                         opacity: 0.5
@@ -430,7 +419,7 @@ PanelWindow {
                                     anchors.centerIn: parent
                                     visible: !appIconImg.visible
                                     text: (modelData.appName ?? "N").slice(0, 1).toUpperCase()
-                                    font.family: "Inter"; font.pixelSize: 14; font.weight: Font.Bold
+                                    font.family: "Google Sans Flex"; font.pixelSize: 14; font.weight: Font.Bold
                                     color: root.urgencyColor(modelData.urgency)
                                 }
                             }
@@ -441,14 +430,14 @@ PanelWindow {
                                 Text {
                                     Layout.fillWidth: true
                                     text: modelData.summary || "Notification"
-                                    font.family: "Inter"; font.pixelSize: 12; font.weight: Font.DemiBold
+                                    font.family: "Google Sans Flex"; font.pixelSize: 12; font.weight: Font.DemiBold
                                     color: root.textColor; elide: Text.ElideRight
                                 }
 
                                 Text {
                                     Layout.fillWidth: true
                                     text: modelData.appName || "Unknown app"
-                                    font.family: "Inter"; font.pixelSize: 10
+                                    font.family: "Google Sans Flex"; font.pixelSize: 10
                                     color: root.textMutedColor; elide: Text.ElideRight
                                 }
                             }
@@ -466,7 +455,7 @@ PanelWindow {
                                 Text {
                                     Layout.alignment: Qt.AlignRight
                                     text: modelData.timeString || "now"
-                                    font.family: "Inter"; font.pixelSize: 9
+                                    font.family: "Google Sans Flex"; font.pixelSize: 9
                                     color: root.textMutedColor
                                 }
                             }
@@ -497,7 +486,7 @@ PanelWindow {
                             wrapMode: Text.WordWrap
                             maximumLineCount: card.expanded ? 6 : 2
                             elide: Text.ElideRight
-                            font.family: "Inter"; font.pixelSize: 10
+                            font.family: "Google Sans Flex"; font.pixelSize: 10
                             color: root.textMutedColor
                         }
 
@@ -538,7 +527,7 @@ PanelWindow {
                                     Text {
                                         id: label; anchors.centerIn: parent
                                         text: parent.modelData.text || parent.modelData.identifier
-                                        font.family: "Inter"; font.pixelSize: 10; font.weight: Font.Medium
+                                        font.family: "Google Sans Flex"; font.pixelSize: 10; font.weight: Font.Medium
                                         color: Theme.primary
                                     }
                                     MouseArea {

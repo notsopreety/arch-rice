@@ -11,7 +11,6 @@ Singleton {
     onBrightnessChanged: root.brightnessUpdated()
 
     property real brightness: 0.5
-    property real maxBrightness: 1.0
     
     // Alias for easier access
     readonly property real level: brightness
@@ -150,10 +149,11 @@ Singleton {
         }
     }
     
-    // Update timer - fast interval for smooth OSD updates
+    // Update timer - setBrightness()/setBrightnessProcess update state instantly, so
+    // this only needs to pick up external changes (e.g. hardware keys).
     Timer {
         id: updateTimer
-        interval: 50
+        interval: 500
         repeat: true
         triggeredOnStart: true
         onTriggered: readBrightness()

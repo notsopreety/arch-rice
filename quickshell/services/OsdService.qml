@@ -175,7 +175,7 @@ Singleton {
 
     Timer {
         id: capslockTimer
-        interval: 100
+        interval: 1000
         repeat: true
         running: root.capslockPath !== ""
         triggeredOnStart: true
@@ -235,7 +235,7 @@ Singleton {
 
     Timer {
         id: kbdTimer
-        interval: 100
+        interval: 1000
         repeat: true
         running: root.kbdPath !== ""
         triggeredOnStart: true
@@ -477,7 +477,7 @@ Singleton {
 
     Timer {
         id: rfkillWatcherTimer
-        interval: 5000
+        interval: 15000
         running: true
         repeat: true
         triggeredOnStart: true

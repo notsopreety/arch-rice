@@ -19,19 +19,8 @@ PanelWindow {
     readonly property color primaryColor: Theme.primary
     readonly property color errorColor: Theme.error
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); window.glassmorphism = true; } catch(e) { window.glassmorphism = false; } }
-        onLoaded: window.glassmorphism = true
-        onLoadFailed: window.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     // Glassmorphic surface helpers
     readonly property color glassCanvasBg:        Qt.rgba(Theme.surfaceContainer.r,    Theme.surfaceContainer.g,    Theme.surfaceContainer.b,    0.35)
@@ -319,7 +308,7 @@ PanelWindow {
                                 Text {
                                     Layout.alignment: Qt.AlignHCenter
                                     text: "You're all caught up"
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     color: window.textMutedColor
@@ -443,7 +432,7 @@ PanelWindow {
                                                     anchors.centerIn: parent
                                                     visible: !appIconImg.visible
                                                     text: (cardDelegate.modelData.appName ?? "N").slice(0, 1).toUpperCase()
-                                                    font.family: "Inter"
+                                                    font.family: "Google Sans Flex"
                                                     font.pixelSize: 14 * Appearance.effectiveScale
                                                     font.weight: Font.Bold
                                                     color: window.urgencyColor(cardDelegate.modelData.urgency)
@@ -456,7 +445,7 @@ PanelWindow {
                                                 Text {
                                                     Layout.fillWidth: true
                                                     text: cardDelegate.modelData.summary || "Notification"
-                                                    font.family: "Inter"
+                                                    font.family: "Google Sans Flex"
                                                     font.pixelSize: 12 * Appearance.effectiveScale
                                                     font.weight: Font.DemiBold
                                                     color: window.textColor
@@ -466,7 +455,7 @@ PanelWindow {
                                                 Text {
                                                     Layout.fillWidth: true
                                                     text: cardDelegate.modelData.appName || "Unknown app"
-                                                    font.family: "Inter"
+                                                    font.family: "Google Sans Flex"
                                                     font.pixelSize: 10 * Appearance.effectiveScale
                                                     color: window.textMutedColor
                                                     elide: Text.ElideRight
@@ -488,7 +477,7 @@ PanelWindow {
                                                 Text {
                                                     Layout.alignment: Qt.AlignRight
                                                     text: cardDelegate.modelData.timeString
-                                                    font.family: "Inter"
+                                                    font.family: "Google Sans Flex"
                                                     font.pixelSize: 9 * Appearance.effectiveScale
                                                     color: window.textMutedColor
                                                 }
@@ -519,7 +508,7 @@ PanelWindow {
                                             wrapMode: Text.WordWrap
                                             maximumLineCount: cardDelegate.expanded ? 6 : 2
                                             elide: Text.ElideRight
-                                            font.family: "Inter"
+                                            font.family: "Google Sans Flex"
                                             font.pixelSize: 10 * Appearance.effectiveScale
                                             color: window.textMutedColor
                                         }
@@ -545,7 +534,7 @@ PanelWindow {
                                                         id: label
                                                         anchors.centerIn: parent
                                                         text: modelData.text
-                                                        font.family: "Inter"
+                                                        font.family: "Google Sans Flex"
                                                         font.pixelSize: 10 * Appearance.effectiveScale
                                                         font.weight: Font.Medium
                                                         color: Theme.primary
@@ -583,7 +572,7 @@ PanelWindow {
                                                 Text {
                                                     anchors.centerIn: parent
                                                     text: cardDelegate.modelData.closed ? "Dismissed" : "Dismiss"
-                                                    font.family: "Inter"
+                                                    font.family: "Google Sans Flex"
                                                     font.pixelSize: 9 * Appearance.effectiveScale
                                                     color: window.textColor
                                                 }
@@ -611,7 +600,7 @@ PanelWindow {
                                                 Text {
                                                     anchors.centerIn: parent
                                                     text: "Delete"
-                                                    font.family: "Inter"
+                                                    font.family: "Google Sans Flex"
                                                     font.pixelSize: 9 * Appearance.effectiveScale
                                                     color: Theme.error
                                                 }
@@ -684,7 +673,7 @@ PanelWindow {
                                     text: window.visibleNotifications.length > 0
                                         ? `${window.visibleNotifications.length} notification${window.visibleNotifications.length === 1 ? "" : "s"}`
                                         : "No notifications"
-                                    font.family: "Inter"
+                                    font.family: "Google Sans Flex"
                                     font.pixelSize: 12 * Appearance.effectiveScale
                                     font.weight: Font.Medium
                                     color: "#ffffff"

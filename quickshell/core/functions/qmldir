@@ -1,4 +1,3 @@
 singleton ColorUtils ColorUtils.qml
 singleton FileUtils FileUtils.qml
 singleton StringUtils StringUtils.qml
-singleton General General.qml

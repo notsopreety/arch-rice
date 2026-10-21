@@ -16,6 +16,10 @@ Scope {
     onCurrentTextChanged: showFailure = false
 
     function tryUnlock() {
+        if (root.unlockInProgress) {
+            console.log("[LockContext] Unlock already in progress, ignoring.");
+            return;
+        }
         console.log("[LockContext] tryUnlock called with password length:", currentText ? currentText.length : 0);
         if (!currentText || currentText.trim() === "") {
             console.log("[LockContext] Empty password, aborting unlock attempt.");
@@ -23,8 +27,24 @@ Scope {
         }
 
         root.unlockInProgress = true;
+        unlockWatchdog.start();
         console.log("[LockContext] Starting PAM authentication...");
         pam.start();
+    }
+
+    // Watchdog: if PAM never signals completion, don't leave the screen stuck locked.
+    Timer {
+        id: unlockWatchdog
+        interval: 15000
+        repeat: false
+        onTriggered: {
+            if (!root.unlockInProgress)
+                return;
+            console.log("[LockContext] PAM watchdog timeout - no completion signal received.");
+            root.unlockInProgress = false;
+            root.showFailure = true;
+            root.failed();
+        }
     }
 
     PamContext {
@@ -54,6 +74,7 @@ Scope {
                 root.failed();
             }
 
+            unlockWatchdog.stop();
             root.unlockInProgress = false;
         }
     }

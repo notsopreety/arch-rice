@@ -56,13 +56,69 @@ Singleton {
         onTriggered: configFileView.writeAdapter()
     }
 
+    // Single queued writer for settings.json. Every writer merges a section here so
+    // independent read-modify-write calls can't drop each other's keys.
+    // A value of null (JSON null) deletes that key.
+    property var pending: ({})
+    property bool flushing: false
+
+    Timer {
+        id: saveDebounce
+        interval: 50
+        repeat: false
+        onTriggered: root.flushPending()
+    }
+
     Process {
-        id: saveTogglesProc
+        id: saveSectionProc
+        onExited: {
+            root.flushing = false;
+            // A flush can arrive while the previous one is still in flight.
+            if (root.pending && Object.keys(root.pending).length > 0) {
+                root.flushPending();
+            }
+        }
+    }
+
+    function setSection(name, obj) {
+        if (!name || !obj) return;
+        let section = root.pending[name] || ({});
+        for (let key in obj) {
+            section[key] = obj[key];
+        }
+        root.pending[name] = section;
+        saveDebounce.restart();
+    }
+
+    function flushPending() {
+        if (!root.ready || root.flushing) return;
+        let changes = root.pending;
+        if (!changes || Object.keys(changes).length === 0) return;
+        root.pending = ({});
+        root.flushing = true;
+        // path and changes are passed as argv so they can't break out of the script
+        let cmd = "import json, os, sys\n" +
+                  "path = sys.argv[1]\n" +
+                  "changes = json.loads(sys.argv[2])\n" +
+                  "data = json.load(open(path)) if os.path.exists(path) else {}\n" +
+                  "for name, vals in changes.items():\n" +
+                  "    sec = data.setdefault(name, {})\n" +
+                  "    for key, val in vals.items():\n" +
+                  "        if val is None:\n" +
+                  "            sec.pop(key, None)\n" +
+                  "        else:\n" +
+                  "            sec[key] = val\n" +
+                  "tmp = path + '.tmp'\n" +
+                  "f = open(tmp, 'w')\n" +
+                  "json.dump(data, f, indent=2)\n" +
+                  "f.close()\n" +
+                  "os.replace(tmp, path)";
+        saveSectionProc.command = ["python3", "-c", cmd, root.filePath, JSON.stringify(changes)];
+        saveSectionProc.running = true;
     }
 
     function saveToggles(togglesList) {
         if (!togglesList) return;
-        let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
         let arr = [];
         for (let i = 0; i < togglesList.length; i++) {
             let item = togglesList[i];
@@ -73,18 +129,11 @@ Singleton {
                 });
             }
         }
-        let listStr = JSON.stringify(arr);
-        let cmd = "import json, os; path = '" + path + "'; " +
-                  "data = json.load(open(path)) if os.path.exists(path) else {}; " +
-                  "qs = data.setdefault('quickSettings', {}); " +
-                  "qs['toggles'] = " + listStr + "; " +
-                  "tmp = path + '.tmp'; " +
-                  "f = open(tmp, 'w'); " +
-                  "json.dump(data, f, indent=2); " +
-                  "f.close(); " +
-                  "os.replace(tmp, path)";
-        saveTogglesProc.command = ["python3", "-c", cmd];
-        saveTogglesProc.running = true;
+        root.setSection("quickSettings", { toggles: arr });
+    }
+
+    onReadyChanged: {
+        if (root.ready) root.flushPending();
     }
 
     Connections {

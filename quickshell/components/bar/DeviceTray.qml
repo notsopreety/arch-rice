@@ -52,7 +52,7 @@ Rectangle {
 
         Text {
             text: UsbMonitorService.devicesList.length.toString()
-            font.family: "Inter"
+            font.family: "Google Sans Flex"
             font.pixelSize: 11
             font.weight: Font.Bold
             color: Theme.primary

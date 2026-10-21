@@ -36,7 +36,6 @@ singleton CalculatorService 1.0 CalculatorService.qml
 singleton GoogleLensService 1.0 GoogleLensService.qml
 singleton BooruService 1.0 BooruService.qml
 singleton SnipService 1.0 SnipService.qml
-singleton Weather 1.0 Weather.qml
 singleton DateTime 1.0 DateTime.qml
 singleton MprisController 1.0 MprisController.qml
 singleton HyprlandCompat 1.0 HyprlandCompat.qml
@@ -51,3 +50,4 @@ singleton UsbMonitorService 1.0 UsbMonitorService.qml
 singleton LyricsService 1.0 LyricsService.qml
 singleton DesktopEditModeService 1.0 DesktopEditModeService.qml
 singleton TranslatorService 1.0 TranslatorService.qml
+singleton Glassmorphism 1.0 Glassmorphism.qml

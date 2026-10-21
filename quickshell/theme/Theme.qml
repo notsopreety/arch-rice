@@ -90,8 +90,8 @@ QtObject {
 
     // Typography
     readonly property var font: QtObject {
-        property string family: "Noto Sans"
-        property string monospace: "JetBrainsMono Nerd Font"
+        property string family: "Google Sans Flex"
+        property string monospace: "Google Sans Flex"
         property int sizeSmall: 11
         property int sizeNormal: 14
         property int sizeLarge: 18

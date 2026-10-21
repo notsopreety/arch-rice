@@ -6,6 +6,7 @@ import Quickshell.Wayland
 import "../theme"
 import "../services"
 import "../components"
+import "../core"
 import "desktopWidget"
 import "widgetCanvas"
 
@@ -34,17 +35,6 @@ PanelWindow {
 
         function bringToTop(item) {
             if (item && item.z !== topZ) item.z = ++topZ;
-        }
-
-        Clock {
-            id: clockWidget
-            onXChanged: canvasContainer.bringToTop(clockWidget)
-            onYChanged: canvasContainer.bringToTop(clockWidget)
-            TapHandler {
-                acceptedButtons: Qt.AllButtons
-                gesturePolicy: TapHandler.DragThreshold
-                onPressedChanged: if (pressed) canvasContainer.bringToTop(clockWidget)
-            }
         }
 
         PhotoFrameWidget {
@@ -112,6 +102,17 @@ PanelWindow {
                 acceptedButtons: Qt.AllButtons
                 gesturePolicy: TapHandler.DragThreshold
                 onPressedChanged: if (pressed) canvasContainer.bringToTop(ramStorageWidget)
+            }
+        }
+
+        ClockWidget {
+            id: clockWidget
+            onXChanged: canvasContainer.bringToTop(clockWidget)
+            onYChanged: canvasContainer.bringToTop(clockWidget)
+            TapHandler {
+                acceptedButtons: Qt.AllButtons
+                gesturePolicy: TapHandler.DragThreshold
+                onPressedChanged: if (pressed) canvasContainer.bringToTop(clockWidget)
             }
         }
 

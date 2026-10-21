@@ -41,19 +41,8 @@ PanelWindow {
     property bool editMode: false
     property var date: new Date()
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); window.glassmorphism = true; } catch(e) { window.glassmorphism = false; } }
-        onLoaded: window.glassmorphism = true
-        onLoadFailed: window.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     // Glassmorphic surface helpers
     readonly property color glassCanvasBg:        Qt.rgba(Theme.surfaceContainer.r,    Theme.surfaceContainer.g,    Theme.surfaceContainer.b,    0.35)

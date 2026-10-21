@@ -91,7 +91,7 @@ Item {
             visible: !isConnected
             x: 6 * Appearance.effectiveScale
             anchors.verticalCenter: parent.verticalCenter
-            font.family: "Inter"
+            font.family: "Google Sans Flex"
             font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Normal
             text: !isEnabled ? "Off" : "No WiFi"
@@ -111,7 +111,7 @@ Item {
             id: marqueeLabel
             visible: isConnected
             anchors.verticalCenter: parent.verticalCenter
-            font.family: "Inter"
+            font.family: "Google Sans Flex"
             font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Medium
             text: networkName

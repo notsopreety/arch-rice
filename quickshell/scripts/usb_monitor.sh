@@ -11,6 +11,12 @@
 
 set -euo pipefail
 
+# Reap child processes (e.g. `udevadm monitor`) when this script exits or is signalled
+cleanup() {
+    pkill -P $$ 2>/dev/null || true
+}
+trap cleanup EXIT TERM INT
+
 # ── Helpers ──────────────────────────────────────────────────────
 
 json_escape() {
@@ -438,7 +444,10 @@ monitor_events() {
                 fi
             fi
         fi
-    done
+    done &
+    # Background + wait so a TERM/INT trap runs immediately instead of being
+    # deferred until the (endless) monitor pipeline exits
+    wait $!
 }
 
 # ── Main ─────────────────────────────────────────────────────────

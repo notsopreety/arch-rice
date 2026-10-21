@@ -45,7 +45,7 @@ Item {
         Text {
             id: volumeText
             text: percentage
-            font.family: "Inter"
+            font.family: "Google Sans Flex"
             font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Medium
             color: isMuted

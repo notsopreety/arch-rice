@@ -11,7 +11,7 @@ import QtQuick.Effects
 import "../../theme"
 import "../../components"
 import "../../services"
-import "../desktopWidget" as DesktopClock
+import "../desktopWidget" as DesktopWidget
 import Quickshell
 import "../../core"
 
@@ -21,20 +21,9 @@ Rectangle {
 
     color: "transparent"
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-    property bool isReady: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); } catch(e) {} }
-        onLoaded: { root.glassmorphism = true; root.isReady = true; }
-        onLoadFailed: { root.glassmorphism = false; root.isReady = true; }
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
+    property bool isReady: Glassmorphism.ready
 
     // Pill color helpers
     readonly property color pillBg: root.glassmorphism
@@ -203,7 +192,7 @@ Rectangle {
         property real squeezeOffset: (1.0 - scaleFactor) * 50 * Appearance.effectiveScale
 
         // Home screen clock widget centered on the lockscreen with weather
-        DesktopClock.Clock {
+        DesktopWidget.ClockWidget {
             id: lockscreenHomeClock
             baseWinSize: 220 * Appearance.effectiveScale
             interactive: false
@@ -234,7 +223,7 @@ Rectangle {
 
                 Text {
                     text: Math.round(WeatherService.temp) + "°"
-                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                    font.family: Theme.font.family
                     font.pixelSize: 22 * Appearance.effectiveScale
                     font.weight: Font.DemiBold
                     color: Qt.rgba(255, 255, 255, 0.95)
@@ -244,7 +233,7 @@ Rectangle {
 
             Text {
                 text: WeatherService.condition
-                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                font.family: Theme.font.family
                 font.pixelSize: 14 * Appearance.effectiveScale
                 font.weight: Font.Normal
                 color: Qt.rgba(255, 255, 255, 0.75)
@@ -646,7 +635,7 @@ Rectangle {
     // Power Commands
     Process { id: shutdownProc; command: ["systemctl", "poweroff"]; running: false }
     Process { id: rebootProc; command: ["systemctl", "reboot"]; running: false }
-    Process { id: logoutProc; command: ["hyprctl", "dispatch", "exit"]; running: false }
+    Process { id: logoutProc; command: ["hyprctl", "dispatch", HyprlandCompat.dsp("exit", "exit")]; running: false }
     Process { id: sleepProc; command: ["sh", "-c", "systemctl suspend"]; running: false }
 
     Rectangle {
@@ -1162,7 +1151,7 @@ Rectangle {
                     contentItem: Text {
                         text: tooltip.text
                         color: Theme.primary
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 11 * Appearance.effectiveScale
                         font.weight: Font.Medium
                     }

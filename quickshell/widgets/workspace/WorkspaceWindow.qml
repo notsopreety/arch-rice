@@ -24,20 +24,8 @@ PanelWindow {
     color: "transparent"
     visible: WorkspaceService.visible
 
-    // ── Glassmorphism toggle ─────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlag.reload()
-        
-        Component.onCompleted: { try { glassFlag.reload(); workspaceWindow.glassmorphism = true; } catch(e) { workspaceWindow.glassmorphism = false; } }
-        onLoaded: workspaceWindow.glassmorphism = true
-        onLoadFailed: workspaceWindow.glassmorphism = false
-    }
-    // ─────────────────────────────────────────────────
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     onVisibleChanged: {
         if (visible) {

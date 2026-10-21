@@ -61,7 +61,7 @@ PopupWindow {
                     anchors.fill: parent
                     anchors.leftMargin: 8 * Appearance.effectiveScale
                     text: "CONNECTED DEVICES"
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 9 * Appearance.effectiveScale
                     font.weight: Font.Black
                     color: Theme.primary
@@ -112,7 +112,7 @@ PopupWindow {
 
                         Text {
                             text: modelData.displayName + (modelData.sizeHuman ? " (" + modelData.sizeHuman + ")" : "")
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 11 * Appearance.effectiveScale
                             color: hoverHandler.hovered ? Theme.primary : "#ffffff"
                             elide: Text.ElideRight

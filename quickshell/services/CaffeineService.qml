@@ -85,7 +85,7 @@ Singleton {
 
     Timer {
         id: watcherTimer
-        interval: 2500
+        interval: 10000
         running: true
         repeat: true
         triggeredOnStart: true

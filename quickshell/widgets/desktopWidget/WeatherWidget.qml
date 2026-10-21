@@ -23,19 +23,8 @@ Item {
     property real customWidth: -1
     property real customHeight: -1
 
-    // ── Glassmorphism Toggle ─────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); } catch(e) {} }
-        onLoaded: root.glassmorphism = true
-        onLoadFailed: root.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     function getNaturalWidth(shape, style) {
         if (shape === 11) { // Wave Temp Curve Timeline Card (Reference UI)
@@ -158,33 +147,18 @@ Item {
         onFileChanged: reloadTimer.restart()
     }
 
-    Process {
-        id: saveSettingsProc
-        running: false
-    }
-
     function saveSettings(newX, newY, newStyle, newShape, newActive, newW, newH) {
-        let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
-        let cmd = "import json, os; path = '" + path + "'; " +
-                  "data = json.load(open(path)) if os.path.exists(path) else {}; " +
-                  "w = data.setdefault('weatherWidget', {}); ";
-        let updates = [];
-        if (newX !== undefined) updates.push("w['winX'] = " + Math.round(newX));
-        if (newY !== undefined) updates.push("w['winY'] = " + Math.round(newY));
-        if (newStyle !== undefined) updates.push("w['styleMode'] = " + Math.round(newStyle));
-        if (newShape !== undefined) updates.push("w['shapeMode'] = " + Math.round(newShape));
-        if (newActive !== undefined) updates.push("w['isActive'] = " + (newActive ? "True" : "False"));
-        if (newW !== undefined && newW > 0) updates.push("w['width'] = " + Math.round(newW));
-        else if (newW === -1) updates.push("w.pop('width', None)");
-        if (newH !== undefined && newH > 0) updates.push("w['height'] = " + Math.round(newH));
-        else if (newH === -1) updates.push("w.pop('height', None)");
-        cmd += updates.join("; ") + "; " +
-               "tmp = path + '.tmp'; " +
-               "f = open(tmp, 'w'); " +
-               "json.dump(data, f, indent=2); " +
-               "f.close(); os.replace(tmp, path)";
-        saveSettingsProc.command = ["python3", "-c", cmd];
-        saveSettingsProc.running = true;
+        let obj = {};
+        if (newX !== undefined) obj.winX = Math.round(newX);
+        if (newY !== undefined) obj.winY = Math.round(newY);
+        if (newStyle !== undefined) obj.styleMode = Math.round(newStyle);
+        if (newShape !== undefined) obj.shapeMode = Math.round(newShape);
+        if (newActive !== undefined) obj.isActive = newActive;
+        if (newW !== undefined && newW > 0) obj.width = Math.round(newW);
+        else if (newW === -1) obj.width = null;
+        if (newH !== undefined && newH > 0) obj.height = Math.round(newH);
+        else if (newH === -1) obj.height = null;
+        Config.setSection("weatherWidget", obj);
     }
 
     Process {
@@ -319,7 +293,7 @@ Item {
 
                             Text {
                                 text: WeatherService.city && WeatherService.city.length > 0 ? WeatherService.city : "New York"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(12, Math.round(Math.min(card.height * 0.082, card.width * 0.045)))
                                 font.weight: Font.Normal
                                 color: Theme.onSurfaceColor
@@ -333,7 +307,7 @@ Item {
 
                             Text {
                                 text: Math.round(WeatherService.temp) + "°"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(22, Math.round(Math.min(card.height * 0.20, card.width * 0.12)))
                                 font.weight: Font.Bold
                                 color: Theme.onSurfaceColor
@@ -386,7 +360,7 @@ Item {
 
                                 Text {
                                     text: forecastItem.day
-                                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                    font.family: Theme.font.family
                                     font.pixelSize: Math.max(11, Math.round(card.height * 0.070))
                                     font.weight: Font.Normal
                                     color: Theme.onSurfaceColor
@@ -399,7 +373,7 @@ Item {
 
                                 Text {
                                     text: forecastItem.min
-                                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                    font.family: Theme.font.family
                                     font.pixelSize: Math.max(11, Math.round(card.height * 0.070))
                                     font.weight: Font.Normal
                                     color: Theme.onSurfaceVariantColor
@@ -409,7 +383,7 @@ Item {
 
                                 Text {
                                     text: " " + forecastItem.max
-                                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                    font.family: Theme.font.family
                                     font.pixelSize: Math.max(11, Math.round(card.height * 0.070))
                                     font.weight: Font.Normal
                                     color: Theme.onSurfaceColor
@@ -478,7 +452,7 @@ Item {
 
                         Text {
                             text: WeatherService.condition || "Sunny"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(13, Math.round(card.height * 0.082))
                             font.weight: Font.DemiBold
                             color: Theme.onSurfaceColor
@@ -490,7 +464,7 @@ Item {
 
                         Text {
                             text: "Feels like " + (WeatherService.feelsLike ? Math.round(WeatherService.feelsLike) : Math.round(WeatherService.temp)) + "°"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(11, Math.round(card.height * 0.068))
                             font.weight: Font.Normal
                             color: Theme.onSurfaceVariantColor
@@ -502,7 +476,7 @@ Item {
 
                         Text {
                             text: "High: " + (WeatherService.todayHigh !== 0 ? WeatherService.todayHigh : Math.round(WeatherService.temp + 3)) + "°  |  Low: " + (WeatherService.todayLow !== 0 ? WeatherService.todayLow : Math.round(WeatherService.temp - 4)) + "°"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(11, Math.round(card.height * 0.068))
                             font.weight: Font.Normal
                             color: Theme.onSurfaceVariantColor
@@ -514,7 +488,7 @@ Item {
 
                         Text {
                             text: "Precipitation: " + (WeatherService.precipitationProbability || 0) + "%"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(11, Math.round(card.height * 0.068))
                             font.weight: Font.Normal
                             color: Theme.onSurfaceVariantColor
@@ -526,7 +500,7 @@ Item {
 
                         Text {
                             text: "Humidity: " + (WeatherService.humidity || 0) + "%"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(11, Math.round(card.height * 0.068))
                             font.weight: Font.Normal
                             color: Theme.onSurfaceVariantColor
@@ -538,7 +512,7 @@ Item {
 
                         Text {
                             text: "Wind: " + (WeatherService.wind ? Math.round(WeatherService.wind) : 0) + " km/h"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(11, Math.round(card.height * 0.068))
                             font.weight: Font.Normal
                             color: Theme.onSurfaceVariantColor
@@ -608,7 +582,7 @@ Item {
                     Text {
                         Layout.alignment: Qt.AlignHCenter
                         text: Math.round(WeatherService.temp) + "°"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.round(cookieBadge.height * 0.18)
                         font.weight: Font.Normal
                         color: "#ffffff"
@@ -645,7 +619,7 @@ Item {
                 // Top Line: "Today Low° / High°"
                 Text {
                     text: "Today " + (WeatherService.todayLow !== 0 ? WeatherService.todayLow : Math.round(WeatherService.temp - 4)) + "° / " + (WeatherService.todayHigh !== 0 ? WeatherService.todayHigh : Math.round(WeatherService.temp + 3)) + "°"
-                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                    font.family: Theme.font.family
                     font.pixelSize: Math.round(card.height * 0.14)
                     font.weight: Font.Normal
                     color: root.textColor
@@ -678,7 +652,7 @@ Item {
 
                     Text {
                         text: WeatherService.condition || "Mostly cloudy"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.round(card.height * 0.13)
                         font.weight: Font.Normal
                         color: Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.85)
@@ -721,7 +695,7 @@ Item {
                 Text {
                     Layout.alignment: Qt.AlignVCenter
                     text: Math.round(WeatherService.temp) + "°"
-                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                    font.family: Theme.font.family
                     font.pixelSize: Math.max(13, Math.round(Math.min(card.height * 0.42, card.width * 0.28)))
                     font.weight: Font.Bold
                     color: Theme.onSurfaceColor
@@ -757,7 +731,7 @@ Item {
 
                         Text {
                             text: WeatherService.city && WeatherService.city.length > 0 ? WeatherService.city : "New York"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(11, Math.round(Math.min(card.height, card.width) * 0.080))
                             font.weight: Font.Normal
                             color: Theme.onSurfaceColor
@@ -771,7 +745,7 @@ Item {
 
                         Text {
                             text: Math.round(WeatherService.temp) + "°"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(22, Math.round(Math.min(card.height, card.width) * 0.22))
                             font.weight: Font.Bold
                             color: Theme.onSurfaceColor
@@ -811,7 +785,7 @@ Item {
 
                     Text {
                         text: WeatherService.condition || "Sunny"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(11, Math.round(Math.min(card.height, card.width) * 0.080))
                         font.weight: Font.DemiBold
                         color: Theme.onSurfaceColor
@@ -822,7 +796,7 @@ Item {
 
                     Text {
                         text: "Precipitation: " + (WeatherService.precipitationProbability || 0) + "%"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(10, Math.round(Math.min(card.height, card.width) * 0.068))
                         font.weight: Font.Normal
                         color: Theme.onSurfaceVariantColor
@@ -834,7 +808,7 @@ Item {
 
                     Text {
                         text: "Humidity: " + (WeatherService.humidity || 0) + "%"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(10, Math.round(Math.min(card.height, card.width) * 0.068))
                         font.weight: Font.Normal
                         color: Theme.onSurfaceVariantColor
@@ -846,7 +820,7 @@ Item {
 
                     Text {
                         text: "Wind: " + (WeatherService.wind ? Math.round(WeatherService.wind) : 0) + " km/h"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(10, Math.round(Math.min(card.height, card.width) * 0.068))
                         font.weight: Font.Normal
                         color: Theme.onSurfaceVariantColor
@@ -901,7 +875,7 @@ Item {
 
                         Text {
                             text: WeatherService.city && WeatherService.city.length > 0 ? WeatherService.city : "New York"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(11, Math.round(Math.min(card.height, card.width) * 0.082))
                             font.weight: Font.DemiBold
                             color: Theme.onSurfaceColor
@@ -914,7 +888,7 @@ Item {
 
                         Text {
                             text: WeatherService.condition || "Sunny"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(10, Math.round(Math.min(card.height, card.width) * 0.072))
                             font.weight: Font.Normal
                             color: Theme.onSurfaceVariantColor
@@ -936,7 +910,7 @@ Item {
 
                     Text {
                         text: Math.round(WeatherService.temp) + "°"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(26, Math.round(Math.min(card.height, card.width) * 0.24))
                         font.weight: Font.Bold
                         color: Theme.onSurfaceColor
@@ -945,7 +919,7 @@ Item {
 
                     Text {
                         text: (WeatherService.todayLow !== 0 ? WeatherService.todayLow : Math.round(WeatherService.temp - 3)) + "°  " + (WeatherService.todayHigh !== 0 ? WeatherService.todayHigh : Math.round(WeatherService.temp)) + "°"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(11, Math.round(Math.min(card.height, card.width) * 0.076))
                         font.weight: Font.Normal
                         color: Theme.onSurfaceVariantColor
@@ -999,7 +973,7 @@ Item {
 
                             Text {
                                 text: "Sunrise"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(13, Math.round(Math.min(card.width, card.height) * 0.095))
                                 font.weight: Font.DemiBold
                                 color: Theme.onSurfaceColor
@@ -1009,7 +983,7 @@ Item {
 
                             Text {
                                 text: WeatherService.sunrise ? WeatherService.sunrise : "6:30 AM"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(11, Math.round(Math.min(card.width, card.height) * 0.080))
                                 font.weight: Font.Normal
                                 color: Theme.onSurfaceVariantColor
@@ -1075,7 +1049,7 @@ Item {
 
                             Text {
                                 text: "Sunset"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(13, Math.round(Math.min(card.width, card.height) * 0.095))
                                 font.weight: Font.DemiBold
                                 color: Theme.onSurfaceColor
@@ -1085,7 +1059,7 @@ Item {
 
                             Text {
                                 text: WeatherService.sunset ? WeatherService.sunset : "7:00 PM"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(11, Math.round(Math.min(card.width, card.height) * 0.080))
                                 font.weight: Font.Normal
                                 color: Theme.onSurfaceVariantColor
@@ -1131,7 +1105,7 @@ Item {
 
                     Text {
                         text: "Today"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(11, Math.round(circularSatelliteContent.baseDim * 0.076))
                         font.weight: Font.Normal
                         color: Theme.onSurfaceVariantColor
@@ -1143,7 +1117,7 @@ Item {
 
                     Text {
                         text: WeatherService.city && WeatherService.city.length > 0 ? WeatherService.city : "New York"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(16, Math.round(circularSatelliteContent.baseDim * 0.125))
                         font.weight: Font.Medium
                         color: Theme.onSurfaceColor
@@ -1156,7 +1130,7 @@ Item {
 
                     Text {
                         text: WeatherService.condition || "Sunny"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(11, Math.round(circularSatelliteContent.baseDim * 0.076))
                         font.weight: Font.Normal
                         color: Theme.onSurfaceVariantColor
@@ -1184,7 +1158,7 @@ Item {
                     Text {
                         anchors.centerIn: parent
                         text: Math.round(WeatherService.temp) + "°"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(15, Math.round(circularSatelliteContent.pillSize * 0.38))
                         font.weight: Font.Bold
                         color: Theme.onSurfaceColor
@@ -1279,8 +1253,8 @@ Item {
 
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "󰖌"
-                                    font.family: "Material Design Icons, Symbols Nerd Font, " + Theme.font.family
+                                    text: "water_drop"
+                                    font.family: "Material Symbols Rounded"
                                     font.pixelSize: Math.max(16, Math.round(humidityCardContent.cookieSize * 0.50))
                                     color: Theme.onSurfaceColor
                                     renderType: Text.NativeRendering
@@ -1297,7 +1271,7 @@ Item {
 
                                 Text {
                                     text: "Humidity"
-                                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                    font.family: Theme.font.family
                                     font.pixelSize: Math.max(12, Math.round(humidityCardContent.baseDim * 0.090))
                                     font.weight: Font.DemiBold
                                     color: Theme.onSurfaceColor
@@ -1306,7 +1280,7 @@ Item {
 
                                 Text {
                                     text: humidityCardContent.dewPointVal + "° Dew Point"
-                                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                    font.family: Theme.font.family
                                     font.pixelSize: Math.max(10, Math.round(humidityCardContent.baseDim * 0.072))
                                     font.weight: Font.Normal
                                     color: Theme.onSurfaceVariantColor
@@ -1333,7 +1307,7 @@ Item {
                                 anchors.leftMargin: humidityCardContent.contentPad
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: (WeatherService.humidity > 0 ? Math.round(WeatherService.humidity) : 25) + "%"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(22, Math.round(parent.height * 0.68))
                                 font.weight: Font.Bold
                                 color: Theme.onSurfaceColor
@@ -1399,7 +1373,7 @@ Item {
                     Text {
                         Layout.alignment: Qt.AlignHCenter
                         text: Math.round(WeatherService.temp) + "° " + (WeatherService.city && WeatherService.city.length > 0 ? WeatherService.city : "New York")
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(13, Math.round(cookieScallopContent.baseDim * 0.088))
                         font.weight: Font.DemiBold
                         color: Theme.onSurfaceColor
@@ -1415,7 +1389,7 @@ Item {
                         readonly property int lowVal: WeatherService.todayLow !== 0 ? WeatherService.todayLow : Math.round(WeatherService.temp - 3)
                         readonly property int highVal: WeatherService.todayHigh !== 0 ? WeatherService.todayHigh : Math.round(WeatherService.temp)
                         text: (lowVal < 10 && lowVal >= 0 ? "0" + lowVal : lowVal) + "°  " + (highVal < 10 && highVal >= 0 ? "0" + highVal : highVal) + "°"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(11, Math.round(cookieScallopContent.baseDim * 0.076))
                         font.weight: Font.Normal
                         color: Theme.onSurfaceVariantColor
@@ -1455,7 +1429,7 @@ Item {
 
                                 Text {
                                     text: String(Math.round(WeatherService.temp))
-                                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                    font.family: Theme.font.family
                                     font.pixelSize: Math.max(26, Math.round(card.height * 0.26))
                                     font.weight: Font.Bold
                                     color: Theme.onSurfaceColor
@@ -1464,7 +1438,7 @@ Item {
 
                                 Text {
                                     text: "°C"
-                                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                    font.family: Theme.font.family
                                     font.pixelSize: Math.max(11, Math.round(card.height * 0.095))
                                     font.weight: Font.Medium
                                     color: Theme.onSurfaceVariantColor
@@ -1478,7 +1452,7 @@ Item {
                                 readonly property int lowVal: WeatherService.todayLow !== 0 ? WeatherService.todayLow : Math.round(WeatherService.temp - 4)
                                 readonly property int highVal: WeatherService.todayHigh !== 0 ? WeatherService.todayHigh : Math.round(WeatherService.temp + 1)
                                 text: lowVal + " ~ " + highVal + "°C"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(10, Math.round(card.height * 0.080))
                                 font.weight: Font.Normal
                                 color: Theme.onSurfaceVariantColor
@@ -1505,7 +1479,7 @@ Item {
 
                                 Text {
                                     text: WeatherService.city && WeatherService.city.length > 0 ? WeatherService.city : "Paris"
-                                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                    font.family: Theme.font.family
                                     font.pixelSize: Math.max(11, Math.round(card.height * 0.082))
                                     font.weight: Font.Medium
                                     color: Theme.onSurfaceVariantColor
@@ -1518,7 +1492,7 @@ Item {
                             Text {
                                 Layout.alignment: Qt.AlignRight
                                 text: WeatherService.condition && WeatherService.condition.length > 0 ? WeatherService.condition : "Sunny"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(12, Math.round(card.height * 0.088))
                                 font.weight: Font.Bold
                                 color: Theme.onSurfaceColor
@@ -1581,7 +1555,7 @@ Item {
                                     Text {
                                         Layout.alignment: Qt.AlignHCenter
                                         text: String(modelData.temp)
-                                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                        font.family: Theme.font.family
                                         font.pixelSize: Math.max(10, Math.round(card.height * 0.075))
                                         font.weight: modelData.isNow ? Font.Bold : Font.Normal
                                         color: modelData.isNow ? Theme.onSurfaceColor : Theme.onSurfaceVariantColor
@@ -1605,7 +1579,7 @@ Item {
                                     Text {
                                         Layout.alignment: Qt.AlignHCenter
                                         text: modelData.timeLabel
-                                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                        font.family: Theme.font.family
                                         font.pixelSize: Math.max(9, Math.round(card.height * 0.068))
                                         font.weight: modelData.isNow ? Font.Bold : Font.Normal
                                         color: modelData.isNow ? Theme.onSurfaceColor : Theme.onSurfaceVariantColor
@@ -1677,7 +1651,7 @@ Item {
 
                             Text {
                                 text: String(Math.round(WeatherService.temp))
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(28, Math.round(card.height * 0.26))
                                 font.weight: Font.Bold
                                 color: Theme.onSurfaceColor
@@ -1686,7 +1660,7 @@ Item {
 
                             Text {
                                 text: "°C"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(12, Math.round(card.height * 0.095))
                                 font.weight: Font.Medium
                                 color: Theme.onSurfaceVariantColor
@@ -1706,7 +1680,7 @@ Item {
                             Text {
                                 Layout.alignment: Qt.AlignRight
                                 text: WeatherService.condition && WeatherService.condition.length > 0 ? WeatherService.condition : "Sunny"
-                                font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                font.family: Theme.font.family
                                 font.pixelSize: Math.max(13, Math.round(card.height * 0.095))
                                 font.weight: Font.Bold
                                 color: Theme.onSurfaceColor
@@ -1727,7 +1701,7 @@ Item {
 
                                 Text {
                                     text: WeatherService.city && WeatherService.city.length > 0 ? WeatherService.city : "Paris"
-                                    font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                    font.family: Theme.font.family
                                     font.pixelSize: Math.max(11, Math.round(card.height * 0.080))
                                     font.weight: Font.Medium
                                     color: Theme.onSurfaceVariantColor
@@ -1876,7 +1850,7 @@ Item {
                                     Text {
                                         Layout.alignment: Qt.AlignHCenter
                                         text: modelData.timeLabel
-                                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                                        font.family: Theme.font.family
                                         font.pixelSize: Math.max(10, Math.round(card.height * 0.075))
                                         font.weight: modelData.isNow ? Font.Bold : Font.Normal
                                         color: modelData.isNow ? Theme.onSurfaceColor : Theme.onSurfaceVariantColor

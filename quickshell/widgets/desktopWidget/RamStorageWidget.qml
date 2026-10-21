@@ -21,19 +21,8 @@ Item {
     property real customWidth: -1
     property real customHeight: -1
 
-    // ── Glassmorphism Toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); } catch(e) {} }
-        onLoaded: root.glassmorphism = true
-        onLoadFailed: root.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     readonly property real defaultWidth: 260 * Appearance.effectiveScale
     readonly property real defaultHeight: (root.styleMode === 1 ? 160 : 74) * Appearance.effectiveScale
@@ -68,26 +57,16 @@ Item {
 
     Timer { id: reloadTimer; interval: 150; running: false; repeat: false; onTriggered: settingsFile.reload() }
     FileView { id: settingsFile; path: Quickshell.env("HOME") + "/.config/quickshell/settings.json"; watchChanges: true; preload: true; onLoaded: root.loadSettings(text()); onFileChanged: reloadTimer.restart() }
-    Process { id: saveSettingsProc }
-
     function saveSettings(newX, newY, newStyle, newW, newH) {
-        let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
-        let cmd = "import json, os; path = '" + path + "'; " +
-                  "data = json.load(open(path)) if os.path.exists(path) else {}; " +
-                  "s = data.setdefault('ramStorageWidget', {}); ";
-        let updates = [];
-        if (newX !== undefined) updates.push("s['x'] = " + Math.round(newX));
-        if (newY !== undefined) updates.push("s['y'] = " + Math.round(newY));
-        let sm = (newStyle !== undefined) ? newStyle : root.styleMode;
-        updates.push("s['styleMode'] = " + sm);
-        if (newW !== undefined && newW > 0) updates.push("s['width'] = " + Math.round(newW));
-        else if (newW === -1) updates.push("s.pop('width', None)");
-        if (newH !== undefined && newH > 0) updates.push("s['height'] = " + Math.round(newH));
-        else if (newH === -1) updates.push("s.pop('height', None)");
-        cmd += updates.join("; ") + "; " +
-               "tmp = path + '.tmp'; f = open(tmp, 'w'); json.dump(data, f, indent=2); f.close(); os.replace(tmp, path)";
-        saveSettingsProc.command = ["python3", "-c", cmd];
-        saveSettingsProc.running = true;
+        let obj = {};
+        if (newX !== undefined) obj.x = Math.round(newX);
+        if (newY !== undefined) obj.y = Math.round(newY);
+        obj.styleMode = (newStyle !== undefined) ? newStyle : root.styleMode;
+        if (newW !== undefined && newW > 0) obj.width = Math.round(newW);
+        else if (newW === -1) obj.width = null;
+        if (newH !== undefined && newH > 0) obj.height = Math.round(newH);
+        else if (newH === -1) obj.height = null;
+        Config.setSection("ramStorageWidget", obj);
     }
 
     function cycleNextStyle() {
@@ -197,7 +176,7 @@ Item {
                             id: ramText
                             anchors.centerIn: parent
                             anchors.horizontalCenterOffset: -2 * Appearance.effectiveScale
-                            text: Math.round(root.ramUsedGB) + " GB / " + Math.round(root.ramTotalGB) + " GB"
+                            text: root.ramUsedGB.toFixed(1) + " GB / " + root.ramTotalGB.toFixed(1) + " GB"
                             font.family: Theme.font.family
                             font.pixelSize: Math.max(11, Math.min(14 * Appearance.effectiveScale, parent.height * 0.38))
                             font.weight: Font.Bold
@@ -284,7 +263,7 @@ Item {
                             id: storageText
                             anchors.centerIn: parent
                             anchors.horizontalCenterOffset: 2 * Appearance.effectiveScale
-                            text: Math.round(root.diskUsedGB) + " GB / " + Math.round(root.diskTotalGB) + " GB"
+                            text: root.diskUsedGB.toFixed(1) + " GB / " + root.diskTotalGB.toFixed(1) + " GB"
                             font.family: Theme.font.family
                             font.pixelSize: Math.max(11, Math.min(14 * Appearance.effectiveScale, parent.height * 0.38))
                             font.weight: Font.Bold

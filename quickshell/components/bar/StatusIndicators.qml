@@ -160,7 +160,7 @@ Item {
                         const s = parent.parent.elapsedSeconds % 60
                         return m + ":" + (s < 10 ? "0" : "") + s
                     }
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 11 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: Theme.error
@@ -213,7 +213,7 @@ Item {
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     text: updatesService.updateCount
-                    font.family: "Inter"
+                    font.family: "Google Sans Flex"
                     font.pixelSize: 11 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: matugen.primary

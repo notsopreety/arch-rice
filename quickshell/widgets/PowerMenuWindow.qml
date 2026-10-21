@@ -14,19 +14,8 @@ import "../core"
 PanelWindow {
     id: powermenuWindow
 
-    // ── Glassmorphism toggle ──────────────────────────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); powermenuWindow.glassmorphism = true; } catch(e) { powermenuWindow.glassmorphism = false; } }
-        onLoaded: powermenuWindow.glassmorphism = true
-        onLoadFailed: powermenuWindow.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
 
     anchors {
@@ -434,7 +423,7 @@ PanelWindow {
                                             color: {
                                                 if (modelData.isPrimary)
                                                     return ma.containsMouse ? Theme.error : Qt.rgba(Theme.error.r + 0.1, Theme.error.g + 0.1, Theme.error.b + 0.1, 0.9);
-                                                return ma.containsMouse ? Theme.primary : Theme.onSurface;
+                                                return ma.containsMouse ? Theme.primary : "#ffffff";
                                             }
                                             Behavior on color { ColorAnimation { duration: 180 } }
                                         }
@@ -466,7 +455,7 @@ PanelWindow {
                                     color: {
                                         if (modelData.isPrimary)
                                             return ma.containsMouse ? "#ffffff" : Qt.rgba(1, 0.8, 0.8, 0.9);
-                                        return ma.containsMouse ? Theme.primary : Theme.onSurfaceVariant;
+                                        return ma.containsMouse ? Theme.primary : "#ffffff";
                                     }
                                     Behavior on color { ColorAnimation { duration: 180 } }
                                 }

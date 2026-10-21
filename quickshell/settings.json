@@ -2,45 +2,29 @@
   "ai": {
     "apiKey": "YOUR_API_KEY",
     "systemInstruction": "I do use arch linux in hyprland WM.",
-    "currentModel": "gemini-2.5-flash-lite",
+    "currentModel": "gemini-3-pro-preview",
     "temperature": 0.7
   },
   "booru": {
     "currentProvider": "yande.re",
-    "nsfwEnabled": false
+    "nsfwEnabled": true
   },
   "global": {
     "autoHideBar": false,
     "floatingBar": false,
     "showBS": true
   },
-  "clock": {
-    "winX": 795,
-    "winY": 169,
-    "winSize": 237,
-    "scallops": 12,
-    "amplitude": 5,
-    "showNumbers": false,
-    "showTicks": true,
-    "showDayLabel": false,
-    "showDigitalTime": true,
-    "showDateBadge": true,
-    "showSecondHand": true,
-    "showSecondHandLine": false,
-    "showWeather": true,
-    "isActive": true
-  },
   "photoFrame": {
     "imagePath": "~/Pictures/Wallpapers",
-    "photoFrameX": 693,
-    "photoFrameY": 655,
-    "photoFrameShape": "square",
+    "photoFrameX": 145,
+    "photoFrameY": 567,
+    "photoFrameShape": "pill",
     "isActive": true
   },
   "screentime": {
     "screentimeX": 1089,
     "screentimeY": 905,
-    "screentimeStyle": 3,
+    "screentimeStyle": 2,
     "isActive": true,
     "winX": 227,
     "winY": 108
@@ -126,15 +110,13 @@
     "winY": 827,
     "style": 1,
     "styleMode": 2,
-    "shapeMode": 2,
-    "isActive": true,
-    "width": 200,
-    "height": 80
+    "shapeMode": 4,
+    "isActive": true
   },
   "mediaPlayer": {
-    "x": 1375,
-    "y": 319,
-    "showLyrics": false,
+    "x": 1365,
+    "y": 430,
+    "showLyrics": true,
     "isActive": true,
     "lyricsHeight": 384,
     "styleMode": 1
@@ -145,10 +127,15 @@
     "styleMode": 1
   },
   "ramStorageWidget": {
-    "x": 1407,
-    "y": 85,
+    "x": 1462,
+    "y": 178,
     "styleMode": 1,
-    "width": 241,
-    "height": 145
+    "width": 220,
+    "height": 120
+  },
+  "clockWidget": {
+    "x": 86,
+    "y": 201,
+    "style": 0
   }
 }

@@ -16,7 +16,6 @@ Singleton {
     property string screenshotsDir: Quickshell.env("HOME") + "/Pictures/Screenshots"
 
     property string _slurpGeometry: ""
-    property string _ocrGeometry: ""
     property string _windowGeomText: ""
     
     Component.onCompleted: {
@@ -28,11 +27,6 @@ Singleton {
         id: mkdirProc
         command: ["mkdir", "-p", root.screenshotsDir]
     }
-    
-    function runOcrCopy() {
-        ocrSlurpProc.exec(["slurp"])
-    }
-    
     
     function takeScreenshot(mode: string) {
         // mode: "screen", "window", "region"
@@ -77,50 +71,6 @@ Singleton {
         }
     }
 
-    // Get region geometry for OCR with slurp
-    Process {
-        id: ocrSlurpProc
-        stdout: StdioCollector {
-            onStreamFinished: root._ocrGeometry = text.trim()
-        }
-        onExited: code => {
-            const geometry = root._ocrGeometry
-            root._ocrGeometry = ""
-            if (code === 0 && geometry !== "") {
-                QsServices.Logger.debug("Screenshot", `OCR capturing region: ${geometry}`)
-                ocrProc.exec(["sh", "-c", `grim -g "${geometry}" - | tesseract - stdout 2>/dev/null | wl-copy`])
-            } else if (code !== 0) {
-                QsServices.Logger.error("Screenshot", `OCR slurp failed with code: ${code}`)
-            }
-        }
-    }
-
-    Process {
-        id: ocrProc
-        onExited: code => {
-            if (code === 0) {
-                QsServices.Logger.info("Screenshot", "OCR completed and text copied to clipboard")
-                notifyProc.exec([
-                    "notify-send",
-                    "-r", "1002",
-                    "-a", "Screenshot OCR",
-                    "-i", "edit-paste",
-                    "OCR Completed",
-                    "Text extracted and copied to clipboard"
-                ])
-            } else {
-                QsServices.Logger.error("Screenshot", `OCR process failed with code: ${code}`)
-                notifyProc.exec([
-                    "notify-send",
-                    "-r", "1002",
-                    "-a", "Screenshot OCR",
-                    "OCR Failed",
-                    "Could not extract text from region"
-                ])
-            }
-        }
-    }
-    
     // Get active window geometry
     // ... (unchanged code block for windowGeomProc)
     Process {
@@ -227,37 +177,4 @@ Singleton {
         command: ["pkill", "-SIGINT", "wf-recorder"]
     }
     
-    function openScreenshotsFolder() {
-        openProc.exec(["xdg-open", screenshotsDir])
-    }
-    
-    Process {
-        id: openProc
-    }
-    
-    function copyLastScreenshot() {
-        if (!lastScreenshotPath) return
-
-        copyProc.exec(["sh", "-c", `wl-copy < "${lastScreenshotPath}"`])
-    }
-    
-    Process {
-        id: copyProc
-    }
-    
-    function deleteLastScreenshot() {
-        if (!lastScreenshotPath) return
-        
-        deleteProc.exec(["rm", lastScreenshotPath])
-    }
-    
-    Process {
-        id: deleteProc
-        onExited: code => {
-            if (code === 0) {
-                QsServices.Logger.info("Screenshot", `Deleted: ${root.lastScreenshotPath}`)
-                root.lastScreenshotPath = ""
-            }
-        }
-    }
 }

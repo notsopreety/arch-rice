@@ -3,6 +3,7 @@ import QtQuick
 import QtCore
 import Quickshell
 import Quickshell.Io
+import "../core"
 
 Singleton {
     id: root
@@ -10,6 +11,8 @@ Singleton {
     signal messageUpdated()
 
     property string apiKey: ""
+    // Env var wins so the key can stay out of settings.json; falls back to stored key
+    readonly property string effectiveApiKey: Quickshell.env("GEMINI_API_KEY") || apiKey
     property string systemInstruction: ""
     property bool isStreaming: false
     property string currentModel: "gemini-2.5-flash"
@@ -34,6 +37,7 @@ Singleton {
         blockLoading: true
         blockWrites: true
         watchChanges: true
+        onFileChanged: reload()
         onLoaded: {
             try {
                 let content = keyFile.text().trim();
@@ -62,27 +66,12 @@ Singleton {
     }
 
     function saveSettings() {
-        try {
-            let obj = {};
-            try {
-                let currentContent = keyFile.text().trim();
-                if (currentContent.length > 0) {
-                    obj = JSON.parse(currentContent);
-                }
-            } catch (e) {}
-            
-            let ai = obj.ai || {};
-            if (ai.apiKey !== apiKey || ai.systemInstruction !== systemInstruction || ai.currentModel !== currentModel || ai.temperature !== temperature) {
-                ai.apiKey = apiKey;
-                ai.systemInstruction = systemInstruction;
-                ai.currentModel = currentModel;
-                ai.temperature = temperature;
-                obj.ai = ai;
-                keyFile.setText(JSON.stringify(obj, null, 2));
-            }
-        } catch (e) {
-            console.log("[AiChatService] Failed to write settings.json: " + e);
-        }
+        Config.setSection("ai", {
+            apiKey: root.apiKey,
+            systemInstruction: root.systemInstruction,
+            currentModel: root.currentModel,
+            temperature: root.temperature
+        });
     }
 
     onApiKeyChanged: saveSettings()
@@ -170,7 +159,7 @@ Singleton {
 
     function sendMessage(text) {
         if (text.trim() === "") return;
-        if (!apiKey) {
+        if (!effectiveApiKey) {
             addMessage("error", "API Key is not set. Please set it using: /key YOUR_API_KEY");
             return;
         }
@@ -233,8 +222,9 @@ Singleton {
 
         apiProcess.command = [
             "curl", "-sN", "-X", "POST",
-            "https://generativelanguage.googleapis.com/v1beta/models/" + root.currentModel + ":streamGenerateContent?alt=sse&key=" + root.apiKey,
+            "https://generativelanguage.googleapis.com/v1beta/models/" + root.currentModel + ":streamGenerateContent?alt=sse",
             "-H", "Content-Type: application/json",
+            "-H", "x-goog-api-key: " + root.effectiveApiKey,
             "-d", JSON.stringify(payload)
         ];
         

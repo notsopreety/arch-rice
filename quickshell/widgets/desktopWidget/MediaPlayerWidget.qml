@@ -59,27 +59,17 @@ Item {
     
     Timer { id: reloadTimer; interval: 150; running: false; repeat: false; onTriggered: settingsFile.reload() }
     FileView { id: settingsFile; path: Quickshell.env("HOME") + "/.config/quickshell/settings.json"; watchChanges: true; preload: true; onLoaded: root.loadSettings(text()); onFileChanged: reloadTimer.restart() }
-    Process { id: saveSettingsProc }
-    
     function saveSettings(newX, newY, lyricsMode, newW, newLyricsH, newStyle) {
-        let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
-        let cmd = "import json, os; path = '" + path + "'; " +
-                  "data = json.load(open(path)) if os.path.exists(path) else {}; " +
-                  "p = data.setdefault('mediaPlayer', {}); ";
-        let updates = [];
-        if (newX !== undefined) updates.push("p['x'] = " + Math.round(newX));
-        if (newY !== undefined) updates.push("p['y'] = " + Math.round(newY));
-        if (lyricsMode !== undefined) updates.push("p['showLyrics'] = " + (lyricsMode ? "True" : "False"));
-        let sm = (newStyle !== undefined) ? newStyle : root.styleMode;
-        updates.push("p['styleMode'] = " + sm);
-        if (newW !== undefined && newW > 0) updates.push("p['width'] = " + Math.round(newW));
-        else if (newW === -1) updates.push("p.pop('width', None)");
-        if (newLyricsH !== undefined && newLyricsH > 180) updates.push("p['lyricsHeight'] = " + Math.round(newLyricsH));
-        updates.push("p.pop('height', None)"); // Remove outdated fixed height
-        cmd += updates.join("; ") + "; " +
-               "tmp = path + '.tmp'; f = open(tmp, 'w'); json.dump(data, f, indent=2); f.close(); os.replace(tmp, path)";
-        saveSettingsProc.command = ["python3", "-c", cmd];
-        saveSettingsProc.running = true;
+        let obj = {};
+        if (newX !== undefined) obj.x = Math.round(newX);
+        if (newY !== undefined) obj.y = Math.round(newY);
+        if (lyricsMode !== undefined) obj.showLyrics = lyricsMode;
+        obj.styleMode = (newStyle !== undefined) ? newStyle : root.styleMode;
+        if (newW !== undefined && newW > 0) obj.width = Math.round(newW);
+        else if (newW === -1) obj.width = null;
+        if (newLyricsH !== undefined && newLyricsH > 180) obj.lyricsHeight = Math.round(newLyricsH);
+        obj.height = null; // Remove outdated fixed height
+        Config.setSection("mediaPlayer", obj);
     }
 
 
@@ -192,6 +182,7 @@ Item {
     // Cover Art Local Download
     property string artFilePath: ""
     property bool artDownloaded: false
+    readonly property string artTargetPath: "/tmp/dms_cover_" + Qt.md5(trackArtUrl) + ".jpg"
 
     onTrackArtUrlChanged: {
         if (!trackArtUrl || trackArtUrl.length === 0) {
@@ -204,20 +195,30 @@ Item {
             artDownloaded = true;
             return;
         }
-        coverArtDownloader.running = true;
+        coverArtCacheCheck.running = true;
     }
 
     Process {
-        id: coverArtDownloader
-        command: ["bash", "-c", "target='/tmp/dms_cover_" + Qt.md5(root.trackArtUrl) + ".jpg'; [ -f \"$target\" ] || curl -sSL '" + root.trackArtUrl + "' -o \"$target\"; echo \"$target\""]
+        id: coverArtCacheCheck
+        command: ["test", "-f", root.artTargetPath]
         running: false
-        stdout: SplitParser {
-            onRead: function(data) {
-                if (data.trim() !== "") {
-                    root.artFilePath = "file://" + data.trim();
-                    root.artDownloaded = true;
-                }
+        onExited: exitCode => {
+            if (exitCode === 0) {
+                root.artFilePath = "file://" + root.artTargetPath;
+                root.artDownloaded = true;
+            } else {
+                coverArtCurl.running = true;
             }
+        }
+    }
+
+    Process {
+        id: coverArtCurl
+        command: ["curl", "-sSL", root.trackArtUrl, "-o", root.artTargetPath]
+        running: false
+        onExited: {
+            root.artFilePath = "file://" + root.artTargetPath;
+            root.artDownloaded = true;
         }
     }
 
@@ -524,7 +525,7 @@ Item {
                         Text {
                             Layout.fillWidth: true
                             text: root.trackTitle
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             renderType: Text.NativeRendering
                             font.pixelSize: Math.max(14, Math.min(parent.width * 0.05, 17))
                             font.weight: Font.DemiBold
@@ -535,7 +536,7 @@ Item {
                         Text {
                             Layout.fillWidth: true
                             text: root.trackArtist
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             renderType: Text.NativeRendering
                             font.pixelSize: Math.max(12, Math.min(parent.width * 0.04, 14))
                             color: Theme.onSurfaceVariantColor
@@ -578,7 +579,6 @@ Item {
                                     onClicked: {
                                         root.showLyrics = !root.showLyrics;
                                         root.saveSettings(root.x, root.y, root.showLyrics);
-                                        if (root.setData) root.setData("showLyrics", root.showLyrics);
                                     }
                                 }
                             }
@@ -691,7 +691,7 @@ Item {
                             if (root.lyricsStatus === "not_found") return "No Lyrics Found on LRCLIB";
                             return "Play a Track to Load Lyrics";
                         }
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         renderType: Text.NativeRendering
                         font.pixelSize: 13
                         color: Theme.onSurfaceVariantColor
@@ -732,7 +732,7 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             width: parent.width
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             renderType: Text.NativeRendering
                             horizontalAlignment: {
                                 if (root.lyricAlignment === "left") return Text.AlignLeft;
@@ -832,7 +832,7 @@ Item {
                         text: (root.activePlayer && root.activePlayer.trackTitle && root.activePlayer.trackTitle.trim().length > 0)
                             ? root.trackTitle
                             : "No Music Playing"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(13, Math.round(card.height * 0.20))
                         font.weight: Font.DemiBold
                         color: Theme.onSurfaceColor
@@ -845,7 +845,7 @@ Item {
                         text: (root.activePlayer && root.activePlayer.trackTitle && root.activePlayer.trackTitle.trim().length > 0)
                             ? root.trackArtist
                             : "Tap to Play"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(11, Math.round(card.height * 0.15))
                         font.weight: Font.Normal
                         color: Theme.onSurfaceVariantColor
@@ -967,7 +967,7 @@ Item {
                         text: (root.activePlayer && root.activePlayer.trackTitle && root.activePlayer.trackTitle.trim().length > 0)
                             ? root.trackTitle
                             : "No Music Playing"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(14, Math.round(card.height * 0.11))
                         font.weight: Font.DemiBold
                         color: Theme.onSurfaceColor
@@ -981,7 +981,7 @@ Item {
                         text: (root.activePlayer && root.activePlayer.trackTitle && root.activePlayer.trackTitle.trim().length > 0)
                             ? root.trackArtist
                             : "Tap to Play"
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(11, Math.round(card.height * 0.085))
                         font.weight: Font.Normal
                         color: Theme.onSurfaceVariantColor
@@ -1089,7 +1089,7 @@ Item {
                     Text {
                         Layout.alignment: Qt.AlignHCenter
                         text: root.formatTime(root.currentPosition) + " / " + root.formatTime(root.trackLength)
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(10, Math.round(card.height * 0.075))
                         font.weight: Font.Medium
                         color: Theme.onSurfaceVariantColor
@@ -1192,7 +1192,7 @@ Item {
                             text: (root.activePlayer && root.activePlayer.trackTitle && root.activePlayer.trackTitle.trim().length > 0)
                                 ? root.trackTitle
                                 : "Tap to Play"
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(14, Math.round(heroStadiumArt.height * 0.18))
                             font.weight: Font.DemiBold
                             color: "#FFFFFF"
@@ -1206,7 +1206,7 @@ Item {
                             text: (root.activePlayer && root.activePlayer.trackTitle && root.activePlayer.trackTitle.trim().length > 0)
                                 ? root.trackArtist
                                 : ""
-                            font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                            font.family: Theme.font.family
                             font.pixelSize: Math.max(11, Math.round(heroStadiumArt.height * 0.13))
                             font.weight: Font.Normal
                             color: Qt.rgba(1, 1, 1, 0.82)
@@ -1324,7 +1324,7 @@ Item {
                     Text {
                         Layout.alignment: Qt.AlignHCenter
                         text: root.formatTime(root.currentPosition) + " / " + root.formatTime(root.trackLength)
-                        font.family: "Google Sans, Product Sans, Inter, Outfit, " + Theme.font.family
+                        font.family: Theme.font.family
                         font.pixelSize: Math.max(11, Math.round(card.height * 0.055))
                         font.weight: Font.Medium
                         color: Theme.onSurfaceVariantColor

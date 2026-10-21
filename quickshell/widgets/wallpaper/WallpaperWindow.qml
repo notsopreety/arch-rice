@@ -13,19 +13,8 @@ import "../"
 PanelWindow {
     id: main
 
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlag.reload()
-        onLoaded: main.glassmorphism = true
-        onLoadFailed: main.glassmorphism = false
-        Component.onCompleted: {
-            try { glassFlag.reload(); } catch(e) {}
-        }
-    }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     // Responsive card dimensions
     readonly property real cardWidth: Math.min(260 * Appearance.effectiveScale, main.width * 0.25)
@@ -98,6 +87,11 @@ PanelWindow {
                 main.setInitialIndex()
             }
         }
+    }
+
+    Process {
+        id: clearCacheProc
+        onExited: Quickshell.execDetached(["bash", Quickshell.shellPath("widgets/wallpaper/cache.sh")])
     }
 
     function setInitialIndex() {
@@ -594,7 +588,7 @@ PanelWindow {
                         anchors.verticalCenter: parent.verticalCenter
                         color: Theme.onSurfaceColor
                         font.pixelSize: 14 * Appearance.effectiveScale
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         selectByMouse: true
                         selectionColor: Theme.primaryContainer
                         selectedTextColor: Theme.onPrimaryContainer
@@ -673,7 +667,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         text: "Search"
                         font.pixelSize: 10 * Appearance.effectiveScale
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.weight: Font.Medium
                         color: searchInput.activeFocus ? Theme.primary : Theme.outline
                         Behavior on color { ColorAnimation { duration: 180 } }
@@ -708,7 +702,9 @@ PanelWindow {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        Quickshell.execDetached(["bash", "-c", "rm -rf " + configs.cache_path.replace(/^~/, Quickshell.env("HOME")) + "* && bash " + Quickshell.shellPath("widgets/wallpaper/cache.sh")])
+                        let cacheDir = configs.cache_path.replace(/^~/, Quickshell.env("HOME")).replace(/\/+$/, "");
+                        clearCacheProc.command = ["rm", "-rf", cacheDir];
+                        clearCacheProc.running = true;
                     }
                 }
 

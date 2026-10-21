@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import Qt5Compat.GraphicalEffects
 import Quickshell
+import Quickshell.Io
 import "../../theme"
 import "../../services"
 import "../../components"
@@ -10,6 +11,43 @@ import "../../core"
 
 Item {
     id: root
+
+    // Copies the given URL to the clipboard (wl-copy reads its payload from stdin)
+    Process {
+        id: copyUrlProc
+        stdinEnabled: true
+        property string pendingText: ""
+        onStarted: write(pendingText)
+        onExited: exitCode => {
+            if (exitCode === 0)
+                Quickshell.execDetached(["notify-send", "-r", "1011", "-a", "Anime Gallery", "Clipboard", "Image URL copied to clipboard!"]);
+        }
+    }
+
+    // Downloads the wallpaper, then applies it if the download succeeded
+    Process {
+        id: wallDlProc
+        property string fileUrl: ""
+        property string destPath: ""
+        command: ["curl", "-sL", "--create-dirs", fileUrl, "-o", destPath]
+        onExited: exitCode => {
+            if (exitCode === 0)
+                Quickshell.execDetached([Quickshell.env("HOME") + "/.config/scripts/wall.sh", "-i", destPath]);
+        }
+    }
+
+    // Downloads to ~/Pictures, then notifies if the download succeeded
+    Process {
+        id: picDlProc
+        property string fileUrl: ""
+        property string destPath: ""
+        property string savedName: ""
+        command: ["curl", "-sL", "--create-dirs", fileUrl, "-o", destPath]
+        onExited: exitCode => {
+            if (exitCode === 0)
+                Quickshell.execDetached(["notify-send", "-r", "1013", "-a", "Anime Gallery", "Image Saved", "Saved to ~/Pictures/" + savedName]);
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -377,7 +415,7 @@ Item {
                                     DankIcon { name: "content_copy"; size: 10; color: "white" }
                                     Text {
                                         text: "Copy URL (L-Click)"
-                                        font.family: "Inter"
+                                        font.family: "Google Sans Flex"
                                         font.pixelSize: 8
                                         font.weight: Font.Medium
                                         color: "white"
@@ -401,7 +439,7 @@ Item {
                                     DankIcon { name: "wallpaper"; size: 10; color: Theme.onPrimary }
                                     Text {
                                         text: "Set Wallpaper (R-Click)"
-                                        font.family: "Inter"
+                                        font.family: "Google Sans Flex"
                                         font.pixelSize: 8
                                         font.weight: Font.Bold
                                         color: Theme.onPrimary
@@ -427,15 +465,14 @@ Item {
                                 let dest = "/tmp/anime-walls/" + cleanName;
 
                                 if (mouse.button === Qt.LeftButton) {
-                                    Quickshell.execDetached([
-                                        "sh", "-c",
-                                        "printf '%s' '" + model.fullUrl + "' | wl-copy && notify-send -r 1011 -a 'Anime Gallery' 'Clipboard' 'Image URL copied to clipboard!'"
-                                    ]);
+                                    copyUrlProc.pendingText = model.fullUrl;
+                                    copyUrlProc.command = ["wl-copy"];
+                                    copyUrlProc.running = true;
                                 } else if (mouse.button === Qt.RightButton) {
-                                    Quickshell.execDetached([
-                                        "sh", "-c",
-                                        "notify-send -r 1012 -a 'Anime Gallery' -t 1500 'Wallpaper' 'Applying wallpaper...' && mkdir -p /tmp/anime-walls && curl -sL '" + url + "' -o '" + dest + "' && $HOME/.config/scripts/wall.sh -i '" + dest + "'"
-                                    ]);
+                                    Quickshell.execDetached(["notify-send", "-r", "1012", "-a", "Anime Gallery", "-t", "1500", "Wallpaper", "Applying wallpaper..."]);
+                                    wallDlProc.fileUrl = url;
+                                    wallDlProc.destPath = dest;
+                                    wallDlProc.running = true;
                                 }
                             }
 
@@ -475,10 +512,11 @@ Item {
                                         let cleanName = "anime_" + index + "_" + Math.floor(Date.now() / 1000) + "." + ext;
                                         let dest = Quickshell.env("HOME") + "/Pictures/" + cleanName;
                                         
-                                        Quickshell.execDetached([
-                                            "sh", "-c",
-                                            "notify-send -r 1013 -a 'Anime Gallery' -t 1500 'Download' 'Downloading image...' && mkdir -p $HOME/Pictures && curl -sL '" + url + "' -o '" + dest + "' && notify-send -r 1013 -a 'Anime Gallery' 'Image Saved' 'Saved to ~/Pictures/" + cleanName + "'"
-                                        ]);
+                                        Quickshell.execDetached(["notify-send", "-r", "1013", "-a", "Anime Gallery", "-t", "1500", "Download", "Downloading image..."]);
+                                        picDlProc.fileUrl = url;
+                                        picDlProc.destPath = dest;
+                                        picDlProc.savedName = cleanName;
+                                        picDlProc.running = true;
                                     }
                                 }
                             }

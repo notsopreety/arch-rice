@@ -15,13 +15,6 @@ QtObject {
     signal fileSaved()
     signal errorOccurred(string message)
 
-    function newFile() {
-        filePath = "";
-        fileContent = "";
-        lastSavedContent = "";
-        isModified = false;
-    }
-
     function openFile(path) {
         if (!path) return;
         

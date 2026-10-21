@@ -94,7 +94,7 @@ Item {
             visible: !hasConnection
             x: 6 * Appearance.effectiveScale
             anchors.verticalCenter: parent.verticalCenter
-            font.family: "Inter"
+            font.family: "Google Sans Flex"
             font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Normal
             text: !isEnabled ? "Off" : "No Device"
@@ -114,7 +114,7 @@ Item {
             id: marqueeLabel
             visible: hasConnection
             anchors.verticalCenter: parent.verticalCenter
-            font.family: "Inter"
+            font.family: "Google Sans Flex"
             font.pixelSize: 10 * Appearance.effectiveScale
             font.weight: Font.Medium
             text: deviceName

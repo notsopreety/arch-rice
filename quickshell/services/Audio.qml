@@ -43,12 +43,6 @@ Singleton {
         setVolume(volume - 0.05);
     }
 
-    function setMute(m) {
-        if (ready) {
-            sink.audio.muted = m;
-        }
-    }
-
     function toggleMute() {
         if (ready) {
             sink.audio.muted = !sink.audio.muted;
@@ -64,12 +58,6 @@ Singleton {
     function setSourceMute(m) {
         if (sourceReady) {
             source.audio.muted = m;
-        }
-    }
-
-    function toggleSourceMute() {
-        if (sourceReady) {
-            source.audio.muted = !source.audio.muted;
         }
     }
 }

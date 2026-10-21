@@ -204,7 +204,6 @@ ShellRoot {
         target: "systemmonitor"
 
         function systemmonitor() { systemMonitorLoader.active = !systemMonitorLoader.active; }
-        function open() { systemMonitorLoader.active = true; }
         function open_direct() { systemMonitorLoader.active = true; }
         function close() { systemMonitorLoader.active = false; }
         function toggle() { systemMonitorLoader.active = !systemMonitorLoader.active; }
@@ -228,7 +227,6 @@ ShellRoot {
     // Ipc Handler for screentime target
     IpcHandler {
         target: "screentime"
-        function open() { screenTimeLoader.active = true; }
         function open_direct() { screenTimeLoader.active = true; }
         function close() { screenTimeLoader.active = false; }
         function toggle() { screenTimeLoader.active = !screenTimeLoader.active; }
@@ -238,15 +236,14 @@ ShellRoot {
     IpcHandler {
         target: "quickshell"
 
-        function systemmonitor() { systemMonitorLoader.active = !systemMonitorLoader.active; }
-
         // Exposed run method for terminal/scripts
         function run(command: string) {
+            const raw = command; // args like paths/devices are case-sensitive; match on lowercased below
             command = command.toLowerCase();
             console.log("Quickshell IPC command received:", command);
 
             if (command.startsWith("eject")) {
-                let parts = command.split(" ");
+                let parts = raw.split(" ");
                 if (parts.length > 1) {
                     let dev = parts[1];
                     ejectProcess.command = [Quickshell.env("HOME") + "/.config/quickshell/scripts/usb_monitor.sh", "--eject", dev];
@@ -257,7 +254,7 @@ ShellRoot {
             
             // Check for notepad with arguments
             if (command.startsWith("notepad")) {
-                let parts = command.split(" ");
+                let parts = raw.split(" ");
                 if (parts.length > 1) {
                     let path = parts.slice(1).join(" ");
                     NotepadService.openFile(path);
@@ -379,9 +376,6 @@ ShellRoot {
                     break;
                 case "lock":
                     LockService.lock();
-                    break;
-                case "systemmonitor":
-                    systemMonitorLoader.active = !systemMonitorLoader.active;
                     break;
 
                 default:

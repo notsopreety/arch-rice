@@ -15,7 +15,6 @@ Singleton {
     function addRef(modules) {
         pollTimer.start();
     }
-    function removeRef(modules) {}
 
     Timer {
         id: pollTimer

@@ -29,12 +29,6 @@ Singleton {
         }
     }
     
-    function trace(component, msg) {
-        if (levelTrace >= minLevel) {
-            console.log(`[TRACE][${component}]`, msg)
-        }
-    }
-    
     function debug(component, msg) {
         if (levelDebug >= minLevel) {
             console.log(`[DEBUG][${component}]`, msg)
@@ -60,21 +54,6 @@ Singleton {
             } else {
                 console.error(`[ERROR][${component}]`, msg)
             }
-        }
-    }
-    
-    // Performance timing helpers
-    property var timers: ({})
-    
-    function timeStart(label) {
-        timers[label] = new Date().getTime()
-    }
-    
-    function timeEnd(label) {
-        if (timers[label]) {
-            const elapsed = new Date().getTime() - timers[label]
-            debug("Performance", `${label}: ${elapsed}ms`)
-            delete timers[label]
         }
     }
 }

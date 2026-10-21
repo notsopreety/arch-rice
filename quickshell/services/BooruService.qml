@@ -3,6 +3,7 @@ import QtQuick
 import QtCore
 import Quickshell
 import Quickshell.Io
+import "../core"
 
 Singleton {
     id: root
@@ -42,6 +43,7 @@ Singleton {
         blockLoading: true
         blockWrites: true
         watchChanges: true
+        onFileChanged: reload()
         onLoaded: {
             try {
                 let content = keyFile.text().trim();
@@ -64,25 +66,10 @@ Singleton {
     }
 
     function saveSettings() {
-        try {
-            let obj = {};
-            try {
-                let currentContent = keyFile.text().trim();
-                if (currentContent.length > 0) {
-                    obj = JSON.parse(currentContent);
-                }
-            } catch (e) {}
-            
-            let booru = obj.booru || {};
-            if (booru.currentProvider !== currentProvider || booru.nsfwEnabled !== nsfwEnabled) {
-                booru.currentProvider = currentProvider;
-                booru.nsfwEnabled = nsfwEnabled;
-                obj.booru = booru;
-                keyFile.setText(JSON.stringify(obj, null, 2));
-            }
-        } catch (e) {
-            console.log("[BooruService] Failed to write settings.json: " + e);
-        }
+        Config.setSection("booru", {
+            currentProvider: root.currentProvider,
+            nsfwEnabled: root.nsfwEnabled
+        });
     }
 
     onCurrentProviderChanged: saveSettings()

@@ -139,7 +139,7 @@ Card {
 
                     Text {
                         text: "Calendar"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 9 * Appearance.effectiveScale
                         font.weight: root.activeTab === "calendar" ? Font.Medium : Font.Normal
                         color: root.activeTab === "calendar" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
@@ -182,7 +182,7 @@ Card {
 
                     Text {
                         text: "To Do"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 9 * Appearance.effectiveScale
                         font.weight: root.activeTab === "todo" ? Font.Medium : Font.Normal
                         color: root.activeTab === "todo" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
@@ -225,7 +225,7 @@ Card {
 
                     Text {
                         text: "Timer"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 9 * Appearance.effectiveScale
                         font.weight: root.activeTab === "timer" ? Font.Medium : Font.Normal
                         color: root.activeTab === "timer" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
@@ -268,7 +268,7 @@ Card {
 
                     Text {
                         text: "Stopwatch"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 9 * Appearance.effectiveScale
                         font.weight: root.activeTab === "stopwatch" ? Font.Medium : Font.Normal
                         color: root.activeTab === "stopwatch" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)
@@ -311,7 +311,7 @@ Card {
 
                     Text {
                         text: "Alarm"
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 9 * Appearance.effectiveScale
                         font.weight: root.activeTab === "alarm" ? Font.Medium : Font.Normal
                         color: root.activeTab === "alarm" ? Theme.primary : Qt.rgba(255, 255, 255, 0.7)

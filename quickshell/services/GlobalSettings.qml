@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../core"
 
 Singleton {
     id: root
@@ -16,6 +17,7 @@ Singleton {
         blockLoading: true
         blockWrites: true
         watchChanges: true
+        onFileChanged: reload()
         onLoaded: {
             try {
                 let content = configFile.text().trim();
@@ -41,26 +43,11 @@ Singleton {
     }
 
     function saveSettings() {
-        try {
-            let obj = {};
-            try {
-                let currentContent = configFile.text().trim();
-                if (currentContent.length > 0) {
-                    obj = JSON.parse(currentContent);
-                }
-            } catch (e) {}
-            
-            let global = obj.global || {};
-            if (global.floatingBar !== floatingBar || global.autoHideBar !== autoHideBar || global.showBS !== showBS) {
-                global.floatingBar = floatingBar;
-                global.autoHideBar = autoHideBar;
-                global.showBS = showBS;
-                obj.global = global;
-                configFile.setText(JSON.stringify(obj, null, 2));
-            }
-        } catch (e) {
-            console.log("[GlobalSettings] Failed to write settings.json: " + e);
-        }
+        Config.setSection("global", {
+            floatingBar: root.floatingBar,
+            autoHideBar: root.autoHideBar,
+            showBS: root.showBS
+        });
     }
 
     onFloatingBarChanged: saveSettings()

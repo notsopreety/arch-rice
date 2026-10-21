@@ -14,7 +14,7 @@ import "../"
 PanelWindow {
     id: root
 
-    property var focusedScreen: Quickshell.screens.find(s => s.name === (Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "")) || Quickshell.screens[0]
+    property var focusedScreen: Quickshell.screens.find(s => s.name === (Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "")) || Quickshell.screens[0] || null
 
     property string eventType: ""
     property string deviceNode: ""
@@ -240,7 +240,7 @@ PanelWindow {
 
                         Text {
                             text: (root.isAddition ? "CONNECTED" : "DISCONNECTED")
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 9 * Appearance.effectiveScale
                             font.weight: Font.Black
                             font.capitalization: Font.AllUppercase
@@ -250,14 +250,14 @@ PanelWindow {
 
                         Text {
                             text: "•"
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 9 * Appearance.effectiveScale
                             color: Qt.rgba(255, 255, 255, 0.3)
                         }
 
                         Text {
                             text: root.isAddition ? root.deviceType.toUpperCase() : root.deviceNode.toUpperCase()
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 9 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             font.capitalization: Font.AllUppercase
@@ -271,7 +271,7 @@ PanelWindow {
                     // Section 2: Large Title (OnSurface)
                     Text {
                         text: root.deviceName
-                        font.family: "Inter"
+                        font.family: "Google Sans Flex"
                         font.pixelSize: 15 * Appearance.effectiveScale
                         font.weight: Font.Bold
                         color: "#ffffff"
@@ -299,7 +299,7 @@ PanelWindow {
                                 id: sizeText
                                 anchors.centerIn: parent
                                 text: root.sizeString
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 9 * Appearance.effectiveScale
                                 font.weight: Font.Bold
                                 color: "#ffffff"
@@ -320,7 +320,7 @@ PanelWindow {
                                 id: fsText
                                 anchors.centerIn: parent
                                 text: root.fileSystem.toUpperCase()
-                                font.family: "Inter"
+                                font.family: "Google Sans Flex"
                                 font.pixelSize: 9 * Appearance.effectiveScale
                                 font.weight: Font.Bold
                                 color: root.isAddition ? "#4caf50" : "#f44336"
@@ -335,7 +335,7 @@ PanelWindow {
                                 }
                                 return root.busType ? "Bus: " + root.busType.toUpperCase() : "Ready to Mount";
                             }
-                            font.family: "Inter"
+                            font.family: "Google Sans Flex"
                             font.pixelSize: 9 * Appearance.effectiveScale
                             font.weight: Font.Medium
                             color: root.mountPoint ? "#81c784" : Qt.rgba(255, 255, 255, 0.6)

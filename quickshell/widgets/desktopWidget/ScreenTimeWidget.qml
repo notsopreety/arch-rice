@@ -7,6 +7,7 @@ import Quickshell.Io
 import "../../core"
 import "../../theme"
 import "../../components"
+import "../../services"
 import "../widgetCanvas"
 
 Item {
@@ -20,19 +21,8 @@ Item {
     property real customWidth: -1
     property real customHeight: -1
 
-    // ── Glassmorphism Toggle (Matching Clock.qml) ─────────────────────────
-    property bool glassmorphism: false
-
-    FileView {
-        id: glassFlag
-        path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-        watchChanges: true
-        onFileChanged: glassFlagTimer.restart()
-        Component.onCompleted: { try { glassFlag.reload(); } catch(e) {} }
-        onLoaded: root.glassmorphism = true
-        onLoadFailed: root.glassmorphism = false
-    }
-    Timer { id: glassFlagTimer; interval: 200; repeat: false; onTriggered: { try { glassFlag.reload(); } catch(e) {} } }
+    // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+    readonly property bool glassmorphism: Glassmorphism.enabled
 
     property int totalTimeSeconds: 0
     property var topApps: []
@@ -114,32 +104,17 @@ Item {
         onFileChanged: reloadTimer.restart()
     }
 
-    Process {
-        id: saveSettingsProc
-        running: false
-    }
-
     // Atomic Save Settings to settings.json
     function saveSettings(newX, newY, newStyle, newW, newH) {
-        let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
-        let cmd = "import json, os; path = '" + path + "'; " +
-                  "data = json.load(open(path)) if os.path.exists(path) else {}; " +
-                  "st = data.setdefault('screentime', {}); ";
-        let updates = [];
-        if (newX !== undefined) updates.push("st['screentimeX'] = " + Math.round(newX));
-        if (newY !== undefined) updates.push("st['screentimeY'] = " + Math.round(newY));
-        if (newStyle !== undefined) updates.push("st['screentimeStyle'] = " + Math.round(newStyle));
-        if (newW !== undefined && newW > 0) updates.push("st['width'] = " + Math.round(newW));
-        else if (newW === -1) updates.push("st.pop('width', None)");
-        if (newH !== undefined && newH > 0) updates.push("st['height'] = " + Math.round(newH));
-        else if (newH === -1) updates.push("st.pop('height', None)");
-        cmd += updates.join("; ") + "; " +
-               "tmp = path + '.tmp'; " +
-               "f = open(tmp, 'w'); " +
-               "json.dump(data, f, indent=2); " +
-               "f.close(); os.replace(tmp, path)";
-        saveSettingsProc.command = ["python3", "-c", cmd];
-        saveSettingsProc.running = true;
+        let obj = {};
+        if (newX !== undefined) obj.screentimeX = Math.round(newX);
+        if (newY !== undefined) obj.screentimeY = Math.round(newY);
+        if (newStyle !== undefined) obj.screentimeStyle = Math.round(newStyle);
+        if (newW !== undefined && newW > 0) obj.width = Math.round(newW);
+        else if (newW === -1) obj.width = null;
+        if (newH !== undefined && newH > 0) obj.height = Math.round(newH);
+        else if (newH === -1) obj.height = null;
+        Config.setSection("screentime", obj);
     }
 
     Process {

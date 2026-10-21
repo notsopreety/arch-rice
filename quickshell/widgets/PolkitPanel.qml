@@ -28,15 +28,8 @@ Scope {
                 readonly property bool isActive: GlobalStates.activeScreen === modelData
                 visible: PolkitService.active && isActive
 
-                // ── Glassmorphism toggle ───────────────────────────────────
-                property bool glassmorphism: false
-                FileView {
-                    id: glassFlag
-                    path: Quickshell.env("HOME") + "/.config/hypr/.glassmorphism_enabled"
-                    Component.onCompleted: { try { glassFlag.reload(); panelWindow.glassmorphism = true; } catch(e) { panelWindow.glassmorphism = false; } }
-                    onLoaded: panelWindow.glassmorphism = true
-                    onLoadFailed: panelWindow.glassmorphism = false
-                }
+                // ── Glassmorphism (shared flag, see services/Glassmorphism.qml) ──
+                readonly property bool glassmorphism: Glassmorphism.enabled
                 // ─────────────────────────────────────────────────────────
 
                 anchors {

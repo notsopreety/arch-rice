@@ -61,20 +61,8 @@ Item {
         }
     }
 
-    Process {
-        id: saveSettingsProc
-        running: false
-    }
-
     function saveSettings() {
-        let path = Quickshell.env("HOME") + "/.config/quickshell/settings.json";
-        let cmd = "import json, os; path = '" + path + "'; " +
-                  "data = json.load(open(path)) if os.path.exists(path) else {}; " +
-                  "al = data.setdefault('activateLinux', {}); " +
-                  "al['scale'] = " + root.customScale.toFixed(2) + "; " +
-                  "tmp = path + '.tmp'; f = open(tmp, 'w'); json.dump(data, f, indent=2); f.close(); os.replace(tmp, path)";
-        saveSettingsProc.command = ["python3", "-c", cmd];
-        saveSettingsProc.running = true;
+        Config.setSection("activateLinux", { scale: parseFloat(root.customScale.toFixed(2)) });
     }
 
     function loadSettings(data) {
